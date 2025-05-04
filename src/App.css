@@ -1,0 +1,18 @@
+/* de:
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+*/
+
+/* para algo como isso: */
+#root {
+  max-width: none;    /* tira o limite de largura */
+  margin: 0;          /* zera margens */
+  padding: 0;         /* zera preenchimento */
+  text-align: left;   /* alinha texto à esquerda */
+  width: 100%;
+  height: 100vh;      /* opcional: faz o root chegar até o fim da tela */
+}
