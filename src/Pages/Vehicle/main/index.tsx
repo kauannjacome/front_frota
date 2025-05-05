@@ -124,10 +124,11 @@ export default function Vehicle() {
             <Input placeholder="AAA-1234" maxLength={8} />
           </Form.Item>
 
+          <div style={{ display: "flex", padding: 0, gap: "20px",marginTop: "20px" }}>
           <Form.Item>
             <Button type="primary"variant="solid"  htmlType="submit">
             <SearchOutlined />
-              Salvar
+              Buscar
             </Button>
           </Form.Item>
           <Form.Item>
@@ -136,6 +137,7 @@ export default function Vehicle() {
               Adicionar
             </Button>
           </Form.Item>
+          </div>
         </Form>
       </Card>
 

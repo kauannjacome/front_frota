@@ -10,6 +10,9 @@ import {
   IdcardOutlined,
   TeamOutlined,
   FileTextOutlined,
+  SnippetsOutlined,
+  BankOutlined,
+  ShopOutlined,
 } from '@ant-design/icons';
 
 const { Title } = Typography;
@@ -23,14 +26,18 @@ interface AppMenuItem {
 }
 
 const menuItems: AppMenuItem[] = [
-  { key: '1', label: 'Home',        icon: <HomeOutlined />,        path: '/' },
-  { key: '2', label: 'Veículos',    icon: <CarOutlined />,         path: '/vehicle' },
-  { key: '3', label: 'Viagem',      icon: <CalendarOutlined />,    path: '/trip' },
-  { key: '4', label: 'Combustível', icon: <ThunderboltOutlined />, path: '/fuel' },
-  { key: '5', label: 'Manutenção',  icon: <ToolOutlined />,        path: '/maintenance' },
-  { key: '6', label: 'Motorista',   icon: <IdcardOutlined />,      path: '/drive' },
-  { key: '7', label: 'Pessoas',     icon: <TeamOutlined />,        path: '/person' },
-  { key: '8', label: 'Relatório',   icon: <FileTextOutlined />,    path: '/relatorio' },
+
+  { key: '1', label: 'Viagem',      icon: <CalendarOutlined />,    path: '/trip' },
+  { key: '2', label: 'Combustível', icon: <ThunderboltOutlined />, path: '/fuel' },
+  { key: '3', label: 'Manutenção',  icon: <ToolOutlined />,        path: '/maintenance' },
+  { key: '4', label: 'Veículos',    icon: <CarOutlined />,         path: '/vehicle' },
+  { key: '5', label: 'Motorista',   icon: <IdcardOutlined />,      path: '/drive' },
+  { key: '6', label: 'Pessoas',     icon: <TeamOutlined />,        path: '/person' },
+  { key: '7', label: 'Ticket',   icon: <SnippetsOutlined  />,    path: '/ticket' },
+  { key: '8', label: 'Usuarios',   icon: <ShopOutlined     />,    path: '/user' },
+  { key: '9', label: 'Fornecedor',   icon: <ShopOutlined     />,    path: '/supplier' },
+  { key: '10', label: 'Relatório',   icon: <FileTextOutlined />,    path: '/relatorio' },
+  { key: '11', label: 'Assinante',   icon: <BankOutlined  />,    path: '/subscriber' },
 ];
 
 const App: React.FC = () => {

@@ -7,6 +7,10 @@ import Fuel from "../Pages/Fuel";
 import Drive from "../Pages/Driver";
 import Person from "../Pages/Person";
 import Maintenance from "../Pages/Maintenance";
+import Ticket from "../Pages/Ticket/main";
+import User from "../Pages/User/main";
+import Supplier from "../Pages/Supplier/main";
+import Subscriber from "../Pages/Subscriber/main";
 
 export default function AppRoutes() {
   return (
@@ -20,7 +24,10 @@ export default function AppRoutes() {
         <Route path="/maintenance" element={< Maintenance/>} />
         <Route path="/drive" element={< Drive/>} />
         <Route path="/person" element={< Person/>} />
-
+        <Route path="/ticket" element={< Ticket/>} />
+        <Route path="/user" element={< User/>} />
+        <Route path="/supplier" element={< Supplier/>} />
+        <Route path="/subscriber" element={< Subscriber/>} />
         </Route>
       </Routes>
     </BrowserRouter>
