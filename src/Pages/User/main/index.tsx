@@ -9,6 +9,8 @@ import {
   Tag,
   Popconfirm,
   Select,
+  Row,
+  Col,
 } from "antd";
 import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import api from '../../../services/api';
@@ -119,35 +121,59 @@ export default function User() {
       <Card>
         <Form
           form={form}
-          layout="inline"
+          layout="horizontal"
           name="userForm"
           onFinish={onFinish}
         >
-          <Form.Item label="Nome" name="name">
-            <Input placeholder="Digite o nome" />
-          </Form.Item>
-          <Form.Item label="CPF" name="cpf">
-            <Input placeholder="Digite o CPF" maxLength={11} />
-          </Form.Item>
+          <Row gutter={[16, 8]}>
+            <Col xs={24} sm={12} md={8} lg={6}>
+              <Form.Item label="Nome" name="name">
+                <Input
+                  placeholder="Digite o nome"
+                  allowClear
+                />
+              </Form.Item>
+            </Col>
 
-          <Form.Item label="Cargo" name="role">
-            <Select placeholder="Selecione o cargo" style={{ width: 160 }}>
-              <Option value="ADMIN_LOCAL">ADMIN_LOCAL</Option>
-              <Option value="ADMIN_GLOBAL">ADMIN_GLOBAL</Option>
-              <Option value="USER">USER</Option>
-              {/* Adicione mais roles conforme seu enum */}
-            </Select>
-          </Form.Item>
-          <Form.Item>
-            <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>
-              Buscar
-            </Button>
-          </Form.Item>
-          <Form.Item>
+            <Col xs={24} sm={12} md={8} lg={6}>
+              <Form.Item label="CPF" name="cpf">
+                <Input
+                  placeholder="Digite o CPF"
+                  maxLength={11}
+                  allowClear
+                />
+              </Form.Item>
+            </Col>
+
+            <Col xs={24} sm={12} md={8} lg={6}>
+              <Form.Item label="Cargo" name="role">
+                <Select
+                  placeholder="Selecione o cargo"
+                  style={{ width: '100%' }}
+                  allowClear
+                >
+                  <Select.Option value="ADMIN_LOCAL">ADMIN_LOCAL</Select.Option>
+                  <Select.Option value="ADMIN_GLOBAL">ADMIN_GLOBAL</Select.Option>
+                  <Select.Option value="USER">USER</Select.Option>
+                  {/* Adicione mais roles conforme seu enum */}
+                </Select>
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Form.Item style={{ marginTop: 16, textAlign: 'left' }}>
             <Button
               type="primary"
+              htmlType="submit"
+              icon={<SearchOutlined />}
+            >
+              Buscar
+            </Button>
+            <Button
+               color="cyan" variant="solid"
               icon={<PlusOutlined />}
-              onClick={() => message.info('Navegar para criação de usuário')}
+              style={{ marginLeft: 12 }}
+              onClick={() => message.info('Abrir formulário de criação')}
             >
               Adicionar
             </Button>

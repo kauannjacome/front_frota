@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Card, Form, Input, Button, message, Space, Popconfirm } from "antd";
+import { Card, Form, Input, Button, message, Space, Popconfirm, Row, Col } from "antd";
 import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import Table, { ColumnsType } from "antd/es/table";
 import api from '../../services/api';
@@ -85,7 +85,6 @@ export default function Drive() {
       width: '15%',
       render: (date: string) => new Date(date).toLocaleDateString('pt-BR'),
     },
-    { title: 'Telefone', dataIndex: 'telefone', key: 'telefone', width: '15%' },
     { title: 'Tipo', dataIndex: 'type', key: 'type', width: '10%' },
     {
       title: 'Ações',
@@ -112,25 +111,41 @@ export default function Drive() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       <Card>
-        <Form form={form} layout="inline" onFinish={onSearch} style={{ alignItems: 'flex-end' }}>
-          <Form.Item label="Nome" name="name">
-            <Input placeholder="Digite o nome" />
-          </Form.Item>
-          <Form.Item label="CNH" name="license_number">
-            <Input placeholder="Número da CNH" />
-          </Form.Item>
+        <Form
+          form={form}
+          layout="horizontal"
+          name="driverForm"
+          onFinish={onSearch}
+        >
+          <Row gutter={[16, 8]}>
+            <Col xs={24} sm={12} md={8} lg={6}>
+              <Form.Item label="Nome" name="name">
+                <Input placeholder="Digite o nome" allowClear />
+              </Form.Item>
+            </Col>
 
-          <Form.Item>
-            <Space>
-              <Button type="primary" htmlType="submit">
-                <SearchOutlined /> Buscar
-              </Button>
-              <Button type="primary" onClick={onAdd}>
-                <PlusOutlined /> Adicionar
-              </Button>
-            </Space>
+            <Col xs={24} sm={12} md={8} lg={6}>
+              <Form.Item label="CNH" name="license_number">
+                <Input placeholder="Número da CNH" allowClear />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Form.Item style={{ marginTop: 16, textAlign: 'left' }}>
+            <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>
+              Buscar
+            </Button>
+            <Button
+              color="cyan" variant="solid"
+              icon={<PlusOutlined />}
+              style={{ marginLeft: 12 }}
+              onClick={() => message.info('Abrir formulário de criação')}
+            >
+              Adicionar
+            </Button>
           </Form.Item>
         </Form>
+
       </Card>
 
       <Card title="Lista de Motoristas">

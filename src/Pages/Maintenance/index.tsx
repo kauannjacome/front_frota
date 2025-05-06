@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Card, Form, Input, Button, message, Space, Tag, Popconfirm, Select } from "antd";
+import { Card, Form, Input, Button, message, Space, Tag, Popconfirm, Select, Row, Col } from "antd";
 import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import api from '../../services/api';
 import Table, { ColumnsType } from "antd/es/table";
@@ -96,10 +96,7 @@ export default function Maintenance() {
       title: 'Custo', dataIndex: 'cost', key: 'cost', width: '10%',
       render: (cost: number) => `R$ ${cost.toFixed(2)}`
     },
-    {
-      title: 'Próximo', dataIndex: 'next_due', key: 'next_due', width: '15%',
-      render: (date: string) => new Date(date).toLocaleDateString('pt-BR')
-    },
+
     {
       title: 'Ações', key: 'action', width: '15%',
       render: (_, record) => (
@@ -121,51 +118,71 @@ export default function Maintenance() {
   ];
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+    <div style={{
+      display: "flex",
+      flexDirection: "column",
+      padding: 0,
+      gap: "20px",
+    }}>
       <Card>
         <Form
           form={form}
-          layout="inline"
+          layout="horizontal"
           name="maintenanceForm"
           onFinish={onFinish}
         >
-          <Form.Item label="Veiculo" name="vehicle_id">
-            <Select
-              placeholder="Selecione o veículo"
-              loading={!veiculos.length}
-              style={{ width: '100%' }}
-            >
-              {veiculos.map(v => (
-                <Select.Option key={v.id} value={v.id}>
-                  {`${v.mark} ${v.model}`}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-          <Form.Item label="Tipo" name="type">
-            <Select placeholder="Selecione o tipo">
-              {maintenanceTypes.map(type => (
-                <Select.Option key={type} value={type}>
-                  {type}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-          <Form.Item>
-            <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>
-              Buscar
-            </Button>
-          </Form.Item>
-          <Form.Item>
+          <Row gutter={[16, 8]}>
+            <Col xs={24} sm={12} md={8} lg={6}>
+              <Form.Item label="Veículo" name="vehicle_id">
+                <Select
+                  placeholder="Selecione o veículo"
+                  loading={!veiculos.length}
+                  style={{ width: '100%' }}
+                >
+                  {veiculos.map(v => (
+                    <Select.Option key={v.id} value={v.id}>
+                      {`${v.mark} ${v.model}`}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+
+            <Col xs={24} sm={12} md={8} lg={6}>
+              <Form.Item label="Tipo" name="type">
+                <Select
+                  placeholder="Selecione o tipo"
+                  style={{ width: '100%' }}
+                >
+                  {maintenanceTypes.map(type => (
+                    <Select.Option key={type} value={type}>
+                      {type}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Form.Item style={{ marginTop: 16, textAlign: 'left' }}>
             <Button
               type="primary"
+              htmlType="submit"
+              icon={<SearchOutlined />}
+            >
+              Buscar
+            </Button>
+            <Button
+               color="cyan" variant="solid"
               icon={<PlusOutlined />}
-              onClick={() => message.info('Implementar criação de manutenção')}
+              style={{ marginLeft: 12 }}
+              onClick={() => message.info('Abrir formulário de criação')}
             >
               Adicionar
             </Button>
           </Form.Item>
         </Form>
+
       </Card>
 
       <Card title="Lista de Manutenções">

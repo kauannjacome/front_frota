@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Card, Form, Input, Button, message, Space, Tag, Popconfirm } from "antd";
+import { Card, Form, Input, Button, message, Space, Tag, Popconfirm, Row, Col } from "antd";
 import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import Table, { ColumnsType } from "antd/es/table";
 import api from '../../../services/api';
@@ -104,34 +104,56 @@ export default function Subscriber() {
       <Card>
         <Form
           form={form}
-          layout="inline"
+          layout="horizontal"
           name="subscriberForm"
           onFinish={onFinish}
         >
-          <Form.Item label="Razão Social" name="name">
-            <Input placeholder="Digite a razão social" />
-          </Form.Item>
-          <Form.Item label="Nome Fantasia" name="subscriber_name">
-            <Input placeholder="Digite o nome fantasia" />
-          </Form.Item>
-          <Form.Item label="CNPJ" name="cnpj">
-            <Input placeholder="00.000.000/0000-00" maxLength={18} />
-          </Form.Item>
-          <Form.Item label="E-mail" name="email">
-            <Input placeholder="email@exemplo.com" />
-          </Form.Item>
-          <Form.Item label="Cidade" name="city">
-            <Input placeholder="Digite a cidade" />
-          </Form.Item>
-          <Form.Item>
-            <Space>
-              <Button type="primary" htmlType="button" onClick={onSearch} icon={<SearchOutlined />}>
-                Buscar
-              </Button>
-              <Button type="primary" htmlType="submit" icon={<PlusOutlined />}>
-                Adicionar
-              </Button>
-            </Space>
+          <Row gutter={[16, 8]}>
+            <Col xs={24} sm={12} md={8} lg={6}>
+              <Form.Item label="Nome" name="subscriber_name">
+                <Input
+                  placeholder="Digite o nome fantasia"
+                  allowClear
+                />
+              </Form.Item>
+            </Col>
+
+            <Col xs={24} sm={12} md={8} lg={6}>
+              <Form.Item label="CNPJ" name="cnpj">
+                <Input
+                  placeholder="00.000.000/0000-00"
+                  maxLength={18}
+                  allowClear
+                />
+              </Form.Item>
+            </Col>
+
+            <Col xs={24} sm={12} md={8} lg={6}>
+              <Form.Item label="Cidade" name="city">
+                <Input
+                  placeholder="Digite a cidade"
+                  allowClear
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Form.Item style={{ marginTop: 16, textAlign: 'left' }}>
+            <Button
+              type="primary"
+              htmlType="submit"
+              icon={<SearchOutlined />}
+            >
+              Buscar
+            </Button>
+            <Button
+               color="cyan" variant="solid"
+              icon={<PlusOutlined />}
+              style={{ marginLeft: 12 }}
+              onClick={() => message.info('Abrir formulário de criação')}
+            >
+              Adicionar
+            </Button>
           </Form.Item>
         </Form>
       </Card>

@@ -1,6 +1,6 @@
 // src/components/Person.tsx
 import React, { useState } from "react";
-import { Card, Form, Input, Button, message, Space, Tag, Popconfirm } from "antd";
+import { Card, Form, Input, Button, message, Space, Tag, Popconfirm, Col, Row } from "antd";
 import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import api from '../../services/api';
 import Table, { ColumnsType } from "antd/es/table";
@@ -90,7 +90,7 @@ export default function Person() {
       width: '15%',
       render: (d: string) => new Date(d).toLocaleDateString(),
     },
-   
+
     {
       title: 'Ações',
       key: 'action',
@@ -122,32 +122,47 @@ export default function Person() {
       <Card>
         <Form
           form={form}
-          layout="inline"
+          layout="horizontal"
           name="personForm"
           onFinish={onFinish}
         >
-          <Form.Item label="Nome" name="full_name">
-            <Input placeholder="Digite o nome" />
-          </Form.Item>
-          <Form.Item label="CPF" name="cpf">
-            <Input placeholder="000.000.000-00" maxLength={14} />
-          </Form.Item>
+          <Row gutter={[16, 8]}>
+            <Col xs={24} sm={12} md={8} lg={6}>
+              <Form.Item label="Nome" name="full_name">
+                <Input placeholder="Digite o nome" allowClear />
+              </Form.Item>
+            </Col>
 
-          <div style={{ display: "flex", gap: "8px", marginTop: 8 }}>
-            <Form.Item>
-              <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>
-                Buscar
-              </Button>
-            </Form.Item>
-            <Form.Item>
-              <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
-                Adicionar
-              </Button>
-            </Form.Item>
-          </div>
+            <Col xs={24} sm={12} md={8} lg={6}>
+              <Form.Item label="CPF" name="cpf">
+                <Input
+                  placeholder="000.000.000-00"
+                  maxLength={14}
+                  allowClear
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Form.Item style={{ marginTop: 16, textAlign: 'left' }}>
+            <Button
+              type="primary"
+              htmlType="submit"
+              icon={<SearchOutlined />}
+            >
+              Buscar
+            </Button>
+            <Button
+               color="cyan" variant="solid"
+              icon={<PlusOutlined />}
+              style={{ marginLeft: 12 }}
+              onClick={() => message.info('Abrir formulário de criação')}
+            >
+              Adicionar
+            </Button>
+          </Form.Item>
         </Form>
       </Card>
-
       {/* Tabela de pessoas */}
       <Card title="Lista de Pessoas">
         <Table<Person>

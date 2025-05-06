@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Card, Form, Input, Button, message, Space, Popconfirm, DatePicker } from 'antd';
+import { Card, Form, Input, Button, message, Space, Popconfirm, DatePicker, Col, Row } from 'antd';
 import { PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import Table, { ColumnsType } from 'antd/es/table';
 import api from '../../../services/api';
@@ -104,31 +104,56 @@ export default function Ticket() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       <Card>
-        <Form form={form} layout="inline" name="ticketForm" onFinish={onFinish}>
-          <Form.Item label="Fornecedor" name="supplier_id">
-            <Input placeholder="ID do fornecedor" />
-          </Form.Item>
-          <Form.Item label="Passageiro" name="passenger_id">
-            <Input placeholder="ID do passageiro" />
-          </Form.Item>
-          <Form.Item label="Estado Origem" name="start_state">
-            <Input placeholder="Ex: EX" maxLength={2} />
-          </Form.Item>
-          <Form.Item label="Cidade Origem" name="start_city">
-            <Input placeholder="Digite a cidade de origem" />
-          </Form.Item>
-          <Form.Item label="Estado Destino" name="end_state">
-            <Input placeholder="Ex: EX" maxLength={2} />
-          </Form.Item>
-          <Form.Item label="Cidade Destino" name="end_city">
-            <Input placeholder="Digite a cidade de destino" />
-          </Form.Item>
-          <Form.Item label="Data Viagem" name="travel_date">
-            <DatePicker />
-          </Form.Item>
-          <Form.Item>
-            <Button type="primary" htmlType="submit">
-              <SearchOutlined /> Buscar
+        <Form
+          form={form}
+          layout="horizontal"
+          name="ticketForm"
+          onFinish={onFinish}
+        >
+          <Row gutter={[16, 8]}>
+            <Col xs={24} sm={12} md={8} lg={6}>
+              <Form.Item label="Fornecedor" name="supplier_id">
+                <Input
+                  placeholder="ID do fornecedor"
+                  allowClear
+                />
+              </Form.Item>
+            </Col>
+
+            <Col xs={24} sm={12} md={8} lg={6}>
+              <Form.Item label="Passageiro" name="passenger_id">
+                <Input
+                  placeholder="ID do passageiro"
+                  allowClear
+                />
+              </Form.Item>
+            </Col>
+
+            <Col xs={24} sm={12} md={8} lg={6}>
+              <Form.Item label="Data Viagem" name="travel_date">
+                <DatePicker
+                  style={{ width: '100%' }}
+                  allowClear
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Form.Item style={{ marginTop: 16, textAlign: 'left' }}>
+            <Button
+              type="primary"
+              htmlType="submit"
+              icon={<SearchOutlined />}
+            >
+              Buscar
+            </Button>
+            <Button
+               color="cyan" variant="solid"
+              icon={<PlusOutlined />}
+              style={{ marginLeft: 12 }}
+              onClick={() => message.info('Abrir formulário de criação')}
+            >
+              Adicionar
             </Button>
           </Form.Item>
         </Form>

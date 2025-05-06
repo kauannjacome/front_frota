@@ -8,8 +8,10 @@ import {
   message,
   Space,
   Popconfirm,
+  Row,
+  Col,
 } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import Table, { ColumnsType } from 'antd/es/table';
 import api from '../../services/api';
 import { Veiculo } from '../../common/store/VehicleStore';
@@ -126,20 +128,14 @@ export default function Fuel() {
       width: '15%',
     },
     { title: 'Litros', dataIndex: 'liters', key: 'liters', width: '10%' },
-    { title: 'Custo', dataIndex: 'cost', key: 'cost', width: '10%' },
-    { title: 'Odômetro', dataIndex: 'odometer', key: 'odometer', width: '10%' },
+
     {
       title: 'Tipo Combustível',
       dataIndex: 'fuel_type',
       key: 'fuel_type',
       width: '15%',
     },
-    {
-      title: 'Tipo Abastecimento',
-      dataIndex: 'supply_type',
-      key: 'supply_type',
-      width: '15%',
-    },
+
     {
       title: 'Ações',
       key: 'action',
@@ -160,67 +156,93 @@ export default function Fuel() {
   ];
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      <Card title="Registrar Abastecimento">
-        <Form form={createForm} layout="vertical" onFinish={onCreate}>
-          <div style={{ display: 'flex', gap: "18px" }}>
-            <Form.Item
-              label="Veículo"
-              name="vehicle_id"
-              rules={[{ required: true, message: 'Selecione o veículo' }]}
-              style={{ flex: '0 0 20vw' }}
-
-            >
-              <Select
-                placeholder="Selecione o veículo"
-                loading={!veiculos.length}
-                style={{ width: '100%' }}
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        padding: 0,
+        gap: "20px",
+      }}
+    >
+      <Card>
+        <Form
+          form={createForm}
+          layout="horizontal"
+          onFinish={onCreate}
+          name="supplyForm"
+        >
+          <Row gutter={[16, 8]}>
+            <Col xs={24} sm={12} md={8} lg={6}>
+              <Form.Item
+                label="Veículo"
+                name="vehicle_id"
               >
-                {veiculos.map(v => (
-                  <Select.Option key={v.id} value={v.id}>
-                    {`${v.mark} ${v.model}`}
-                  </Select.Option>
-                ))}
-              </Select>
-            </Form.Item>
+                <Select
+                  placeholder="Selecione o veículo"
+                  loading={!veiculos.length}
+                  allowClear
+                >
+                  {veiculos.map(v => (
+                    <Select.Option key={v.id} value={v.id}>
+                      {`${v.mark} ${v.model}`}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
 
-            <Form.Item
-              label="Data de Abastecimento"
-              name="supply_date"
-              rules={[{ required: true, message: 'Informe a data' }]}
-              style={{ flex: '0 0 10vw' }}
+            <Col xs={24} sm={12} md={8} lg={6}>
+              <Form.Item
+                label="Data de Abastecimento"
+                name="supply_date"
+              >
+                <DatePicker
+                  style={{ width: '100%' }}
+                  locale={ptBRDatePicker}
+                  format="DD/MM/YYYY"
+                />
+              </Form.Item>
+            </Col>
+
+            <Col xs={24} sm={12} md={8} lg={6}>
+              <Form.Item
+                label="Tipo de Combustível"
+                name="fuel_type"
+              >
+                <Select
+                  placeholder="Selecione o tipo"
+                  allowClear
+                >
+                  <Select.Option value="GASOLINA">Gasolina</Select.Option>
+                  <Select.Option value="DIESEL">Diesel</Select.Option>
+                  <Select.Option value="ETANOL">Etanol</Select.Option>
+                  <Select.Option value="ELETRICO">Elétrico</Select.Option>
+                  <Select.Option value="OUTRO">Outro tipo de combustível</Select.Option>
+                </Select>
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Form.Item style={{ marginTop: 16, textAlign: 'left' }}>
+            <Button
+              type="primary"
+              htmlType="submit"
+              icon={<SearchOutlined />}
             >
-              <DatePicker style={{ width: '100%' }}
-                locale={ptBRDatePicker}
-                format="DD/MM/YYYY"
-              />
-            </Form.Item>
-
-            <Form.Item
-              label="Tipo de Combustível"
-              name="fuel_type"
-              rules={[{ required: true, message: 'Selecione o tipo de combustível' }]}
-              style={{ flex: '0 0 20vw' }}
+              Buscar
+            </Button>
+            <Button
+               color="cyan" variant="solid"
+              icon={<PlusOutlined />}
+              style={{ marginLeft: 12 }}
+              onClick={() => message.info('Abrir formulário de criação')}
             >
-              <Select placeholder="Selecione o tipo">
-                {typesFuel.map(type => (
-                  <Select.Option key={type} value={type}>
-                    {/* Se quiser exibir em maiúsculo apenas a primeira letra: */}
-                    {type.charAt(0) + type.slice(1).toLowerCase()}
-                  </Select.Option>
-                ))}
-              </Select>
-            </Form.Item>
-
-          </div>
-
-          <Form.Item>
-            <Button type="primary" htmlType="submit" icon={<PlusOutlined />}>
               Adicionar
             </Button>
           </Form.Item>
         </Form>
       </Card>
+
 
       <Card title="Lista de Abastecimentos">
         <Table<FuelLog>

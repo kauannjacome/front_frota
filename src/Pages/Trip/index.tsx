@@ -12,6 +12,8 @@ import {
   TimePicker,
   Select,
   Switch,
+  Col,
+  Row,
 } from "antd";
 import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import api from "../../services/api";
@@ -43,6 +45,7 @@ interface Trip {
 export default function Trip() {
   const [form] = Form.useForm();
   const [trips, setTrips] = useState<Trip[]>([]);
+  const { Option } = Select;
 
   const onFinish = async (values: any) => {
     try {
@@ -144,38 +147,55 @@ export default function Trip() {
       }}
     >
       <Card>
-        <Form form={form} layout="inline" name="tripForm" onFinish={onFinish}>
-          <Form.Item label="Propósito" name="purpose">
-            <Input placeholder="Digite o propósito" />
-          </Form.Item>
-          <Form.Item label="Status" name="status">
-            <Select
-              placeholder="Selecione o status"
-              allowClear
-              style={{ width: 150 }}
-            >
-              <Select.Option value="PENDENTE">Pendente</Select.Option>
-              <Select.Option value="APROVADO">Aprovado</Select.Option>
-              <Select.Option value="REJEITADO">Rejeitado</Select.Option>
-            </Select>
-          </Form.Item>
-          <Form.Item label="Data" name="request_date">
-            <DatePicker />
-          </Form.Item>
-          <Space style={{ marginTop: 8 }}>
+
+        <Form
+          form={form}
+          layout="horizontal"
+          name="tripForm"
+          onSubmitCapture={onFinish}
+        >
+          <Row gutter={[16, 8]}>
+            <Col xs={24} sm={12} md={8} lg={6}>
+              <Form.Item name="purpose" label="Propósito">
+                <Input placeholder="Digite o propósito" allowClear />
+              </Form.Item>
+            </Col>
+
+            <Col xs={24} sm={12} md={8} lg={6}>
+              <Form.Item name="status" label="Status">
+                <Select placeholder="Selecione o status" allowClear>
+                  <Option value="PENDENTE">Pendente</Option>
+                  <Option value="APROVADO">Aprovado</Option>
+                  <Option value="EM_ANDAMENTO">Em andamento</Option>
+                  <Option value="CONCLUIDO">Concluído</Option>
+                  <Option value="CANCELADO">Cancelado</Option>
+                </Select>
+              </Form.Item>
+            </Col>
+
+            <Col xs={24} sm={12} md={8} lg={6}>
+              <Form.Item name="request_date" label="Data">
+                <DatePicker style={{ width: '100%' }} />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Form.Item style={{ marginTop: 16, textAlign: 'left' }}>
             <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>
               Buscar
             </Button>
+
             <Button
-              type="primary"
+               color="cyan" variant="solid"
               icon={<PlusOutlined />}
-              onClick={() => message.info("Abrir formulário de criação")}
+              style={{ marginLeft: 12 }}
+              onClick={() => message.info('Abrir formulário de criação')}
             >
               Adicionar
             </Button>
-
-          </Space>
+          </Form.Item>
         </Form>
+
       </Card>
 
       <Card title="Lista de Viagens">

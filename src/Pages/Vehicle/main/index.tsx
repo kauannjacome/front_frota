@@ -1,5 +1,5 @@
-import  { useState } from "react";
-import { Card, Form, Input, Button, message, Space, Tag, Popconfirm } from "antd";
+import { useState } from "react";
+import { Card, Form, Input, Button, message, Space, Tag, Popconfirm, Row, Col } from "antd";
 import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import api from '../../../services/api';
 import Table, { ColumnsType } from "antd/es/table";
@@ -39,7 +39,7 @@ export default function Vehicle() {
   };
 
 
-  const onDelete = async (id:number) => {
+  const onDelete = async (id: number) => {
 
     try {
 
@@ -64,13 +64,14 @@ export default function Vehicle() {
     {
       title: 'Disponível', dataIndex: 'available', key: 'available',
       render: (available: boolean) => <Tag color={available ? 'green' : 'volcano'}>{available ? 'Sim' : 'Não'}</Tag>
-      , width: '10%'},
+      , width: '10%'
+    },
 
     {
       title: 'Ações', key: 'action',
       render: (_, record) => (
         <Space size="middle">
-          <Button  color="cyan" variant="solid" onClick={() => { message.info(`Editando veículo ID: ${record.id}`); }}>
+          <Button color="cyan" variant="solid" onClick={() => { message.info(`Editando veículo ID: ${record.id}`); }}>
             Editar
           </Button>
 
@@ -81,7 +82,7 @@ export default function Vehicle() {
             okText="Sim"
             cancelText="Não"
           >
-            <Button variant="solid"  color="red">Delete</Button>
+            <Button variant="solid" color="red">Delete</Button>
           </Popconfirm>
         </Space>
       ), width: '20%'
@@ -93,39 +94,43 @@ export default function Vehicle() {
       <Card >
         <Form
           form={form}
-          layout="inline"         // <-- layout inline
+          layout="horizontal"
           name="vehicleForm"
           onFinish={onFinish}
         >
-          <Form.Item
-            label="Apelido"
-            name="surname"
-          >
-            <Input placeholder="Digite da Apelido" />
-          </Form.Item>
- 
-          <Form.Item
-            label="Placa"
-            name="placa"
-          >
-            <Input placeholder="AAA-1234" maxLength={8} />
-          </Form.Item>
+          <Row gutter={[16, 8]}>
+            <Col xs={24} sm={12} md={8} lg={6}>
+              <Form.Item label="Apelido" name="surname">
+                <Input placeholder="Digite o apelido" allowClear />
+              </Form.Item>
+            </Col>
 
-          <div style={{ display: "flex", padding: 0, gap: "20px",marginTop: "20px" }}>
-          <Form.Item>
-            <Button type="primary"variant="solid"  htmlType="submit">
-            <SearchOutlined />
+            <Col xs={24} sm={12} md={8} lg={6}>
+              <Form.Item label="Placa" name="placa">
+                <Input placeholder="AAA-1234" maxLength={8} allowClear />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Form.Item style={{ marginTop: 16, textAlign: 'left' }}>
+            <Button
+              type="primary"
+              htmlType="submit"
+              icon={<SearchOutlined />}
+            >
               Buscar
             </Button>
-          </Form.Item>
-          <Form.Item>
-            <Button color="purple" variant="solid" type="primary"  >
-              <PlusOutlined />
+            <Button
+               color="cyan" variant="solid"
+              icon={<PlusOutlined />}
+              style={{ marginLeft: 12 }}
+              onClick={() => message.info('Abrir formulário de criação')}
+            >
               Adicionar
             </Button>
           </Form.Item>
-          </div>
         </Form>
+
       </Card>
 
       <Card title="Lista de Veículos">

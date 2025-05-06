@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Card, Form, Input, Button, message, Space, Tag, Popconfirm } from "antd";
+import { Card, Form, Input, Button, message, Space, Tag, Popconfirm, Row, Col } from "antd";
 import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import api from '../../../services/api';
 import Table, { ColumnsType } from "antd/es/table";
@@ -92,28 +92,49 @@ export default function Supplier() {
       <Card>
         <Form
           form={form}
-          layout="inline"
+          layout="horizontal"
           name="supplierForm"
           onFinish={onFinish}
         >
-          <Form.Item label="Nome" name="name">
-            <Input placeholder="Digite o nome" />
+          <Row gutter={[16, 8]}>
+            <Col xs={24} sm={12} md={8} lg={6}>
+              <Form.Item label="Nome" name="name">
+                <Input
+                  placeholder="Digite o nome"
+                  allowClear
+                />
+              </Form.Item>
+            </Col>
+
+            <Col xs={24} sm={12} md={8} lg={6}>
+              <Form.Item label="CNPJ" name="cnpj">
+                <Input
+                  placeholder="00.000.000/0000-00"
+                  maxLength={18}
+                  allowClear
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Form.Item style={{ marginTop: 16, textAlign: 'left' }}>
+            <Button
+              type="primary"
+              htmlType="button"
+              icon={<SearchOutlined />}
+              onClick={fetchSuppliers}
+            >
+              Buscar
+            </Button>
+            <Button
+               color="cyan" variant="solid"
+              icon={<PlusOutlined />}
+              style={{ marginLeft: 12 }}
+              onClick={() => message.info('Abrir formulário de criação')}
+            >
+              Adicionar
+            </Button>
           </Form.Item>
-          <Form.Item label="CNPJ" name="cnpj">
-            <Input placeholder="00.000.000/0000-00" maxLength={18} />
-          </Form.Item>
-          <div style={{ display: "flex", padding: 0, gap: "20px", marginTop: "20px" }}>
-            <Form.Item>
-              <Button type="primary" htmlType="button" onClick={fetchSuppliers}>
-                <SearchOutlined /> Buscar
-              </Button>
-            </Form.Item>
-            <Form.Item>
-              <Button type="primary" htmlType="submit">
-                <PlusOutlined /> Adicionar
-              </Button>
-            </Form.Item>
-          </div>
         </Form>
       </Card>
 
