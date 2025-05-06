@@ -103,20 +103,7 @@ export default function Vehicle() {
           >
             <Input placeholder="Digite da Apelido" />
           </Form.Item>
-          <Form.Item
-            label="Marca"
-            name="mark"
-          >
-            <Input placeholder="Digite da marca" />
-          </Form.Item>
-
-          <Form.Item
-            label="modelo"
-            name="model"
-          >
-            <Input placeholder="Digite do modelo" />
-          </Form.Item>
-
+ 
           <Form.Item
             label="Placa"
             name="placa"

@@ -1,10 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Form, InputNumber, DatePicker, Select, Button, message, Space, Tag, Popconfirm } from 'antd';
+import {
+  Card,
+  Form,
+  DatePicker,
+  Select,
+  Button,
+  message,
+  Space,
+  Popconfirm,
+} from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import Table, { ColumnsType } from 'antd/es/table';
 import api from '../../services/api';
-import moment from 'moment';
+import { Veiculo } from '../../common/store/VehicleStore';
+import ptBR from 'antd/lib/locale/pt_BR';
+import ptBRDatePicker from 'antd/es/date-picker/locale/pt_BR';
 
+import moment from 'moment';
 interface FuelLog {
   id: number;
   uuid: string;
@@ -28,12 +40,34 @@ interface FuelLog {
 export default function Fuel() {
   const [createForm] = Form.useForm();
   const [fuelLogs, setFuelLogs] = useState<FuelLog[]>([]);
+  const [typesFuel, setTypesFuel] = useState<string[]>([]);
+  const [veiculos, setVeiculos] = useState<Veiculo[]>([]);
 
-  // Carrega todos os registros ao montar o componente
+
+  // Carrega logs e veículos ao montar
   useEffect(() => {
     loadFuelLogs();
+    api
+      .get<Veiculo[]>('/vehicle')
+      .then(({ data }) => setVeiculos(data))
+      .catch(err => {
+        console.error('Erro ao carregar veículos', err);
+        message.error('Não foi possível carregar a lista de veículos.');
+      });
   }, []);
 
+  // Carrega logs e veículos ao montar
+  useEffect(() => {
+    loadFuelLogs();
+    api
+      .get<string[]>('/fuel-log/types')
+      .then(({ data }) => setTypesFuel(data))
+      .catch(err => {
+        console.error('Erro ao carregar typoes de combustivel', err);
+
+      });
+  }, []);
+  console.log(typesFuel)
   const loadFuelLogs = async () => {
     try {
       const response = await api.get<FuelLog[]>('/fuel-log');
@@ -73,19 +107,44 @@ export default function Fuel() {
   };
 
   const columns: ColumnsType<FuelLog> = [
-    { title: 'Veículo', dataIndex: 'vehicle_id', key: 'vehicle_id', width: '10%' },
     {
-      title: 'Data', dataIndex: 'supply_date', key: 'supply_date',
+      title: 'Veículo',
+      key: 'vehicle',
+      width: '12%',
+      render: (_: any, record: FuelLog) => {
+        const vehicle = veiculos.find(v => v.id === record.vehicle_id);
+        return vehicle
+          ? `${vehicle.mark} ${vehicle.model}`
+          : `#${record.vehicle_id}`;
+      },
+    },
+    {
+      title: 'Data',
+      dataIndex: 'supply_date',
+      key: 'supply_date',
       render: (date: string) => moment(date).format('DD/MM/YYYY'),
-      width: '15%'
+      width: '15%',
     },
     { title: 'Litros', dataIndex: 'liters', key: 'liters', width: '10%' },
     { title: 'Custo', dataIndex: 'cost', key: 'cost', width: '10%' },
     { title: 'Odômetro', dataIndex: 'odometer', key: 'odometer', width: '10%' },
-    { title: 'Tipo Combustível', dataIndex: 'fuel_type', key: 'fuel_type', width: '15%' },
-    { title: 'Tipo Abastecimento', dataIndex: 'supply_type', key: 'supply_type', width: '15%' },
     {
-      title: 'Ações', key: 'action', width: '10%', render: (_, record) => (
+      title: 'Tipo Combustível',
+      dataIndex: 'fuel_type',
+      key: 'fuel_type',
+      width: '15%',
+    },
+    {
+      title: 'Tipo Abastecimento',
+      dataIndex: 'supply_type',
+      key: 'supply_type',
+      width: '15%',
+    },
+    {
+      title: 'Ações',
+      key: 'action',
+      width: '10%',
+      render: (_, record) => (
         <Space size="middle">
           <Popconfirm
             title="Deseja excluir este registro?"
@@ -96,58 +155,64 @@ export default function Fuel() {
             <Button danger>Excluir</Button>
           </Popconfirm>
         </Space>
-      )
-    }
+      ),
+    },
   ];
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       <Card title="Registrar Abastecimento">
-        <Form
-          form={createForm}
-          layout="vertical"
-          onFinish={onCreate}
-        >
-          <Form.Item
-            label="ID do Veículo"
-            name="vehicle_id"
-            rules={[{ required: true, message: 'Informe o ID do veículo' }]}
-          >
-            <InputNumber style={{ width: '100%' }} />
-          </Form.Item>
+        <Form form={createForm} layout="vertical" onFinish={onCreate}>
+          <div style={{ display: 'flex', gap: "18px" }}>
+            <Form.Item
+              label="Veículo"
+              name="vehicle_id"
+              rules={[{ required: true, message: 'Selecione o veículo' }]}
+              style={{ flex: '0 0 20vw' }}
 
-          <Form.Item
-            label="Data de Abastecimento"
-            name="supply_date"
-            rules={[{ required: true, message: 'Informe a data' }]}
-          >
-            <DatePicker style={{ width: '100%' }} showTime />
-          </Form.Item>
+            >
+              <Select
+                placeholder="Selecione o veículo"
+                loading={!veiculos.length}
+                style={{ width: '100%' }}
+              >
+                {veiculos.map(v => (
+                  <Select.Option key={v.id} value={v.id}>
+                    {`${v.mark} ${v.model}`}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
 
-      
+            <Form.Item
+              label="Data de Abastecimento"
+              name="supply_date"
+              rules={[{ required: true, message: 'Informe a data' }]}
+              style={{ flex: '0 0 10vw' }}
+            >
+              <DatePicker style={{ width: '100%' }}
+                locale={ptBRDatePicker}
+                format="DD/MM/YYYY"
+              />
+            </Form.Item>
 
-          <Form.Item
-            label="Tipo de Combustível"
-            name="fuel_type"
-            rules={[{ required: true, message: 'Selecione o tipo de combustível' }]}
-          >
-            <Select>
-              <Select.Option value="GASOLINA">Gasolina</Select.Option>
-              <Select.Option value="DIESEL">Diesel</Select.Option>
-              <Select.Option value="ETANOL">Etanol</Select.Option>
-            </Select>
-          </Form.Item>
+            <Form.Item
+              label="Tipo de Combustível"
+              name="fuel_type"
+              rules={[{ required: true, message: 'Selecione o tipo de combustível' }]}
+              style={{ flex: '0 0 20vw' }}
+            >
+              <Select placeholder="Selecione o tipo">
+                {typesFuel.map(type => (
+                  <Select.Option key={type} value={type}>
+                    {/* Se quiser exibir em maiúsculo apenas a primeira letra: */}
+                    {type.charAt(0) + type.slice(1).toLowerCase()}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
 
-          <Form.Item
-            label="Tipo de Abastecimento"
-            name="supply_type"
-            rules={[{ required: true, message: 'Selecione o tipo de abastecimento' }]}
-          >
-            <Select>
-              <Select.Option value="COMPLETE">Completo</Select.Option>
-              <Select.Option value="PARCIAL">Parcial</Select.Option>
-            </Select>
-          </Form.Item>
+          </div>
 
           <Form.Item>
             <Button type="primary" htmlType="submit" icon={<PlusOutlined />}>

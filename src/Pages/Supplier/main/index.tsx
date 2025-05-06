@@ -99,9 +99,6 @@ export default function Supplier() {
           <Form.Item label="Nome" name="name">
             <Input placeholder="Digite o nome" />
           </Form.Item>
-          <Form.Item label="Contato" name="contact_info">
-            <Input placeholder="Digite o contato" />
-          </Form.Item>
           <Form.Item label="CNPJ" name="cnpj">
             <Input placeholder="00.000.000/0000-00" maxLength={18} />
           </Form.Item>

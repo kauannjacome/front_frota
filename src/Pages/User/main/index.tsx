@@ -123,12 +123,13 @@ export default function User() {
           name="userForm"
           onFinish={onFinish}
         >
-          <Form.Item label="CPF" name="cpf">
-            <Input placeholder="Digite o CPF" maxLength={11} />
-          </Form.Item>
           <Form.Item label="Nome" name="name">
             <Input placeholder="Digite o nome" />
           </Form.Item>
+          <Form.Item label="CPF" name="cpf">
+            <Input placeholder="Digite o CPF" maxLength={11} />
+          </Form.Item>
+
           <Form.Item label="Cargo" name="role">
             <Select placeholder="Selecione o cargo" style={{ width: 160 }}>
               <Option value="ADMIN_LOCAL">ADMIN_LOCAL</Option>

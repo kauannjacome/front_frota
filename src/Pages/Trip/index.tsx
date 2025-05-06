@@ -11,6 +11,7 @@ import {
   DatePicker,
   TimePicker,
   Select,
+  Switch,
 } from "antd";
 import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import api from "../../services/api";
@@ -172,6 +173,7 @@ export default function Trip() {
             >
               Adicionar
             </Button>
+
           </Space>
         </Form>
       </Card>

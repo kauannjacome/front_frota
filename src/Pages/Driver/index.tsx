@@ -119,9 +119,7 @@ export default function Drive() {
           <Form.Item label="CNH" name="license_number">
             <Input placeholder="Número da CNH" />
           </Form.Item>
-          <Form.Item label="Telefone" name="telefone">
-            <Input placeholder="Digite o telefone" />
-          </Form.Item>
+
           <Form.Item>
             <Space>
               <Button type="primary" htmlType="submit">

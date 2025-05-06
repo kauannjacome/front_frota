@@ -1,8 +1,9 @@
-import React, { useState } from "react";
-import { Card, Form, Input, Button, message, Space, Tag, Popconfirm } from "antd";
+import React, { useEffect, useState } from "react";
+import { Card, Form, Input, Button, message, Space, Tag, Popconfirm, Select } from "antd";
 import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import api from '../../services/api';
 import Table, { ColumnsType } from "antd/es/table";
+import { Veiculo } from "../../common/store/VehicleStore";
 
 interface Maintenance {
   id: number;
@@ -20,7 +21,8 @@ interface Maintenance {
 export default function Maintenance() {
   const [form] = Form.useForm();
   const [records, setRecords] = useState<Maintenance[]>([]);
-
+  const [veiculos, setVeiculos] = useState<Veiculo[]>([]);
+  const [maintenanceTypes, setMaintenanceTypes] = useState<string[]>([]);
   const onFinish = async (values: any) => {
     try {
       const response = await api.get<Maintenance[]>('/maintenance');
@@ -44,9 +46,43 @@ export default function Maintenance() {
     }
   };
 
+  useEffect(() => {
+    api.get<Veiculo[]>("/vehicle")
+      .then(({ data }) => setVeiculos(data))
+      .catch(err => {
+        console.error("Erro ao carregar veículos", err);
+        message.error("Não foi possível carregar a lista de veículos.");
+      });
+  }, []);
+  console.log(veiculos)
+  // Carrega logs e veículos ao montar
+  useEffect(() => {
+
+    api
+      .get<string[]>('/maintenance/types')
+      .then(({ data }) => setMaintenanceTypes(data))
+      .catch(err => {
+        console.error('Erro ao carregar typoes de combustivel', err);
+
+      });
+  }, []);
+  console.log(maintenanceTypes)
+
   const columns: ColumnsType<Maintenance> = [
 
-    { title: 'Veículo ID', dataIndex: 'vehicle_id', key: 'vehicle_id', width: '12%' },
+    {
+      title: 'Veículo',
+      key: 'vehicle',
+      width: '12%',
+      render: (_: any, record: Maintenance) => {
+        // procura o veículo correspondente no state
+        const vehicle = veiculos.find(v => v.id === record.vehicle_id);
+        // aqui você pode escolher o que exibir: marca+modelo, apelido (surname), placa…
+        return vehicle
+          ? `${vehicle.mark} ${vehicle.model}`    // ou vehicle.surname, ou vehicle.plate
+          : `#${record.vehicle_id}`;               // fallback caso não ache
+      }
+    },
     {
       title: 'Tipo', dataIndex: 'type', key: 'type', width: '15%',
       render: (type: string) => <Tag color={type === 'PREVENTIVA' ? 'blue' : 'volcano'}>{type}</Tag>
@@ -93,14 +129,30 @@ export default function Maintenance() {
           name="maintenanceForm"
           onFinish={onFinish}
         >
-          <Form.Item label="Veículo ID" name="vehicle_id">
-            <Input placeholder="ID do veículo" />
+          <Form.Item label="Veiculo" name="vehicle_id">
+            <Select
+              placeholder="Selecione o veículo"
+              loading={!veiculos.length}
+              style={{ width: '100%' }}
+            >
+              {veiculos.map(v => (
+                <Select.Option key={v.id} value={v.id}>
+                  {`${v.mark} ${v.model}`}
+                </Select.Option>
+              ))}
+            </Select>
           </Form.Item>
           <Form.Item label="Tipo" name="type">
-            <Input placeholder="PREVENTIVA ou CORRETIVA" />
+            <Select placeholder="Selecione o tipo">
+              {maintenanceTypes.map(type => (
+                <Select.Option key={type} value={type}>
+                  {type}
+                </Select.Option>
+              ))}
+            </Select>
           </Form.Item>
           <Form.Item>
-            <Button type="primary" htmlType="submit" icon={<SearchOutlined /> }>
+            <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>
               Buscar
             </Button>
           </Form.Item>

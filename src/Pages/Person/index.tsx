@@ -132,9 +132,6 @@ export default function Person() {
           <Form.Item label="CPF" name="cpf">
             <Input placeholder="000.000.000-00" maxLength={14} />
           </Form.Item>
-          <Form.Item label="E-mail" name="email">
-            <Input placeholder="email@exemplo.com" />
-          </Form.Item>
 
           <div style={{ display: "flex", gap: "8px", marginTop: 8 }}>
             <Form.Item>
