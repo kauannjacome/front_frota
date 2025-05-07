@@ -16,9 +16,11 @@ import {
   Row,
 } from "antd";
 import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
-import api from "../../services/api";
+import api from "../../../services/api";
 import Table, { ColumnsType } from "antd/es/table";
 import moment from "moment";
+import { TripStatusColors, TripStatusOptions } from "../../../common/types/constantsTypes";
+import { useNavigate } from "react-router-dom";
 
 interface Trip {
   id: number;
@@ -43,6 +45,7 @@ interface Trip {
 }
 
 export default function Trip() {
+  const navigate = useNavigate();
   const [form] = Form.useForm();
   const [trips, setTrips] = useState<Trip[]>([]);
   const { Option } = Select;
@@ -77,7 +80,7 @@ export default function Trip() {
       key: "request_date",
       width: "15%",
       render: (date: string) =>
-        date ? moment(date).format("DD/MM/YYYY") : "-",
+        date ? moment(date).format("DD/MM/YYYY HH:mm" ) : "-",
     },
     {
       title: "Origem",
@@ -105,10 +108,10 @@ export default function Trip() {
       key: "status",
       width: "10%",
       render: (status: string) => {
-        let color = "geekblue";
-        if (status === "APROVADO") color = "green";
-        if (status === "REJEITADO") color = "volcano";
-        return <Tag color={color}>{status}</Tag>;
+        const color = TripStatusColors[status] || 'geekblue';
+        // Se você quiser exibir o label em vez do código:
+        const label = TripStatusOptions.find(o => o.value === status)?.label || status;
+        return <Tag color={color}>{label}</Tag>;
       },
     },
     {
@@ -164,11 +167,11 @@ export default function Trip() {
             <Col xs={24} sm={12} md={8} lg={6}>
               <Form.Item name="status" label="Status">
                 <Select placeholder="Selecione o status" allowClear>
-                  <Option value="PENDENTE">Pendente</Option>
-                  <Option value="APROVADO">Aprovado</Option>
-                  <Option value="EM_ANDAMENTO">Em andamento</Option>
-                  <Option value="CONCLUIDO">Concluído</Option>
-                  <Option value="CANCELADO">Cancelado</Option>
+                  {TripStatusOptions.map(opt => (
+                    <Option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </Option>
+                  ))}
                 </Select>
               </Form.Item>
             </Col>
@@ -186,10 +189,10 @@ export default function Trip() {
             </Button>
 
             <Button
-               color="cyan" variant="solid"
+              color="cyan" variant="solid"
               icon={<PlusOutlined />}
               style={{ marginLeft: 12 }}
-              onClick={() => message.info('Abrir formulário de criação')}
+              onClick={() => navigate('/trip/create') }
             >
               Adicionar
             </Button>

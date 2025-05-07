@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Card, Form, Input, Button, message, Space, Popconfirm, DatePicker, Col, Row } from 'antd';
 import { PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import Table, { ColumnsType } from 'antd/es/table';
 import api from '../../../services/api';
+import { useSupplierStore } from '../../../common/store/SupplierStore';
 
 interface Ticket {
   id: number;
@@ -22,7 +23,8 @@ interface Ticket {
 export default function Ticket() {
   const [form] = Form.useForm();
   const [tickets, setTickets] = useState<Ticket[]>([]);
-
+  const suppliers = useSupplierStore(state => state.suppliers)?? [];
+  const fetchSuppliers = useSupplierStore(state => state.fetchSuppliers);
   const onFinish = async (values: any) => {
     try {
       const params = {
@@ -56,7 +58,16 @@ export default function Ticket() {
 
   const columns: ColumnsType<Ticket> = [
 
-    { title: 'Fornecedor', dataIndex: 'supplier_id', key: 'supplier_id', width: '10%' },
+    {
+      title: 'Fornecedor',
+      dataIndex: 'supplier_id',
+      key: 'supplier_id',
+      width: '15%',
+      render: (supplierId: number) => {
+        const supplier = suppliers.find(s => s.id === supplierId);
+        return supplier ? supplier.name : supplierId;
+      },
+    },
     { title: 'Passageiro', dataIndex: 'passenger_id', key: 'passenger_id', width: '10%' },
     {
       title: 'Origem',
@@ -101,6 +112,12 @@ export default function Ticket() {
     },
   ];
 
+    // Chama fetchSuppliers só uma vez, ao montar o componente
+    useEffect(() => {
+      fetchSuppliers();
+    }, [fetchSuppliers]);
+
+    console.log(suppliers)
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       <Card>
