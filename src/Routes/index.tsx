@@ -11,7 +11,6 @@ import Ticket from "../Pages/Ticket/main";
 import User from "../Pages/User/main";
 import Supplier from "../Pages/Supplier/main";
 import Subscriber from "../Pages/Subscriber/main";
-import CreateMaintenance from "../Pages/Maintenance/Create";
 
 
 export default function AppRoutes() {
@@ -19,12 +18,11 @@ export default function AppRoutes() {
     <BrowserRouter>
       <Routes>
         <Route element={<AppLayout />}>
-          <Route path="/" element={< Vehicle />} />
+          <Route path="/vehicle" element={< Vehicle />} />
           <Route path="/trip" element={< Trip />} />
           <Route path="/trip/create" element={< CreateTrip />} />
           <Route path="/fuel" element={< Fuel />} />
           <Route path="/maintenance" element={< Maintenance />} />
-          <Route path="/maintenance/create" element={< CreateMaintenance />} />
           <Route path="/drive" element={< Drive />} />
           <Route path="/person" element={< Person />} />
           <Route path="/ticket" element={< Ticket />} />
