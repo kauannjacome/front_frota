@@ -4,6 +4,7 @@ import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import api from '../../services/api';
 import Table, { ColumnsType } from "antd/es/table";
 import { Veiculo } from "../../common/store/VehicleStore";
+import { useNavigate } from "react-router-dom";
 
 interface Maintenance {
   id: number;
@@ -23,6 +24,7 @@ export default function Maintenance() {
   const [records, setRecords] = useState<Maintenance[]>([]);
   const [veiculos, setVeiculos] = useState<Veiculo[]>([]);
   const [maintenanceTypes, setMaintenanceTypes] = useState<string[]>([]);
+  const navigate = useNavigate();
   const onFinish = async (values: any) => {
     try {
       const response = await api.get<Maintenance[]>('/maintenance');
@@ -101,7 +103,7 @@ export default function Maintenance() {
       title: 'Ações', key: 'action', width: '15%',
       render: (_, record) => (
         <Space size="middle">
-          <Button onClick={() => message.info(`Editando manutenção ID: ${record.id}`)}>
+          <Button    onClick={() => {  navigate(`/maintenance/edit/${record.id}`); }}>
             Editar
           </Button>
           <Popconfirm
@@ -176,7 +178,7 @@ export default function Maintenance() {
                color="cyan" variant="solid"
               icon={<PlusOutlined />}
               style={{ marginLeft: 12 }}
-              onClick={() => message.info('Abrir formulário de criação')}
+              onClick={() =>  navigate('/maintenance/create')}
             >
               Adicionar
             </Button>

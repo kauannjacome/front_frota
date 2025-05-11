@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Card, Form, Input, Button, message, Space, Tag, Popconfirm, Row, Col } from "antd";
 import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import Table, { ColumnsType } from "antd/es/table";
-import api from '../../../services/api';
+import api from '../../services/api';
+import { useNavigate } from "react-router-dom";
 
 interface Subscriber {
   id: number;
@@ -18,6 +19,7 @@ interface Subscriber {
 }
 
 export default function Subscriber() {
+  const navigate = useNavigate();
   const [form] = Form.useForm();
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
 
@@ -77,7 +79,7 @@ export default function Subscriber() {
       title: 'Ações', key: 'action', width: '20%',
       render: (_, record) => (
         <Space size="middle">
-          <Button onClick={() => message.info(`Editando assinante ID: ${record.id}`)}>
+          <Button   onClick={() => {  navigate(`/subscriber/edit/${record.id}`); }}>
             Editar
           </Button>
           <Popconfirm
@@ -150,7 +152,7 @@ export default function Subscriber() {
                color="cyan" variant="solid"
               icon={<PlusOutlined />}
               style={{ marginLeft: 12 }}
-              onClick={() => message.info('Abrir formulário de criação')}
+              onClick={() =>  navigate('/subscriber/create')}
             >
               Adicionar
             </Button>

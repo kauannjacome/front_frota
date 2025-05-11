@@ -15,6 +15,7 @@ import {
 import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import api from '../../../services/api';
 import Table, { ColumnsType } from "antd/es/table";
+import { useNavigate } from "react-router-dom";
 
 const { Option } = Select;
 
@@ -35,7 +36,7 @@ interface User {
 export default function User() {
   const [form] = Form.useForm();
   const [users, setUsers] = useState<User[]>([]);
-
+  const navigate = useNavigate();
   const fetchUsers = async (values?: any) => {
     try {
       // Você pode passar params para filtro no back-end, ex: cpf, name, role...
@@ -96,7 +97,7 @@ export default function User() {
         <Space size="middle">
           <Button
             type="default"
-            onClick={() => message.info(`Editando usuário ID: ${record.id}`)}
+            onClick={() => {  navigate(`/user/edit/${record.id}`); }}
           >
             Editar
           </Button>
@@ -173,7 +174,7 @@ export default function User() {
                color="cyan" variant="solid"
               icon={<PlusOutlined />}
               style={{ marginLeft: 12 }}
-              onClick={() => message.info('Abrir formulário de criação')}
+              onClick={() =>  navigate('/user/create')}
             >
               Adicionar
             </Button>

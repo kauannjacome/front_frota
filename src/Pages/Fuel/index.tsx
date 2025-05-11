@@ -19,6 +19,7 @@ import ptBR from 'antd/lib/locale/pt_BR';
 import ptBRDatePicker from 'antd/es/date-picker/locale/pt_BR';
 
 import moment from 'moment';
+import { useNavigate } from 'react-router-dom';
 interface FuelLog {
   id: number;
   uuid: string;
@@ -44,7 +45,7 @@ export default function Fuel() {
   const [fuelLogs, setFuelLogs] = useState<FuelLog[]>([]);
   const [typesFuel, setTypesFuel] = useState<string[]>([]);
   const [veiculos, setVeiculos] = useState<Veiculo[]>([]);
-
+  const navigate = useNavigate();
 
   // Carrega logs e veículos ao montar
   useEffect(() => {
@@ -141,7 +142,11 @@ export default function Fuel() {
       key: 'action',
       width: '10%',
       render: (_, record) => (
+        
         <Space size="middle">
+          <Button    onClick={() => {  navigate(`/maintenance/edit/${record.id}`); }}>
+            Editar
+          </Button>
           <Popconfirm
             title="Deseja excluir este registro?"
             onConfirm={() => onDelete(record.id)}
@@ -235,7 +240,7 @@ export default function Fuel() {
                color="cyan" variant="solid"
               icon={<PlusOutlined />}
               style={{ marginLeft: 12 }}
-              onClick={() => message.info('Abrir formulário de criação')}
+              onClick={() => {  navigate(`/fuel/create`); }}
             >
               Adicionar
             </Button>

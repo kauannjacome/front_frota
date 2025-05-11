@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Card, Form, Input, Button, message, Space, Tag, Popconfirm, Row, Col } from "antd";
 import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
-import api from '../../../services/api';
+import api from '../../services/api';
 import Table, { ColumnsType } from "antd/es/table";
+import { useNavigate } from "react-router-dom";
 
 interface Supplier {
   id: number;
@@ -19,6 +20,7 @@ interface Supplier {
 export default function Supplier() {
   const [form] = Form.useForm();
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
+  const navigate = useNavigate();
 
   const fetchSuppliers = async () => {
     try {
@@ -70,7 +72,7 @@ export default function Supplier() {
       render: (_, record) => (
         <Space size="middle">
           <Button
-            onClick={() => { message.info(`Editar fornecedor ID: ${record.id}`); }}
+            onClick={() => { navigate(`/supplier/edit/${record.id}`); }}
           >
             Editar
           </Button>
@@ -127,10 +129,10 @@ export default function Supplier() {
               Buscar
             </Button>
             <Button
-               color="cyan" variant="solid"
+              color="cyan" variant="solid"
               icon={<PlusOutlined />}
               style={{ marginLeft: 12 }}
-              onClick={() => message.info('Abrir formulário de criação')}
+              onClick={() =>  navigate('/supplier/create')}
             >
               Adicionar
             </Button>

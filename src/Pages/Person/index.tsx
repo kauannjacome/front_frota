@@ -4,6 +4,7 @@ import { Card, Form, Input, Button, message, Space, Tag, Popconfirm, Col, Row } 
 import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import api from '../../services/api';
 import Table, { ColumnsType } from "antd/es/table";
+import { useNavigate } from "react-router-dom";
 
 interface Person {
   id: number;
@@ -38,7 +39,7 @@ interface Person {
 export default function Person() {
   const [form] = Form.useForm();
   const [persons, setPersons] = useState<Person[]>([]);
-
+  const navigate = useNavigate();
   // Buscar pessoas com base nos filtros do formulário
   const onFinish = async (values: any) => {
     try {
@@ -52,19 +53,6 @@ export default function Person() {
     }
   };
 
-  // Adicionar nova pessoa
-  const handleAdd = async () => {
-    try {
-      const values = form.getFieldsValue();
-      const response = await api.post<Person>('/person', values);
-      setPersons(prev => [response.data, ...prev]);
-      message.success('Pessoa adicionada com sucesso!');
-      form.resetFields();
-    } catch (error: any) {
-      console.error('Erro ao adicionar pessoa:', error);
-      message.error('Não foi possível adicionar a pessoa.');
-    }
-  };
 
   // Excluir (soft delete) pessoa
   const onDelete = async (id: number) => {
@@ -99,7 +87,7 @@ export default function Person() {
         <Space size="middle">
           <Button
             type="link"
-            onClick={() => message.info(`Editando pessoa ID: ${record.id}`)}
+            onClick={() => {  navigate(`/person/edit/${record.id}`); }}
           >
             Editar
           </Button>
@@ -156,7 +144,7 @@ export default function Person() {
                color="cyan" variant="solid"
               icon={<PlusOutlined />}
               style={{ marginLeft: 12 }}
-              onClick={() => message.info('Abrir formulário de criação')}
+              onClick={() =>  navigate('/person/create')}
             >
               Adicionar
             </Button>

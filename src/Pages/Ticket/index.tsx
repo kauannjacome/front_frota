@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import { Card, Form, Input, Button, message, Space, Popconfirm, DatePicker, Col, Row } from 'antd';
 import { PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import Table, { ColumnsType } from 'antd/es/table';
-import api from '../../../services/api';
-import { useSupplierStore } from '../../../common/store/SupplierStore';
+import api from '../../services/api';
+import { useSupplierStore } from '../../common/store/SupplierStore';
+import { useNavigate } from 'react-router-dom';
 
 interface Ticket {
   id: number;
@@ -24,6 +25,7 @@ export default function Ticket() {
   const [form] = Form.useForm();
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const suppliers = useSupplierStore(state => state.suppliers)?? [];
+  const navigate = useNavigate();
   const fetchSuppliers = useSupplierStore(state => state.fetchSuppliers);
   const onFinish = async (values: any) => {
     try {
@@ -93,7 +95,7 @@ export default function Ticket() {
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
-          <Button type="default" onClick={() => message.info(`Editando passagem ID: ${record.id}`)}>
+          <Button type="default"   onClick={() => {  navigate(`/ticket/edit/${record.id}`); }}>
             Editar
           </Button>
           <Popconfirm
@@ -168,7 +170,7 @@ export default function Ticket() {
                color="cyan" variant="solid"
               icon={<PlusOutlined />}
               style={{ marginLeft: 12 }}
-              onClick={() => message.info('Abrir formulário de criação')}
+              onClick={() =>  navigate('/ticket/create')}
             >
               Adicionar
             </Button>
