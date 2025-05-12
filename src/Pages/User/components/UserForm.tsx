@@ -79,23 +79,7 @@ export default function UserForm({ initialValues, onFinish, onCancel }: Props) {
         </Col>
       </Row>
 
-      <Row gutter={16}>
-        <Col span={8}>
-          <Form.Item name="is_password_temp" label="Senha Temporária" valuePropName="checked">
-            <Switch />
-          </Form.Item>
-        </Col>
-        <Col span={8}>
-          <Form.Item name="number_try" label="Número de tentativas">
-            <InputNumber min={0} style={{ width: '100%' }} />
-          </Form.Item>
-        </Col>
-        <Col span={8}>
-          <Form.Item name="is_blocked" label="Bloqueado" valuePropName="checked">
-            <Switch />
-          </Form.Item>
-        </Col>
-      </Row>
+
 
       <Row gutter={16}>
         <Col span={8}>
@@ -108,32 +92,11 @@ export default function UserForm({ initialValues, onFinish, onCancel }: Props) {
             <Input placeholder="CONTRATADO" />
           </Form.Item>
         </Col>
-        <Col span={8}>
-          <Form.Item name="accepted_terms" valuePropName="checked">
-            <Checkbox>Aceitou termos</Checkbox>
-          </Form.Item>
-        </Col>
+
       </Row>
 
-      <Row gutter={16}>
-        <Col span={8}>
-          <Form.Item name="accepted_terms_at" label="Data de aceitação">
-            <DatePicker style={{ width: '100%' }} showTime />
-          </Form.Item>
-        </Col>
-        <Col span={8}>
-          <Form.Item name="accepted_terms_version" label="Versão dos termos">
-            <Input />
-          </Form.Item>
-        </Col>
-      </Row>
 
-      <Form.Item name="subscriber_id" hidden>
-        <Input type="number" />
-      </Form.Item>
-      <Form.Item name="supplier_id" hidden>
-        <Input type="number" />
-      </Form.Item>
+
 
       <Form.Item>
         <Button type="primary" htmlType="submit">

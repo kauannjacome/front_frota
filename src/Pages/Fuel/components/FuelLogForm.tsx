@@ -1,6 +1,8 @@
-// src/components/FuelLogForm.tsx
-import { Form, InputNumber, DatePicker, Select, Button, Row, Col, Input } from 'antd';
+import { useEffect, useState, useCallback } from 'react';
+import { Form, InputNumber, DatePicker, Select, Button, Row, Col, message, Spin } from 'antd';
 import moment from 'moment';
+import debounce from 'lodash/debounce';
+import api from '../../../services/api';
 
 export interface FuelLogFormValues {
   vehicle_id?: number;
@@ -24,7 +26,106 @@ type Props = {
   onCancel?: () => void;
 };
 
+interface Vehicle {
+  id: number;
+  surname: string;
+  plate: string;
+}
+
+interface Driver {
+  id: number;
+  name: string;
+}
+
+interface Supplier {
+  id: number;
+  name: string;
+}
+
 export default function FuelLogForm({ initialValues, onFinish, onCancel }: Props) {
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [loadingVehicles, setLoadingVehicles] = useState(false);
+  const [drivers, setDrivers] = useState<Driver[]>([]);
+  const [loadingDrivers, setLoadingDrivers] = useState(false);
+  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
+  const [loadingSuppliers, setLoadingSuppliers] = useState(false);
+
+  const fetchVehicles = async (search?: string) => {
+    setLoadingVehicles(true);
+    try {
+      const { data } = await api.get<Vehicle[]>('/vehicle', {
+        params: search ? { q: search } : {}
+      });
+      setVehicles(data);
+    } catch (err) {
+      console.error('Erro ao buscar veículos:', err);
+      message.error('Falha ao carregar lista de veículos.');
+    } finally {
+      setLoadingVehicles(false);
+    }
+  };
+
+  const fetchDrivers = async (search?: string) => {
+    setLoadingDrivers(true);
+    try {
+      const { data } = await api.get<Driver[]>('/user/drive', {
+        params: search ? { q: search } : {}
+      });
+      setDrivers(data);
+    } catch (err) {
+      console.error('Erro ao buscar motoristas:', err);
+      message.error('Falha ao carregar lista de motoristas.');
+    } finally {
+      setLoadingDrivers(false);
+    }
+  };
+
+  const fetchSuppliers = async (search?: string) => {
+    setLoadingSuppliers(true);
+    try {
+      const { data } = await api.get<Supplier[]>('/supplier/fuel', {
+        params: search ? { q: search } : {}
+      });
+      setSuppliers(data);
+    } catch (err) {
+      console.error('Erro ao buscar fornecedores:', err);
+      message.error('Falha ao carregar lista de fornecedores.');
+    } finally {
+      setLoadingSuppliers(false);
+    }
+  };
+
+  // Debounced search handlers
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const handleVehicleSearch = useCallback(
+    debounce((value: string) => {
+      fetchVehicles(value);
+    }, 500),
+    []
+  );
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const handleDriverSearch = useCallback(
+    debounce((value: string) => {
+      fetchDrivers(value);
+    }, 500),
+    []
+  );
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const handleSupplierSearch = useCallback(
+    debounce((value: string) => {
+      fetchSuppliers(value);
+    }, 500),
+    []
+  );
+
+  useEffect(() => {
+    fetchVehicles();
+    fetchDrivers();
+    fetchSuppliers();
+  }, []);
+
   return (
     <Form<FuelLogFormValues>
       layout="vertical"
@@ -36,76 +137,99 @@ export default function FuelLogForm({ initialValues, onFinish, onCancel }: Props
       }}
     >
       <Row gutter={16}>
-        <Col span={8}>
-          <Form.Item name="vehicle_id" label="Veículo (ID)">
-            <InputNumber style={{ width: '100%' }} />
-          </Form.Item>
-        </Col>
-        <Col span={8}>
-          <Form.Item name="driver_id" label="Motorista (ID)">
-            <InputNumber style={{ width: '100%' }} />
-          </Form.Item>
-        </Col>
-        <Col span={8}>
-          <Form.Item name="authorizer_id" label="Autorizador (ID)">
-            <InputNumber style={{ width: '100%' }} />
-          </Form.Item>
-        </Col>
-      </Row>
-
-      <Row gutter={16}>
-        <Col span={8}>
-          <Form.Item name="attendant_id" label="Atendente (ID)">
-            <InputNumber style={{ width: '100%' }} />
-          </Form.Item>
-        </Col>
-        <Col span={8}>
-          <Form.Item name="person_id" label="Pessoa Associada (ID)">
-            <InputNumber style={{ width: '100%' }} />
-          </Form.Item>
-        </Col>
-        <Col span={8}>
-          <Form.Item name="supplier_id" label="Fornecedor (ID)">
-            <InputNumber style={{ width: '100%' }} />
-          </Form.Item>
-        </Col>
-      </Row>
-
-      <Row gutter={16}>
-        <Col span={12}>
+        <Col span={6}>
           <Form.Item
-            name="supply_date"
-            label="Data de Abastecimento"
-            rules={[{ required: true, message: 'Informe a data de abastecimento' }]}
+            name="vehicle_id"
+            label="Veículo"
+            rules={[{ required: true, message: 'Selecione o veículo' }]}
           >
-            <DatePicker style={{ width: '100%' }} />
+            <Select
+              showSearch
+              placeholder="Digite para buscar..."
+              notFoundContent={loadingVehicles ? <Spin size="small" /> : null}
+              filterOption={false}
+              onSearch={handleVehicleSearch}
+              loading={loadingVehicles}
+              allowClear
+            >
+              {vehicles.map(vehicle => (
+                <Select.Option key={vehicle.id} value={vehicle.id}>
+                  {`${vehicle.surname}-${vehicle.plate}`}
+                </Select.Option>
+              ))}
+            </Select>
           </Form.Item>
         </Col>
-        <Col span={12}>
-          <Form.Item name="deadline" label="Prazo (Deadline)">
-            <DatePicker style={{ width: '100%' }} />
+
+        <Col span={6}>
+          <Form.Item
+            name="driver_id"
+            label="Motorista"
+            rules={[{ required: true, message: 'Selecione o motorista' }]}
+          >
+            <Select
+              showSearch
+              placeholder="Digite para buscar..."
+              notFoundContent={loadingDrivers ? <Spin size="small" /> : null}
+              filterOption={false}
+              onSearch={handleDriverSearch}
+              loading={loadingDrivers}
+              allowClear
+            >
+              {drivers.map(driver => (
+                <Select.Option key={driver.id} value={driver.id}>
+                  {driver.name}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Col>
+
+        <Col span={6}>
+          <Form.Item
+            name="supplier_id"
+            label="Fornecedor"
+            rules={[{ required: true, message: 'Selecione o fornecedor' }]}
+          >
+            <Select
+              showSearch
+              placeholder="Digite para buscar..."
+              notFoundContent={loadingSuppliers ? <Spin size="small" /> : null}
+              filterOption={false}
+              onSearch={handleSupplierSearch}
+              loading={loadingSuppliers}
+              allowClear
+            >
+              {suppliers.map(supplier => (
+                <Select.Option key={supplier.id} value={supplier.id}>
+                  {supplier.name}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Col>
+        <Col span={6}>
+          <Form.Item
+            name="supply_type"
+            label="Tipo de Abastecimento"
+          >
+            <Select placeholder="Selecione o tipo">
+              <Select.Option value="COMPLETE">Completo</Select.Option>
+              <Select.Option value="PARTIAL">Parcial</Select.Option>
+            </Select>
           </Form.Item>
         </Col>
       </Row>
 
+      {/* restante do formulário permanece igual */}
+
+
+
+
       <Row gutter={16}>
         <Col span={6}>
-          <Form.Item name="liters" label="Litros">
-            <InputNumber style={{ width: '100%' }} min={0} step={0.01} />
-          </Form.Item>
-        </Col>
-        <Col span={6}>
-          <Form.Item name="cost" label="Custo">
-            <InputNumber
-              style={{ width: '100%' }}
-              min={0}
-              formatter={value => (value ? `R$ ${value}` : '')}
-            />
-          </Form.Item>
-        </Col>
-        <Col span={6}>
-          <Form.Item name="odometer" label="Hodômetro">
-            <InputNumber style={{ width: '100%' }} />
+          <Form.Item name="deadline" label="Prazo Limite">
+            <DatePicker style={{ width: '100%' }} />
           </Form.Item>
         </Col>
         <Col span={6}>
@@ -122,21 +246,45 @@ export default function FuelLogForm({ initialValues, onFinish, onCancel }: Props
             </Select>
           </Form.Item>
         </Col>
+        <Col span={6}>
+          <Form.Item name="liters" label="Litros">
+            <InputNumber style={{ width: '100%' }} min={0} step={0.01} />
+          </Form.Item>
+        </Col>
+        <Col span={6}>
+          <Form.Item name="cost" label="Custo">
+            <InputNumber
+              style={{ width: '100%' }}
+              min={0}
+              formatter={value => (value ? `R$ ${value}` : '')}
+            />
+          </Form.Item>
+        </Col>
+     
+
       </Row>
 
-      <Form.Item
-        name="supply_type"
-        label="Tipo de Abastecimento"
-      >
-        <Select placeholder="Selecione o tipo">
-          <Select.Option value="COMPLETE">Completo</Select.Option>
-          <Select.Option value="PARTIAL">Parcial</Select.Option>
-        </Select>
-      </Form.Item>
+      <Row gutter={16}>
+      <Col span={6}>
+          <Form.Item name="odometer" label="Hodômetro">
+            <InputNumber style={{ width: '100%' }} />
+          </Form.Item>
+        </Col>
+        <Col span={6}>
+          <Form.Item
+            name="supply_date"
+            label="Data de Abastecimento"
+            rules={[{ required: true, message: 'Informe a data de abastecimento' }]}
+          >
+            <DatePicker style={{ width: '100%' }} />
+          </Form.Item>
+        </Col>
+
+      </Row>
 
       <Form.Item>
         <Button type="primary" htmlType="submit">Salvar</Button>
-       <Button style={{ marginLeft: 8 }} onClick={onCancel}>Cancelar</Button>
+        <Button style={{ marginLeft: 8 }} onClick={onCancel}>Cancelar</Button>
       </Form.Item>
     </Form>
   );

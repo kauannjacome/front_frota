@@ -34,7 +34,7 @@ export default function MaintenanceForm({ initialValues, onFinish, onCancel }: P
       }}
     >
       <Row gutter={16}>
-        <Col span={8}>
+        <Col span={6}>
           <Form.Item
             name="vehicle_id"
             label="Veículo (ID)"
@@ -43,25 +43,13 @@ export default function MaintenanceForm({ initialValues, onFinish, onCancel }: P
             <InputNumber style={{ width: '100%' }} />
           </Form.Item>
         </Col>
-        <Col span={8}>
+        <Col span={6}>
           <Form.Item name="supplier_id" label="Fornecedor (ID)">
             <InputNumber style={{ width: '100%' }} />
           </Form.Item>
         </Col>
-        <Col span={8}>
-          <Form.Item name="authorizer_id" label="Autorizador (ID)">
-            <InputNumber style={{ width: '100%' }} />
-          </Form.Item>
-        </Col>
-      </Row>
 
-      <Row gutter={16}>
-        <Col span={8}>
-          <Form.Item name="attendant_id" label="Atendente (ID)">
-            <InputNumber style={{ width: '100%' }} />
-          </Form.Item>
-        </Col>
-        <Col span={8}>
+        <Col span={6}>
           <Form.Item
             name="type"
             label="Tipo de Manutenção"
@@ -74,16 +62,19 @@ export default function MaintenanceForm({ initialValues, onFinish, onCancel }: P
             </Select>
           </Form.Item>
         </Col>
-        <Col span={8}>
+        <Col span={6}>
           <Form.Item
             name="date"
             label="Data"
-            rules={[{ required: true, message: 'Informe a data da manutenção' }]}
+
           >
             <DatePicker style={{ width: '100%' }} />
           </Form.Item>
         </Col>
+
       </Row>
+
+  
 
       <Form.Item name="description" label="Descrição">
         <Input.TextArea rows={3} />
@@ -106,9 +97,7 @@ export default function MaintenanceForm({ initialValues, onFinish, onCancel }: P
         </Col>
       </Row>
 
-      <Form.Item name="subscriber_id" hidden>
-        <Input type="number" />
-      </Form.Item>
+
 
       <Form.Item>
         <Button type="primary" htmlType="submit">Salvar</Button>

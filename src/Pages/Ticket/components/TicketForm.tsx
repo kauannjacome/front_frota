@@ -36,7 +36,7 @@ export default function TicketForm({ initialValues, onFinish, onCancel }: Ticket
       }}
     >
       <Row gutter={16}>
-        <Col span={8}>
+        <Col span={6}>
           <Form.Item
             name="supplier_id"
             label="Fornecedor (ID)"
@@ -45,7 +45,7 @@ export default function TicketForm({ initialValues, onFinish, onCancel }: Ticket
             <InputNumber style={{ width: '100%' }} min={1} />
           </Form.Item>
         </Col>
-        <Col span={8}>
+        <Col span={6}>
           <Form.Item
             name="passenger_id"
             label="Passageiro (ID)"
@@ -54,20 +54,21 @@ export default function TicketForm({ initialValues, onFinish, onCancel }: Ticket
             <InputNumber style={{ width: '100%' }} min={1} />
           </Form.Item>
         </Col>
-        <Col span={8}>
-          <Form.Item name="authorizer_id" label="Autorizador (ID)">
-            <InputNumber style={{ width: '100%' }} min={1} />
+        <Col span={6}>
+          <Form.Item name="travel_date" label="Data da Viagem">
+            <DatePicker style={{ width: '100%' }} showTime />
+          </Form.Item>
+        </Col>
+        <Col span={6}>
+          <Form.Item name="cost" label="Custo">
+            <InputNumber style={{ width: '100%' }} min={0} step={0.01} />
           </Form.Item>
         </Col>
       </Row>
 
       <Row gutter={16}>
-        <Col span={8}>
-          <Form.Item name="attendant_id" label="Atendente (ID)">
-            <InputNumber style={{ width: '100%' }} min={1} />
-          </Form.Item>
-        </Col>
-        <Col span={8}>
+
+        <Col span={4}>
           <Form.Item
             name="start_state"
             label="Estado de Origem"
@@ -85,10 +86,8 @@ export default function TicketForm({ initialValues, onFinish, onCancel }: Ticket
             <Input placeholder="Cidade" />
           </Form.Item>
         </Col>
-      </Row>
 
-      <Row gutter={16}>
-        <Col span={8}>
+        <Col span={4}>
           <Form.Item
             name="end_state"
             label="Estado de Destino"
@@ -106,24 +105,12 @@ export default function TicketForm({ initialValues, onFinish, onCancel }: Ticket
             <Input placeholder="Cidade" />
           </Form.Item>
         </Col>
-        <Col span={8}>
-          <Form.Item name="travel_date" label="Data da Viagem">
-            <DatePicker style={{ width: '100%' }} showTime />
-          </Form.Item>
-        </Col>
+ 
       </Row>
 
       <Row gutter={16} align="middle">
-        <Col span={8}>
-          <Form.Item name="attendant_viewed" label="Atendente Visualizou" valuePropName="checked">
-            <Switch />
-          </Form.Item>
-        </Col>
-        <Col span={8}>
-          <Form.Item name="cost" label="Custo">
-            <InputNumber style={{ width: '100%' }} min={0} step={0.01} />
-          </Form.Item>
-        </Col>
+
+
       </Row>
 
       <Form.Item>

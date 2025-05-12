@@ -154,13 +154,6 @@ export default function PersonForm({ initialValues, onFinish, onCancel }: Props)
         </Form.Item>
       </Card>
 
-      {/* Termos e hidden subscriber */}
-      <Form.Item name="termsAccepted" valuePropName="checked">
-        <Checkbox>Concordo com os termos</Checkbox>
-      </Form.Item>
-      <Form.Item name="subscriber_id" hidden>
-        <Input type="number" />
-      </Form.Item>
 
       {/* Botões */}
       <Form.Item>
