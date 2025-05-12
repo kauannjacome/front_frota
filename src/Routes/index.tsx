@@ -28,6 +28,7 @@ import CreateSubscriber from "../Pages/Subscriber/CreateSubscriber";
 import EditSubscriber from "../Pages/Subscriber/EditSubscriber";
 
 
+
 export default function AppRoutes() {
   return (
     <BrowserRouter>
@@ -36,8 +37,10 @@ export default function AppRoutes() {
           <Route path="/vehicle" element={< Vehicle />} />
           <Route path="/vehicle/create" element={< CreateVehicle />} />
           <Route path="/vehicle/edit/:id" element={< EditVehicle />} />
+
           <Route path="/trip" element={< Trip />} />
           <Route path="/trip/create" element={< CreateTrip />} />
+
           <Route path="/fuel" element={< Fuel />} />
           <Route path="/fuel/create" element={< CreateFuelLog />} />
           <Route path="/fuel/edit/:id" element={< EditFuelLog />} />
@@ -61,6 +64,8 @@ export default function AppRoutes() {
           <Route path="/supplier" element={< Supplier />} />
           <Route path="/supplier/create" element={< CreateSupplier />} />
           <Route path="/supplier/edit/:id" element={< EditSupplier />} />
+
+
 
           <Route path="/subscriber" element={< Subscriber />} />
           <Route path="/subscriber/create" element={< CreateSubscriber />} />
