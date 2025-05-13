@@ -26,6 +26,9 @@ import CreateSupplier from "../Pages/Supplier/CreateSupplier";
 import EditSupplier from "../Pages/Supplier/EditSupplier";
 import CreateSubscriber from "../Pages/Subscriber/CreateSubscriber";
 import EditSubscriber from "../Pages/Subscriber/EditSubscriber";
+import Department from "../Pages/Department";
+import CreateDepartment from "../Pages/Department/CreateDepartment";
+import EditDepartment from "../Pages/Department/EditDepartment";
 
 
 
@@ -65,7 +68,9 @@ export default function AppRoutes() {
           <Route path="/supplier/create" element={< CreateSupplier />} />
           <Route path="/supplier/edit/:id" element={< EditSupplier />} />
 
-
+          <Route path="/department" element={< Department />} />
+          <Route path="/department/create" element={< CreateDepartment />} />
+          <Route path="/department/edit/:id" element={< EditDepartment />} />
 
           <Route path="/subscriber" element={< Subscriber />} />
           <Route path="/subscriber/create" element={< CreateSubscriber />} />

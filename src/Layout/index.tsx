@@ -11,6 +11,7 @@ import {
   ShopOutlined,
   FileTextOutlined,
   BankOutlined,
+  ApartmentOutlined,
 } from '@ant-design/icons';
 
 const { Title } = Typography;
@@ -45,6 +46,7 @@ const menuItems: AppMenuItem[] = [
       { key: '10-5', label: 'Veículos',    path: '/report/vehicle' },
     ],
   },
+  { key: '4',  label: 'Departamento',  icon: <ApartmentOutlined />,    path: '/department' },
   { key: '11', label: 'Assinante',    icon: <BankOutlined />,         path: '/subscriber' },
 ];
 

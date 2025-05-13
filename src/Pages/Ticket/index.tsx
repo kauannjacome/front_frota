@@ -1,10 +1,22 @@
-import { useEffect, useState } from 'react';
-import { Card, Form, Input, Button, message, Space, Popconfirm, DatePicker, Col, Row } from 'antd';
-import { PlusOutlined, SearchOutlined } from '@ant-design/icons';
-import Table, { ColumnsType } from 'antd/es/table';
-import api from '../../services/api';
-import { useSupplierStore } from '../../common/store/SupplierStore';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import {
+  Card,
+  Form,
+  Input,
+  Button,
+  message,
+  Space,
+  Popconfirm,
+  DatePicker,
+  Col,
+  Row,
+  Select,
+} from "antd";
+import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
+import Table, { ColumnsType } from "antd/es/table";
+import api from "../../services/api";
+import { useSupplierStore } from "../../common/store/SupplierStore";
+import { useNavigate } from "react-router-dom";
 
 interface Ticket {
   id: number;
@@ -20,13 +32,19 @@ interface Ticket {
   updatedAt: string;
   deletedAt: string | null;
 }
+interface Person {
+  id: number;
+  full_name: string;
+}
 
 export default function Ticket() {
   const [form] = Form.useForm();
   const [tickets, setTickets] = useState<Ticket[]>([]);
-  const suppliers = useSupplierStore(state => state.suppliers)?? [];
+  const [persons, setPersons] = useState<Person[]>([]);
+
+  const suppliers = useSupplierStore((state) => state.suppliers) ?? [];
   const navigate = useNavigate();
-  const fetchSuppliers = useSupplierStore(state => state.fetchSuppliers);
+  const fetchSuppliers = useSupplierStore((state) => state.fetchSuppliers);
   const onFinish = async (values: any) => {
     try {
       const params = {
@@ -36,66 +54,77 @@ export default function Ticket() {
         start_city: values.start_city,
         end_state: values.end_state,
         end_city: values.end_city,
-        travel_date: values.travel_date ? values.travel_date.format('YYYY-MM-DD') : undefined,
+        travel_date: values.travel_date
+          ? values.travel_date.format("YYYY-MM-DD")
+          : undefined,
       };
-      const response = await api.get<Ticket[]>('/ticket', { params });
+      const response = await api.get<Ticket[]>("/ticket", { params });
       setTickets(response.data);
-      message.success('Passagens carregadas com sucesso!');
+      message.success("Passagens carregadas com sucesso!");
     } catch (error) {
-      console.error('Erro ao buscar passagens:', error);
-      message.error('Não foi possível carregar as passagens.');
+      console.error("Erro ao buscar passagens:", error);
+      message.error("Não foi possível carregar as passagens.");
     }
   };
 
   const onDelete = async (id: number) => {
     try {
       await api.delete(`/ticket/${id}`);
-      setTickets(prev => prev.filter(t => t.id !== id));
-      message.success('Passagem excluída com sucesso!');
+      setTickets((prev) => prev.filter((t) => t.id !== id));
+      message.success("Passagem excluída com sucesso!");
     } catch (error) {
-      console.error('Erro ao excluir passagem:', error);
-      message.error('Não foi possível excluir a passagem.');
+      console.error("Erro ao excluir passagem:", error);
+      message.error("Não foi possível excluir a passagem.");
     }
   };
 
   const columns: ColumnsType<Ticket> = [
-
     {
-      title: 'Fornecedor',
-      dataIndex: 'supplier_id',
-      key: 'supplier_id',
-      width: '15%',
+      title: "Fornecedor",
+      dataIndex: "supplier_id",
+      key: "supplier_id",
+      width: "15%",
       render: (supplierId: number) => {
-        const supplier = suppliers.find(s => s.id === supplierId);
+        const supplier = suppliers.find((s) => s.id === supplierId);
         return supplier ? supplier.name : supplierId;
       },
     },
-    { title: 'Passageiro', dataIndex: 'passenger_id', key: 'passenger_id', width: '10%' },
     {
-      title: 'Origem',
-      key: 'origin',
+      title: "Passageiro",
+      dataIndex: "passenger_id",
+      key: "passenger_id",
+      width: "10%",
+    },
+    {
+      title: "Origem",
+      key: "origin",
       render: (_, record) => `${record.start_state} - ${record.start_city}`,
-      width: '15%',
+      width: "15%",
     },
     {
-      title: 'Destino',
-      key: 'destination',
+      title: "Destino",
+      key: "destination",
       render: (_, record) => `${record.end_state} - ${record.end_city}`,
-      width: '15%',
+      width: "15%",
     },
     {
-      title: 'Data de Viagem',
-      dataIndex: 'travel_date',
-      key: 'travel_date',
-      render: date => date || '-',
-      width: '10%'
+      title: "Data de Viagem",
+      dataIndex: "travel_date",
+      key: "travel_date",
+      render: (date) => date || "-",
+      width: "10%",
     },
     {
-      title: 'Ações',
-      key: 'action',
+      title: "Ações",
+      key: "action",
       render: (_, record) => (
         <Space size="middle">
-          <Button type="default"   onClick={() => {  navigate(`/ticket/edit/${record.id}`); }}>
+          <Button
+            type="default"
+            onClick={() => {
+              navigate(`/ticket/edit/${record.id}`);
+            }}
+          >
             Editar
           </Button>
           <Popconfirm
@@ -110,18 +139,28 @@ export default function Ticket() {
           </Popconfirm>
         </Space>
       ),
-      width: '15%'
+      width: "15%",
     },
   ];
 
-    // Chama fetchSuppliers só uma vez, ao montar o componente
-    useEffect(() => {
-      fetchSuppliers();
-    }, [fetchSuppliers]);
+  // Chama fetchSuppliers só uma vez, ao montar o componente
+  useEffect(() => {
+    fetchSuppliers();
 
-    console.log(suppliers)
+    api
+      .get<Person[]>("/person")
+      .then((res) => {
+        setPersons(res.data); // extrai o .data antes de setar
+      })
+      .catch((err) => {
+        console.error("Erro ao buscar pessoas:", err);
+        message.error("Não foi possível carregar os passageiros.");
+      });
+  }, [fetchSuppliers]);
+
+  console.log(suppliers);
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
       <Card>
         <Form
           form={form}
@@ -132,45 +171,61 @@ export default function Ticket() {
           <Row gutter={[16, 8]}>
             <Col xs={24} sm={12} md={8} lg={6}>
               <Form.Item label="Fornecedor" name="supplier_id">
-                <Input
-                  placeholder="ID do fornecedor"
+                <Select
+                  placeholder="Selecione um fornecedor"
                   allowClear
+                  options={suppliers.map((s) => ({
+                    value: s.id,
+                    label: s.name,
+                  }))}
+                  showSearch
+                  filterOption={(input, option) =>
+                    option!.label
+                      .toString()
+                      .toLowerCase()
+                      .includes(input.toLowerCase())
+                  }
                 />
               </Form.Item>
             </Col>
 
             <Col xs={24} sm={12} md={8} lg={6}>
               <Form.Item label="Passageiro" name="passenger_id">
-                <Input
-                  placeholder="ID do passageiro"
+                <Select
+                  placeholder="Selecione um passageiro"
                   allowClear
+                  options={persons.map((p) => ({
+                    value: p.id,
+                    label: p.full_name,
+                  }))}
+                  showSearch
+                  filterOption={(input, option) =>
+                    option!.label
+                      .toString()
+                      .toLowerCase()
+                      .includes(input.toLowerCase())
+                  }
                 />
               </Form.Item>
             </Col>
 
             <Col xs={24} sm={12} md={8} lg={6}>
               <Form.Item label="Data Viagem" name="travel_date">
-                <DatePicker
-                  style={{ width: '100%' }}
-                  allowClear
-                />
+                <DatePicker style={{ width: "100%" }} allowClear />
               </Form.Item>
             </Col>
           </Row>
 
-          <Form.Item style={{ marginTop: 16, textAlign: 'left' }}>
-            <Button
-              type="primary"
-              htmlType="submit"
-              icon={<SearchOutlined />}
-            >
+          <Form.Item style={{ marginTop: 16, textAlign: "left" }}>
+            <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>
               Buscar
             </Button>
             <Button
-               color="cyan" variant="solid"
+              color="cyan"
+              variant="solid"
               icon={<PlusOutlined />}
               style={{ marginLeft: 12 }}
-              onClick={() =>  navigate('/ticket/create')}
+              onClick={() => navigate("/ticket/create")}
             >
               Adicionar
             </Button>

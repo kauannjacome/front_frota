@@ -1,5 +1,5 @@
-// src/pages/components/SupplierForm.tsx
-import { Form, Input, Button, Row, Col } from 'antd';
+import React from 'react';
+import { Form, Input, Button, Row, Col, Select } from 'antd';
 
 export type SupplierFormValues = {
   name: string;
@@ -8,6 +8,14 @@ export type SupplierFormValues = {
   cnpj?: string;
   category: string;
 };
+
+// Lista de categorias do fornecedor
+const supplierCategories = [
+  { value: 'POSTO_COMBUSTIVEL', label: 'Posto de Combustível' },
+  { value: 'FORNECEDOR_PECAS', label: 'Peças de Reposição' },
+  { value: 'COMPANHIA_TRANSPORTE', label: 'Emissão de Tickets/Passagens' },
+
+];
 
 interface Props {
   initialValues: Partial<SupplierFormValues>;
@@ -32,9 +40,20 @@ export default function SupplierForm({ initialValues, onFinish, onCancel }: Prop
             <Input placeholder="Transporte Parceiro" />
           </Form.Item>
         </Col>
+
         <Col span={12}>
-          <Form.Item name="category" label="Categoria" rules={[{ required: true, message: 'Informe a categoria' }]}> 
-            <Input placeholder="POSTO_COMBUSTIVEL" />
+          <Form.Item
+            name="category"
+            label="Categoria"
+            rules={[{ required: true, message: 'Informe a categoria' }]}
+          >
+            <Select placeholder="Selecione a categoria">
+              {supplierCategories.map(cat => (
+                <Select.Option key={cat.value} value={cat.value}>
+                  {cat.label}
+                </Select.Option>
+              ))}
+            </Select>
           </Form.Item>
         </Col>
       </Row>

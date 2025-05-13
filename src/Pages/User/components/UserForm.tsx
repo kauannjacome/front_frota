@@ -1,5 +1,4 @@
-// src/pages/components/UserForm.tsx
-import { Form, Input, DatePicker, InputNumber, Switch, Button, Row, Col, Checkbox } from 'antd';
+import { Form, Input, DatePicker, InputNumber, Switch, Button, Row, Col, Checkbox, Select } from 'antd';
 import moment from 'moment';
 
 export interface UserFormValues {
@@ -27,6 +26,21 @@ type Props = {
   onCancel?: () => void;
 };
 
+// Opções baseadas nos enums type_contract e role_user
+const typeOptions = [
+  { label: 'Contratado', value: 'CONTRATADO' },
+  { label: 'Diarista', value: 'DIARISTA' },
+];
+
+const roleOptions = [
+  { label: 'Gestor', value: 'MANAGE' },
+  { label: 'Secretario(a)', value: 'SECRETARY' },
+  { label: 'Adiminstrador Local', value: 'ADMIN_LOCAL' },
+  { label: 'Digitador', value: 'TYPIST' },
+  { label: 'Motorista', value: 'DRIVE' },
+  { label: 'Digitador Fornecedor', value: 'TYPIST_SUPPLY' },
+];
+
 export default function UserForm({ initialValues, onFinish, onCancel }: Props) {
   return (
     <Form<UserFormValues>
@@ -41,12 +55,12 @@ export default function UserForm({ initialValues, onFinish, onCancel }: Props) {
     >
       <Row gutter={16}>
         <Col span={8}>
-          <Form.Item name="cpf" label="CPF" rules={[{ required: true, message: 'Informe o CPF' }]}>
+          <Form.Item name="cpf" label="CPF" rules={[{ required: true, message: 'Informe o CPF' }]}>            
             <Input placeholder="00000000000" maxLength={11} />
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item name="name" label="Nome" rules={[{ required: true, message: 'Informe o nome' }]}>
+          <Form.Item name="name" label="Nome" rules={[{ required: true, message: 'Informe o nome' }]}>            
             <Input placeholder="Nome completo" />
           </Form.Item>
         </Col>
@@ -79,34 +93,38 @@ export default function UserForm({ initialValues, onFinish, onCancel }: Props) {
         </Col>
       </Row>
 
-
-
       <Row gutter={16}>
         <Col span={8}>
-          <Form.Item name="role" label="Função" rules={[{ required: true, message: 'Informe a função' }]}>
-            <Input placeholder="ADMIN_LOCAL" />
+          <Form.Item name="role" label="Função" rules={[{ required: true, message: 'Informe a função' }]}>            
+            <Select placeholder="Selecione a função">
+              {roleOptions.map(opt => (
+                <Select.Option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </Select.Option>
+              ))}
+            </Select>
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item name="type" label="Tipo" rules={[{ required: true, message: 'Informe o tipo' }]}>
-            <Input placeholder="CONTRATADO" />
+          <Form.Item name="type" label="Tipo" rules={[{ required: true, message: 'Informe o tipo' }]}>            
+            <Select placeholder="Selecione o tipo">
+              {typeOptions.map(opt => (
+                <Select.Option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </Select.Option>
+              ))}
+            </Select>
           </Form.Item>
         </Col>
-
       </Row>
-
-
-
 
       <Form.Item>
         <Button type="primary" htmlType="submit">
           Salvar
         </Button>
-
         <Button style={{ marginLeft: 8 }} onClick={onCancel}>
           Cancelar
         </Button>
-
       </Form.Item>
     </Form>
   );

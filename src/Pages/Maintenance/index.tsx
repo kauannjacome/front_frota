@@ -139,14 +139,20 @@ export default function Maintenance() {
                 <Select
                   placeholder="Selecione o veículo"
                   loading={!veiculos.length}
-                  style={{ width: '100%' }}
-                >
-                  {veiculos.map(v => (
-                    <Select.Option key={v.id} value={v.id}>
-                      {`${v.mark} ${v.model}`}
-                    </Select.Option>
-                  ))}
-                </Select>
+                  allowClear
+                  showSearch
+                  options={veiculos.map((v) => ({
+                    value: v.id,
+                    label: `${v.mark} ${v.model}`,
+                  }))}
+                  filterOption={(input, option) =>
+                    // garante sempre retornar boolean
+                    (option?.label ?? "")
+                      .toString()
+                      .toLowerCase()
+                      .includes(input.toLowerCase())
+                  }
+                />
               </Form.Item>
             </Col>
 
