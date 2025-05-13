@@ -1,8 +1,18 @@
-import { useEffect, useState, useCallback } from 'react';
-import { Form, InputNumber, DatePicker, Select, Button, Row, Col, message, Spin } from 'antd';
-import moment from 'moment';
-import debounce from 'lodash/debounce';
-import api from '../../../services/api';
+import { useEffect, useState, useCallback } from "react";
+import {
+  Form,
+  InputNumber,
+  DatePicker,
+  Select,
+  Button,
+  Row,
+  Col,
+  message,
+  Spin,
+} from "antd";
+import moment from "moment";
+import debounce from "lodash/debounce";
+import api from "../../../services/api";
 
 export interface FuelLogFormValues {
   vehicle_id?: number;
@@ -16,8 +26,8 @@ export interface FuelLogFormValues {
   liters?: number;
   cost?: number;
   odometer?: number;
-  fuel_type: 'GASOLINA' | 'ALCOOL' | 'DIESEL' | 'ELETRICO';
-  supply_type?: 'COMPLETE' | 'PARTIAL';
+  fuel_type: "GASOLINA" | "ALCOOL" | "DIESEL" | "ELETRICO";
+  supply_type?: "COMPLETE" | "PARTIAL";
 }
 
 type Props = {
@@ -30,6 +40,9 @@ interface Vehicle {
   id: number;
   surname: string;
   plate: string;
+  mark: string;
+  model: string;
+
 }
 
 interface Driver {
@@ -42,7 +55,11 @@ interface Supplier {
   name: string;
 }
 
-export default function FuelLogForm({ initialValues, onFinish, onCancel }: Props) {
+export default function FuelLogForm({
+  initialValues,
+  onFinish,
+  onCancel,
+}: Props) {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [loadingVehicles, setLoadingVehicles] = useState(false);
   const [drivers, setDrivers] = useState<Driver[]>([]);
@@ -53,13 +70,13 @@ export default function FuelLogForm({ initialValues, onFinish, onCancel }: Props
   const fetchVehicles = async (search?: string) => {
     setLoadingVehicles(true);
     try {
-      const { data } = await api.get<Vehicle[]>('/vehicle', {
-        params: search ? { q: search } : {}
+      const { data } = await api.get<Vehicle[]>("/vehicle", {
+        params: search ? { q: search } : {},
       });
       setVehicles(data);
     } catch (err) {
-      console.error('Erro ao buscar veículos:', err);
-      message.error('Falha ao carregar lista de veículos.');
+      console.error("Erro ao buscar veículos:", err);
+      message.error("Falha ao carregar lista de veículos.");
     } finally {
       setLoadingVehicles(false);
     }
@@ -68,13 +85,13 @@ export default function FuelLogForm({ initialValues, onFinish, onCancel }: Props
   const fetchDrivers = async (search?: string) => {
     setLoadingDrivers(true);
     try {
-      const { data } = await api.get<Driver[]>('/user/drive', {
-        params: search ? { q: search } : {}
+      const { data } = await api.get<Driver[]>("/user/drive", {
+        params: search ? { q: search } : {},
       });
       setDrivers(data);
     } catch (err) {
-      console.error('Erro ao buscar motoristas:', err);
-      message.error('Falha ao carregar lista de motoristas.');
+      console.error("Erro ao buscar motoristas:", err);
+      message.error("Falha ao carregar lista de motoristas.");
     } finally {
       setLoadingDrivers(false);
     }
@@ -83,13 +100,13 @@ export default function FuelLogForm({ initialValues, onFinish, onCancel }: Props
   const fetchSuppliers = async (search?: string) => {
     setLoadingSuppliers(true);
     try {
-      const { data } = await api.get<Supplier[]>('/supplier/fuel', {
-        params: search ? { q: search } : {}
+      const { data } = await api.get<Supplier[]>("/supplier/fuel", {
+        params: search ? { q: search } : {},
       });
       setSuppliers(data);
     } catch (err) {
-      console.error('Erro ao buscar fornecedores:', err);
-      message.error('Falha ao carregar lista de fornecedores.');
+      console.error("Erro ao buscar fornecedores:", err);
+      message.error("Falha ao carregar lista de fornecedores.");
     } finally {
       setLoadingSuppliers(false);
     }
@@ -132,32 +149,35 @@ export default function FuelLogForm({ initialValues, onFinish, onCancel }: Props
       onFinish={onFinish}
       initialValues={{
         ...initialValues,
-        supply_date: initialValues.supply_date ? moment(initialValues.supply_date) : undefined,
-        deadline: initialValues.deadline ? moment(initialValues.deadline) : undefined,
+        supply_date: initialValues.supply_date
+          ? moment(initialValues.supply_date)
+          : undefined,
+        deadline: initialValues.deadline
+          ? moment(initialValues.deadline)
+          : undefined,
       }}
     >
       <Row gutter={16}>
-        <Col span={6}>
-          <Form.Item
-            name="vehicle_id"
-            label="Veículo"
-            rules={[{ required: true, message: 'Selecione o veículo' }]}
-          >
+
+        <Col xs={24} sm={12} md={8} lg={6}>
+          <Form.Item label="Veículo" name="vehicle_id">
             <Select
-              showSearch
-              placeholder="Digite para buscar..."
-              notFoundContent={loadingVehicles ? <Spin size="small" /> : null}
-              filterOption={false}
-              onSearch={handleVehicleSearch}
-              loading={loadingVehicles}
+              placeholder="Selecione o veículo"
+              loading={!vehicles.length}
               allowClear
-            >
-              {vehicles.map(vehicle => (
-                <Select.Option key={vehicle.id} value={vehicle.id}>
-                  {`${vehicle.surname}-${vehicle.plate}`}
-                </Select.Option>
-              ))}
-            </Select>
+              showSearch
+              options={vehicles.map((v) => ({
+                value: v.id,
+                label: `${v.mark} ${v.model}`,
+              }))}
+              filterOption={(input, option) =>
+                // garante sempre retornar boolean
+                (option?.label ?? "")
+                  .toString()
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
+            />
           </Form.Item>
         </Col>
 
@@ -165,7 +185,7 @@ export default function FuelLogForm({ initialValues, onFinish, onCancel }: Props
           <Form.Item
             name="driver_id"
             label="Motorista"
-            rules={[{ required: true, message: 'Selecione o motorista' }]}
+            rules={[{ required: true, message: "Selecione o motorista" }]}
           >
             <Select
               showSearch
@@ -176,7 +196,7 @@ export default function FuelLogForm({ initialValues, onFinish, onCancel }: Props
               loading={loadingDrivers}
               allowClear
             >
-              {drivers.map(driver => (
+              {drivers.map((driver) => (
                 <Select.Option key={driver.id} value={driver.id}>
                   {driver.name}
                 </Select.Option>
@@ -189,7 +209,7 @@ export default function FuelLogForm({ initialValues, onFinish, onCancel }: Props
           <Form.Item
             name="supplier_id"
             label="Fornecedor"
-            rules={[{ required: true, message: 'Selecione o fornecedor' }]}
+            rules={[{ required: true, message: "Selecione o fornecedor" }]}
           >
             <Select
               showSearch
@@ -200,7 +220,7 @@ export default function FuelLogForm({ initialValues, onFinish, onCancel }: Props
               loading={loadingSuppliers}
               allowClear
             >
-              {suppliers.map(supplier => (
+              {suppliers.map((supplier) => (
                 <Select.Option key={supplier.id} value={supplier.id}>
                   {supplier.name}
                 </Select.Option>
@@ -209,10 +229,7 @@ export default function FuelLogForm({ initialValues, onFinish, onCancel }: Props
           </Form.Item>
         </Col>
         <Col span={6}>
-          <Form.Item
-            name="supply_type"
-            label="Tipo de Abastecimento"
-          >
+          <Form.Item name="supply_type" label="Tipo de Abastecimento">
             <Select placeholder="Selecione o tipo">
               <Select.Option value="COMPLETE">Completo</Select.Option>
               <Select.Option value="PARTIAL">Parcial</Select.Option>
@@ -223,20 +240,19 @@ export default function FuelLogForm({ initialValues, onFinish, onCancel }: Props
 
       {/* restante do formulário permanece igual */}
 
-
-
-
       <Row gutter={16}>
         <Col span={6}>
           <Form.Item name="deadline" label="Prazo Limite">
-            <DatePicker style={{ width: '100%' }} />
+            <DatePicker style={{ width: "100%" }} />
           </Form.Item>
         </Col>
         <Col span={6}>
           <Form.Item
             name="fuel_type"
             label="Tipo de Combustível"
-            rules={[{ required: true, message: 'Selecione o tipo de combustível' }]}
+            rules={[
+              { required: true, message: "Selecione o tipo de combustível" },
+            ]}
           >
             <Select placeholder="Selecione o tipo">
               <Select.Option value="GASOLINA">Gasolina</Select.Option>
@@ -248,43 +264,46 @@ export default function FuelLogForm({ initialValues, onFinish, onCancel }: Props
         </Col>
         <Col span={6}>
           <Form.Item name="liters" label="Litros">
-            <InputNumber style={{ width: '100%' }} min={0} step={0.01} />
+            <InputNumber style={{ width: "100%" }} min={0} step={0.01} />
           </Form.Item>
         </Col>
         <Col span={6}>
           <Form.Item name="cost" label="Custo">
             <InputNumber
-              style={{ width: '100%' }}
+              style={{ width: "100%" }}
               min={0}
-              formatter={value => (value ? `R$ ${value}` : '')}
+              formatter={(value) => (value ? `R$ ${value}` : "")}
             />
           </Form.Item>
         </Col>
-     
-
       </Row>
 
       <Row gutter={16}>
-      <Col span={6}>
+        <Col span={6}>
           <Form.Item name="odometer" label="Hodômetro">
-            <InputNumber style={{ width: '100%' }} />
+            <InputNumber style={{ width: "100%" }} />
           </Form.Item>
         </Col>
         <Col span={6}>
           <Form.Item
             name="supply_date"
             label="Data de Abastecimento"
-            rules={[{ required: true, message: 'Informe a data de abastecimento' }]}
+            rules={[
+              { required: true, message: "Informe a data de abastecimento" },
+            ]}
           >
-            <DatePicker style={{ width: '100%' }} />
+            <DatePicker style={{ width: "100%" }} />
           </Form.Item>
         </Col>
-
       </Row>
 
       <Form.Item>
-        <Button type="primary" htmlType="submit">Salvar</Button>
-        <Button style={{ marginLeft: 8 }} onClick={onCancel}>Cancelar</Button>
+        <Button type="primary" htmlType="submit">
+          Salvar
+        </Button>
+        <Button style={{ marginLeft: 8 }} onClick={onCancel}>
+          Cancelar
+        </Button>
       </Form.Item>
     </Form>
   );

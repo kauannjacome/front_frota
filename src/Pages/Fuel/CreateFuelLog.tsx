@@ -1,6 +1,6 @@
 
 // src/pages/CreateFuelLog.tsx
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import { Card, message } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import FuelLogForm, { FuelLogFormValues } from './components/FuelLogForm';

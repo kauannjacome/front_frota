@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Card,
   Form,
@@ -9,9 +9,7 @@ import {
   Tag,
   Popconfirm,
   DatePicker,
-  TimePicker,
   Select,
-  Switch,
   Col,
   Row,
 } from "antd";
@@ -19,8 +17,12 @@ import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import api from "../../../services/api";
 import Table, { ColumnsType } from "antd/es/table";
 import moment from "moment";
-import { TripStatusColors, TripStatusOptions } from "../../../common/types/constantsTypes";
+import {
+  TripStatusColors,
+  TripStatusOptions,
+} from "../../../common/types/constantsTypes";
 import { useNavigate } from "react-router-dom";
+import { Veiculo } from "../../../common/store/VehicleStore";
 
 interface Trip {
   id: number;
@@ -48,11 +50,21 @@ export default function Trip() {
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [trips, setTrips] = useState<Trip[]>([]);
+  const [veiculos, setVeiculos] = useState<Veiculo[]>([]);
   const { Option } = Select;
+  useEffect(() => {
+    api.get<Veiculo[]>("/vehicle")
+      .then(({ data }) => setVeiculos(data))
+      .catch(err => {
+        console.error("Erro ao carregar veículos", err);
+        message.error("Não foi possível carregar a lista de veículos.");
+      });
+  }, []);
 
+  
   const onFinish = async (values: any) => {
     try {
-      const response = await api.get<Trip[]>("/trip", { params: values });
+      const response = await api.get<Trip[]>("/trip/search", { params: values });
       setTrips(response.data);
       message.success("Dados de viagem carregados com sucesso!");
     } catch (error) {
@@ -80,7 +92,7 @@ export default function Trip() {
       key: "request_date",
       width: "15%",
       render: (date: string) =>
-        date ? moment(date).format("DD/MM/YYYY HH:mm" ) : "-",
+        date ? moment(date).format("DD/MM/YYYY HH:mm") : "-",
     },
     {
       title: "Origem",
@@ -108,9 +120,10 @@ export default function Trip() {
       key: "status",
       width: "10%",
       render: (status: string) => {
-        const color = TripStatusColors[status] || 'geekblue';
+        const color = TripStatusColors[status] || "geekblue";
         // Se você quiser exibir o label em vez do código:
-        const label = TripStatusOptions.find(o => o.value === status)?.label || status;
+        const label =
+          TripStatusOptions.find((o) => o.value === status)?.label || status;
         return <Tag color={color}>{label}</Tag>;
       },
     },
@@ -120,7 +133,6 @@ export default function Trip() {
       width: "15%",
       render: (_, record) => (
         <Space size="middle">
-
           <Button
             type="default"
             onClick={() => message.info(`Editar viagem ID: ${record.id}`)}
@@ -150,14 +162,35 @@ export default function Trip() {
       }}
     >
       <Card>
-
         <Form
           form={form}
           layout="horizontal"
           name="tripForm"
-          onSubmitCapture={onFinish}
+          onFinish={onFinish}
         >
+
           <Row gutter={[16, 8]}>
+                      <Col xs={24} sm={12} md={8} lg={6}>
+            <Form.Item label="Veículo" name="vehicle_id">
+              <Select
+                placeholder="Selecione o veículo"
+                loading={!veiculos.length}
+                allowClear
+                showSearch
+                options={veiculos.map((v) => ({
+                  value: v.id,
+                  label: `${v.surname} ${v.plate}`,
+                }))}
+                filterOption={(input, option) =>
+                  // garante sempre retornar boolean
+                  (option?.label ?? "")
+                    .toString()
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
+                }
+              />
+            </Form.Item>
+          </Col>
             <Col xs={24} sm={12} md={8} lg={6}>
               <Form.Item name="purpose" label="Propósito">
                 <Input placeholder="Digite o propósito" allowClear />
@@ -166,39 +199,47 @@ export default function Trip() {
 
             <Col xs={24} sm={12} md={8} lg={6}>
               <Form.Item name="status" label="Status">
-                <Select placeholder="Selecione o status" allowClear>
-                  {TripStatusOptions.map(opt => (
-                    <Option key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </Option>
-                  ))}
-                </Select>
+                <Select
+                  placeholder="Selecione o status"
+                  allowClear
+                  showSearch
+                  options={TripStatusOptions.map((opt) => ({
+                    value: opt.value,
+                    label: opt.label,
+                  }))}
+                  filterOption={(input, option) =>
+                    (option?.label ?? "")
+                      .toString()
+                      .toLowerCase()
+                      .includes(input.toLowerCase())
+                  }
+                />
               </Form.Item>
             </Col>
 
             <Col xs={24} sm={12} md={8} lg={6}>
               <Form.Item name="request_date" label="Data">
-                <DatePicker style={{ width: '100%' }} />
+                <DatePicker style={{ width: "100%" }} />
               </Form.Item>
             </Col>
           </Row>
 
-          <Form.Item style={{ marginTop: 16, textAlign: 'left' }}>
+          <Form.Item style={{ marginTop: 16, textAlign: "left" }}>
             <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>
               Buscar
             </Button>
 
             <Button
-              color="cyan" variant="solid"
+              color="cyan"
+              variant="solid"
               icon={<PlusOutlined />}
               style={{ marginLeft: 12 }}
-              onClick={() => navigate('/trip/create') }
+              onClick={() => navigate("/trip/create")}
             >
               Adicionar
             </Button>
           </Form.Item>
         </Form>
-
       </Card>
 
       <Card title="Lista de Viagens">

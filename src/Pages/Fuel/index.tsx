@@ -48,7 +48,7 @@ export default function Fuel() {
 
   // Carrega logs e veículos ao montar
   useEffect(() => {
-    loadFuelLogs();
+    
     api
       .get<Veiculo[]>("/vehicle")
       .then(({ data }) => setVeiculos(data))
@@ -59,7 +59,6 @@ export default function Fuel() {
   }, []);
 
   useEffect(() => {
-    loadFuelLogs();
     api
       .get<string[]>("/fuel-log/types")
       .then(({ data }) => setTypesFuel(data))
@@ -68,7 +67,7 @@ export default function Fuel() {
       });
   }, []);
 
-  const loadFuelLogs = async () => {
+  const onSearch = async () => {
     try {
       const response = await api.get<FuelLog[]>("/fuel-log");
       setFuelLogs(response.data);
@@ -78,22 +77,6 @@ export default function Fuel() {
     }
   };
 
-  const onCreate = async (values: any) => {
-    try {
-      const payload = {
-        ...values,
-        supply_date: values.supply_date.toISOString(),
-        deadline: values.deadline ? values.deadline.toISOString() : null,
-      };
-      await api.post("/fuel-log", payload);
-      message.success("Registro de abastecimento criado com sucesso!");
-      createForm.resetFields();
-      loadFuelLogs();
-    } catch (error) {
-      console.error("Erro ao criar registro:", error);
-      message.error("Falha ao criar registro de abastecimento.");
-    }
-  };
 
   const onDelete = async (id: number) => {
     try {
@@ -167,7 +150,7 @@ export default function Fuel() {
         <Form
           form={createForm}
           layout="horizontal"
-          onFinish={onCreate}
+          onFinish={onSearch}
           name="supplyForm"
         >
           <Row gutter={[16, 8]}>
@@ -180,7 +163,7 @@ export default function Fuel() {
                   showSearch
                   options={veiculos.map((v) => ({
                     value: v.id,
-                    label: `${v.mark} ${v.model}`,
+                    label: `${v.surname}-${v.plate}`,
                   }))}
                   filterOption={(input, option) =>
                     // garante sempre retornar boolean

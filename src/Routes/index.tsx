@@ -29,6 +29,8 @@ import EditSubscriber from "../Pages/Subscriber/EditSubscriber";
 import Department from "../Pages/Department";
 import CreateDepartment from "../Pages/Department/CreateDepartment";
 import EditDepartment from "../Pages/Department/EditDepartment";
+import Auth from "../Pages/Auth";
+import AuthSupplier from "../Pages/Mobile/AuthSupplier";
 
 
 
@@ -36,7 +38,10 @@ export default function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
+      <Route path="/" element={< Auth />} />
+      <Route path="/auth/supplier" element={< AuthSupplier />} />
         <Route element={<AppLayout />}>
+
           <Route path="/vehicle" element={< Vehicle />} />
           <Route path="/vehicle/create" element={< CreateVehicle />} />
           <Route path="/vehicle/edit/:id" element={< EditVehicle />} />

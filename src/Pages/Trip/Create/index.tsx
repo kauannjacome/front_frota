@@ -7,7 +7,7 @@ import type { Person } from '../../../common/types';
 import type { ColumnsType } from 'antd/es/table';
 import { CloseOutlined, SaveOutlined } from '@ant-design/icons';
 import api from '../../../services/api';
-
+import { Veiculo } from "../../../common/store/VehicleStore";
 // Extende Person com campos editáveis
 interface PersonRow extends Person {
   dropoff_location: string;
@@ -26,6 +26,7 @@ export default function CreateTrip() {
   const [loadingEnd, setLoadingEnd] = useState(false);
 
   const [suggestions, setSuggestions] = useState<{ label: string; value: string }[]>([]);
+    const [veiculos, setVeiculos] = useState<Veiculo[]>([]);
   // Estado agora usa PersonRow
   const [persons, setPersons] = useState<PersonRow[]>([]);
 
@@ -175,11 +176,7 @@ export default function CreateTrip() {
                 </Select>
               </Form.Item>
             </Col>
-            <Col span={4}>
-              <Form.Item label="Data início" name="start_time">
-                <DatePicker showTime format="DD/MM/YYYY HH:mm" style={{ width: '100%' }} />
-              </Form.Item>
-            </Col>
+
             <Col span={3}>
               <Form.Item label="Estado final" name="end_state">
                 <Select placeholder="UF" showSearch allowClear onChange={setEndUf}>
@@ -195,7 +192,12 @@ export default function CreateTrip() {
               </Form.Item>
             </Col>
             <Col span={4}>
-              <Form.Item label="Data final" name="end_time">
+              <Form.Item label="Data Ida" name="start_time">
+                <DatePicker showTime format="DD/MM/YYYY HH:mm" style={{ width: '100%' }} />
+              </Form.Item>
+            </Col>
+            <Col span={4}>
+              <Form.Item label="Data Volta" name="back_time">
                 <DatePicker showTime format="DD/MM/YYYY HH:mm" style={{ width: '100%' }} />
               </Form.Item>
             </Col>
@@ -217,12 +219,25 @@ export default function CreateTrip() {
               </Form.Item>
             </Col>
             <Col span={5}>
-              <Form.Item name="vehicle_id" label="Veículo">
-                <Select placeholder="Selecione o veículo" showSearch allowClear>
-                  <Option value={1}>Veículo 1</Option>
-                  <Option value={2}>Veículo 2</Option>
-                </Select>
-              </Form.Item>
+            <Form.Item label="Veículo" name="vehicle_id">
+              <Select
+                placeholder="Selecione o veículo"
+                loading={!veiculos.length}
+                allowClear
+                showSearch
+                options={veiculos.map((v) => ({
+                  value: v.id,
+                  label: `${v.mark} ${v.model}`,
+                }))}
+                filterOption={(input, option) =>
+                  // garante sempre retornar boolean
+                  (option?.label ?? "")
+                    .toString()
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
+                }
+              />
+            </Form.Item>
             </Col>
             <Col span={4}>
               <Form.Item name="status" label="Status" initialValue="PENDENTE">
