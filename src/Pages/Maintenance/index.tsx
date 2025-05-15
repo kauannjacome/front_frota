@@ -103,7 +103,7 @@ export default function Maintenance() {
       title: 'Ações', key: 'action', width: '15%',
       render: (_, record) => (
         <Space size="middle">
-          <Button    onClick={() => {  navigate(`/maintenance/edit/${record.id}`); }}>
+          <Button   color="cyan" variant="solid"  onClick={() => {  navigate(`/maintenance/edit/${record.id}`); }}>
             Editar
           </Button>
           <Popconfirm
@@ -112,7 +112,7 @@ export default function Maintenance() {
             okText="Sim"
             cancelText="Não"
           >
-            <Button danger>Excluir</Button>
+            <Button  color="danger" variant="solid">Excluir</Button>
           </Popconfirm>
         </Space>
       ),
@@ -181,7 +181,7 @@ export default function Maintenance() {
               Buscar
             </Button>
             <Button
-               color="cyan" variant="solid"
+                   color="orange" variant="solid"
               icon={<PlusOutlined />}
               style={{ marginLeft: 12 }}
               onClick={() =>  navigate('/maintenance/create')}

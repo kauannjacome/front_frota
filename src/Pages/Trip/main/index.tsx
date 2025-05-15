@@ -53,18 +53,20 @@ export default function Trip() {
   const [veiculos, setVeiculos] = useState<Veiculo[]>([]);
   const { Option } = Select;
   useEffect(() => {
-    api.get<Veiculo[]>("/vehicle")
+    api
+      .get<Veiculo[]>("/vehicle")
       .then(({ data }) => setVeiculos(data))
-      .catch(err => {
+      .catch((err) => {
         console.error("Erro ao carregar veículos", err);
         message.error("Não foi possível carregar a lista de veículos.");
       });
   }, []);
 
-  
   const onFinish = async (values: any) => {
     try {
-      const response = await api.get<Trip[]>("/trip/search", { params: values });
+      const response = await api.get<Trip[]>("/trip/search", {
+        params: values,
+      });
       setTrips(response.data);
       message.success("Dados de viagem carregados com sucesso!");
     } catch (error) {
@@ -133,8 +135,11 @@ export default function Trip() {
       width: "15%",
       render: (_, record) => (
         <Space size="middle">
+          <Button variant="solid" color="purple" onClick={() => {}}>
+            Imprimir
+          </Button>
           <Button
-            type="default"
+             color="cyan" variant="solid"
             onClick={() => message.info(`Editar viagem ID: ${record.id}`)}
           >
             Editar
@@ -145,7 +150,7 @@ export default function Trip() {
             okText="Sim"
             cancelText="Não"
           >
-            <Button danger>Excluir</Button>
+            <Button  color="danger" variant="solid">Excluir</Button>
           </Popconfirm>
         </Space>
       ),
@@ -168,29 +173,28 @@ export default function Trip() {
           name="tripForm"
           onFinish={onFinish}
         >
-
           <Row gutter={[16, 8]}>
-                      <Col xs={24} sm={12} md={8} lg={6}>
-            <Form.Item label="Veículo" name="vehicle_id">
-              <Select
-                placeholder="Selecione o veículo"
-                loading={!veiculos.length}
-                allowClear
-                showSearch
-                options={veiculos.map((v) => ({
-                  value: v.id,
-                  label: `${v.surname} ${v.plate}`,
-                }))}
-                filterOption={(input, option) =>
-                  // garante sempre retornar boolean
-                  (option?.label ?? "")
-                    .toString()
-                    .toLowerCase()
-                    .includes(input.toLowerCase())
-                }
-              />
-            </Form.Item>
-          </Col>
+            <Col xs={24} sm={12} md={8} lg={6}>
+              <Form.Item label="Veículo" name="vehicle_id">
+                <Select
+                  placeholder="Selecione o veículo"
+                  loading={!veiculos.length}
+                  allowClear
+                  showSearch
+                  options={veiculos.map((v) => ({
+                    value: v.id,
+                    label: `${v.surname} ${v.plate}`,
+                  }))}
+                  filterOption={(input, option) =>
+                    // garante sempre retornar boolean
+                    (option?.label ?? "")
+                      .toString()
+                      .toLowerCase()
+                      .includes(input.toLowerCase())
+                  }
+                />
+              </Form.Item>
+            </Col>
             <Col xs={24} sm={12} md={8} lg={6}>
               <Form.Item name="purpose" label="Propósito">
                 <Input placeholder="Digite o propósito" allowClear />
@@ -230,8 +234,7 @@ export default function Trip() {
             </Button>
 
             <Button
-              color="cyan"
-              variant="solid"
+           color="orange" variant="solid"
               icon={<PlusOutlined />}
               style={{ marginLeft: 12 }}
               onClick={() => navigate("/trip/create")}

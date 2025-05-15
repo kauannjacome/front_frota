@@ -97,7 +97,7 @@ export default function User() {
       render: (_, record) => (
         <Space size="middle">
           <Button
-            type="default"
+           color="cyan" variant="solid"
             onClick={() => {  navigate(`/user/edit/${record.id}`); }}
           >
             Editar
@@ -172,7 +172,7 @@ export default function User() {
               Buscar
             </Button>
             <Button
-               color="cyan" variant="solid"
+                 color="orange" variant="solid"
               icon={<PlusOutlined />}
               style={{ marginLeft: 12 }}
               onClick={() =>  navigate('/user/create')}

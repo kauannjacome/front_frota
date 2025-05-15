@@ -79,7 +79,7 @@ export default function Subscriber() {
       title: 'Ações', key: 'action', width: '20%',
       render: (_, record) => (
         <Space size="middle">
-          <Button   onClick={() => {  navigate(`/subscriber/edit/${record.id}`); }}>
+          <Button  color="cyan" variant="solid"  onClick={() => {  navigate(`/subscriber/edit/${record.id}`); }}>
             Editar
           </Button>
           <Popconfirm
@@ -89,7 +89,7 @@ export default function Subscriber() {
             okText="Sim"
             cancelText="Não"
           >
-            <Button danger>Excluir</Button>
+            <Button  color="danger" variant="solid">Excluir</Button>
           </Popconfirm>
         </Space>
       )
@@ -149,7 +149,7 @@ export default function Subscriber() {
               Buscar
             </Button>
             <Button
-               color="cyan" variant="solid"
+                  color="orange" variant="solid"
               icon={<PlusOutlined />}
               style={{ marginLeft: 12 }}
               onClick={() =>  navigate('/subscriber/create')}

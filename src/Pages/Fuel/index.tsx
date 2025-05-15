@@ -48,7 +48,6 @@ export default function Fuel() {
 
   // Carrega logs e veículos ao montar
   useEffect(() => {
-    
     api
       .get<Veiculo[]>("/vehicle")
       .then(({ data }) => setVeiculos(data))
@@ -76,7 +75,6 @@ export default function Fuel() {
       message.error("Não foi possível carregar os registros.");
     }
   };
-
 
   const onDelete = async (id: number) => {
     try {
@@ -121,7 +119,11 @@ export default function Fuel() {
       width: "10%",
       render: (_, record) => (
         <Space size="middle">
-          <Button onClick={() => navigate(`/maintenance/edit/${record.id}`)}>
+          <Button variant="solid" color="purple" onClick={() => {}}>
+            Imprimir
+          </Button>
+
+          <Button  color="cyan" variant="solid" onClick={() => navigate(`/maintenance/edit/${record.id}`)}>
             Editar
           </Button>
           <Popconfirm
@@ -130,7 +132,7 @@ export default function Fuel() {
             okText="Sim"
             cancelText="Não"
           >
-            <Button danger>Excluir</Button>
+            <Button  color="danger" variant="solid">Excluir</Button>
           </Popconfirm>
         </Space>
       ),
@@ -206,6 +208,7 @@ export default function Fuel() {
               Buscar
             </Button>
             <Button
+                color="orange" variant="solid"
               icon={<PlusOutlined />}
               style={{ marginLeft: 12 }}
               onClick={() => navigate(`/fuel/create`)}

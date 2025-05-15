@@ -71,7 +71,9 @@ export default function Supplier() {
       title: 'Ações', key: 'action', width: '20%',
       render: (_, record) => (
         <Space size="middle">
+          
           <Button
+           color="cyan" variant="solid"
             onClick={() => { navigate(`/supplier/edit/${record.id}`); }}
           >
             Editar
@@ -82,7 +84,7 @@ export default function Supplier() {
             okText="Sim"
             cancelText="Não"
           >
-            <Button danger>Excluir</Button>
+            <Button  color="danger" variant="solid" >Excluir</Button>
           </Popconfirm>
         </Space>
       ),
@@ -129,7 +131,7 @@ export default function Supplier() {
               Buscar
             </Button>
             <Button
-              color="cyan" variant="solid"
+                color="orange" variant="solid"
               icon={<PlusOutlined />}
               style={{ marginLeft: 12 }}
               onClick={() =>  navigate('/supplier/create')}

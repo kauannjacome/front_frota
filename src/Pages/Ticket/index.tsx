@@ -18,7 +18,7 @@ import api from "../../services/api";
 import { useSupplierStore } from "../../common/store/SupplierStore";
 import { useNavigate } from "react-router-dom";
 import { states, cities } from "estados-cidades";
-import moment from 'moment';
+import moment from "moment";
 
 interface Ticket {
   id: number;
@@ -40,7 +40,7 @@ interface Person {
 }
 const { Option } = Select;
 export default function Ticket() {
-  moment.locale('pt-br');
+  moment.locale("pt-br");
   const [form] = Form.useForm();
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [persons, setPersons] = useState<Person[]>([]);
@@ -101,7 +101,7 @@ export default function Ticket() {
       dataIndex: "passenger_id",
       key: "passenger_id",
       render: (_: any, record: Ticket) => {
-        const person = persons.find(p => p.id === record.passenger_id);
+        const person = persons.find((p) => p.id === record.passenger_id);
         return person ? person.full_name : record.passenger_id;
       },
       width: "30%",
@@ -116,7 +116,7 @@ export default function Ticket() {
       title: "Data de Viagem",
       dataIndex: "travel_date",
       key: "travel_date",
-      render: (date) =>  moment(date).format('DD/MM/YYYY') || "-",
+      render: (date) => moment(date).format("DD/MM/YYYY") || "-",
       width: "10%",
     },
     {
@@ -124,8 +124,12 @@ export default function Ticket() {
       key: "action",
       render: (_, record) => (
         <Space size="middle">
+          <Button variant="solid" color="purple" onClick={() => {}}>
+            Imprimir
+          </Button>
+
           <Button
-            type="default"
+            color="cyan" variant="solid"
             onClick={() => {
               navigate(`/ticket/edit/${record.id}`);
             }}
@@ -229,11 +233,9 @@ export default function Ticket() {
                 </Select>
               </Form.Item>
             </Col>
-
-          
-            </Row>
-            <Row gutter={[16, 8]}>
-            <Col span={10} >
+          </Row>
+          <Row gutter={[16, 8]}>
+            <Col span={10}>
               <Form.Item label="Passageiro" name="passenger_id">
                 <Select
                   placeholder="Selecione um passageiro"
@@ -265,8 +267,7 @@ export default function Ticket() {
               Buscar
             </Button>
             <Button
-              color="cyan"
-              variant="solid"
+             color="orange" variant="solid"
               icon={<PlusOutlined />}
               style={{ marginLeft: 12 }}
               onClick={() => navigate("/ticket/create")}

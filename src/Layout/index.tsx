@@ -102,6 +102,7 @@ const App: React.FC = () => {
         collapsed={collapsed}
         onCollapse={setCollapsed}
         theme="dark"
+        
         style={{ borderRight: '1px solid #001529' }}
       >
         <div style={{

@@ -123,7 +123,7 @@ export default function Vehicle() {
               Buscar
             </Button>
             <Button
-              color="cyan" variant="solid"
+           color="orange" variant="solid"
               icon={<PlusOutlined />}
               style={{ marginLeft: 12 }}
               onClick={() =>  navigate('/vehicle/create')}

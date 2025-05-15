@@ -303,9 +303,14 @@ export default function FuelLogForm({
       </Row>
 
       <Form.Item>
-        <Button type="primary" htmlType="submit">
+      <Button  variant="solid"   color="purple"  onClick={onCancel}>
+          Salvar e Imprimir
+        </Button>
+        <Button style={{ marginLeft: 8 }}  type="primary" htmlType="submit">
           Salvar
         </Button>
+
+
         <Button style={{ marginLeft: 8 }} onClick={onCancel}>
           Cancelar
         </Button>

@@ -86,7 +86,7 @@ export default function Person() {
       render: (_, record) => (
         <Space size="middle">
           <Button
-            type="link"
+             color="cyan" variant="solid"
             onClick={() => {  navigate(`/person/edit/${record.id}`); }}
           >
             Editar
@@ -97,7 +97,7 @@ export default function Person() {
             okText="Sim"
             cancelText="Não"
           >
-            <Button type="link" danger>Excluir</Button>
+            <Button  color="danger" variant="solid">Excluir</Button>
           </Popconfirm>
         </Space>
       ),
@@ -141,7 +141,7 @@ export default function Person() {
               Buscar
             </Button>
             <Button
-               color="cyan" variant="solid"
+                  color="orange" variant="solid"
               icon={<PlusOutlined />}
               style={{ marginLeft: 12 }}
               onClick={() =>  navigate('/person/create')}

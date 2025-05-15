@@ -81,7 +81,7 @@ export default function Department() {
       width: '40%',
       render: (_, record) => (
         <Space size="middle">
-          <Button onClick={() => navigate(`/department/edit/${record.id}`)}>Editar</Button>
+          <Button  color="cyan" variant="solid" onClick={() => navigate(`/department/edit/${record.id}`)}>Editar</Button>
           <Popconfirm
             title="Excluir"
             description="Tem certeza que deseja excluir este departamento?"
@@ -89,7 +89,7 @@ export default function Department() {
             okText="Sim"
             cancelText="Não"
           >
-            <Button danger>Excluir</Button>
+            <Button  color="danger" variant="solid">Excluir</Button>
           </Popconfirm>
         </Space>
       )
@@ -137,7 +137,7 @@ export default function Department() {
               Buscar
             </Button>
             <Button
-              type="default"
+                 color="orange" variant="solid"
               icon={<PlusOutlined />}
               style={{ marginLeft: 12 }}
               onClick={() => navigate('/department/create')}
