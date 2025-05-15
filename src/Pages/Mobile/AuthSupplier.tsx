@@ -1,146 +1,102 @@
-import { Layout, Card, Form, Input, Button, message, Grid } from "antd";
-import { useNavigate } from "react-router-dom";
-import api from "../../services/api";
+import { Card, Layout, Form, Input, Button } from 'antd';
+import api from '../../services/api';
+import { useState, CSSProperties } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-const { Item } = Form;
-const { Password } = Input;
-const { useBreakpoint } = Grid;
-
-interface UserStorage {
-  id: string;
-  full_name: string;
-  sex: string;
-  email: string;
-  status: string;
-  postalCode: string;
-}
-
-interface AuthResponse {
+// Defina a interface de resposta do login
+interface LoginResponse {
   token: string;
-  userStorage: UserStorage;
+  user: Record<string, any>; // ajuste para sua tipagem de usuário
 }
 
-interface LoginForm {
-  login: string;
-  password: string;
-}
+const containerStyle: CSSProperties = {
+  minHeight: '100vh',
+  padding: '1rem',
+  backgroundColor: '#F1F3FB',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+};
 
-export default function AuthSupplier() {
-  const screens = useBreakpoint();
+const logoStyle: CSSProperties = {
+  width: '40%',
+  maxWidth: '150px',
+  marginBottom: '1.5rem',
+};
+
+const cardStyle: CSSProperties = {
+  width: '90%',
+  maxWidth: '400px',
+  padding: '2rem',
+  textAlign: 'center',
+};
+
+export default function AuthLogin() {
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const [messageApi, contextHolder] = message.useMessage();
 
-  // Calcula largura baseada no ponto de quebra ativo
-  const cardWidth = screens.xs
-    ? "90vw"
-    : screens.sm
-    ? "70vw"
-    : screens.md
-    ? "50vw"
-    : "40vw";
+  const onFinish = async (values: { email: string; password: string }) => {
+    setLoading(true);
+    navigate('/') ;
 
-  const handleLogin = async (values: LoginForm) => {
-    const { login, password } = values;
     try {
-      const response = await api.post<AuthResponse>("/auth", { login, password });
-      if (response.status === 200 && response.data.userStorage) {
-        messageApi.success("Login realizado com sucesso");
-        const { token, userStorage } = response.data;
-        const storageData = {
-          id: userStorage.id,
-          full_name: userStorage.full_name,
-          sex: userStorage.sex,
-          email: userStorage.email,
-          late_payment: userStorage.status,
-          postalCode: userStorage.postalCode,
-        };
-        sessionStorage.setItem("token_akautec_protocol", token);
-        sessionStorage.setItem("user_data", JSON.stringify(storageData));
-        navigate("/home");
-      } else {
-        console.error("Resposta inesperada da API:", response);
-        messageApi.error("Ocorreu um erro inesperado ao fazer login.");
-      }
-    } catch (error: any) {
-      if (error.response) {
-        switch (error.response.status) {
-          case 401:
-            messageApi.error("Usuário ou senha incorretos");
-            break;
-          case 500:
-            messageApi.error("Erro no servidor. Verifique o back-end.");
-            break;
-          default:
-            messageApi.error(
-              `Erro: ${error.response.status} - ${
-                error.response.data.message || "Ocorreu um erro inesperado"
-              }`
-            );
-        }
-      } else {
-        messageApi.error(
-          "Não foi possível conectar ao servidor. Verifique sua conexão ou o back-end."
-        );
-      }
+      // Especifica o tipo genérico para o retorno
+      const response = await api.post<LoginResponse>('/auth/login', values);
+      const { token, user } = response.data;
+
+      // Armazene o token conforme sua necessidade (ex: localStorage)
+      localStorage.setItem('authToken', token);
+
+      // Redireciona para o dashboard, passando o usuário no state
+      navigate('/dashboard', { state: { user } });
+    } catch (error) {
+      console.error('Erro ao efetuar login:', error);
+      // Aqui você pode exibir uma mensagem de erro para o usuário
+    } finally {
+      setLoading(false);
     }
   };
 
-  const navigateToRecovery = () => {
-    navigate("/recovery");
-  };
-
   return (
-    <>
-      {contextHolder}
-      <Layout
-        style={{
-          minHeight: "100vh",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          padding: "0 16px",
-        }}
-      >
-        <Card style={{ width: cardWidth, maxWidth: 400 }}>
-          <Form<LoginForm> layout="vertical" onFinish={handleLogin}>
-            <div style={{ textAlign: "center", marginBottom: 24 }}>
-              <img
-                src="/imagens/logo_com_nome_colorido.svg"
-                alt="Logo"
-                width={screens.xs ? 150 : 200}
-              />
-            </div>
+    <Layout style={containerStyle}>
+      <img
+        src="/imagens/logo_com_nome_colorido.svg"
+        alt="Logo"
+        style={logoStyle}
+      />
+      <Card style={cardStyle}>
+        <h1 style={{ marginBottom: '1rem' }}>Login</h1>
+        <Form
+          name="login"
+          layout="vertical"
+          onFinish={onFinish}
+        >
+          <Form.Item
+            label="Email"
+            name="email"
+            rules={[
+              { required: true, message: 'Por favor insira seu email!' },
+              { type: 'email', message: 'Formato de email inválido!' }
+            ]}
+          >
+            <Input placeholder="Email" />
+          </Form.Item>
 
-            <Item
-              label="Login"
-              name="login"
-              rules={[{ required: true, message: "Por favor, insira seu login!" }]}
-            >
-              <Input placeholder="Seu usuário ou e-mail" />
-            </Item>
+          <Form.Item
+            label="Senha"
+            name="password"
+            rules={[{ required: true, message: 'Por favor insira sua senha!' }]}
+          >
+            <Input.Password placeholder="Senha" />
+          </Form.Item>
 
-            <Item
-              label="Senha"
-              name="password"
-              rules={[{ required: true, message: "Por favor, insira sua senha!" }]}
-            >
-              <Password placeholder="Digite sua senha" autoComplete="current-password" />
-            </Item>
-
-            <Item>
-              <Button type="primary" htmlType="submit" block>
-                Entrar
-              </Button>
-            </Item>
-
-            <Item>
-              <Button type="link" onClick={navigateToRecovery} block>
-                Esqueci minha senha
-              </Button>
-            </Item>
-          </Form>
-        </Card>
-      </Layout>
-    </>
+          <Form.Item>
+            <Button type="primary" htmlType="submit" block loading={loading}>
+              Entrar
+            </Button>
+          </Form.Item>
+        </Form>
+      </Card>
+    </Layout>
   );
 }

@@ -31,6 +31,7 @@ import CreateDepartment from "../Pages/Department/CreateDepartment";
 import EditDepartment from "../Pages/Department/EditDepartment";
 import Auth from "../Pages/Auth";
 import AuthSupplier from "../Pages/Mobile/AuthSupplier";
+import FuelLogAttendant from "../Pages/Mobile/fuelLogAttendant";
 
 
 
@@ -40,6 +41,7 @@ export default function AppRoutes() {
       <Routes>
       <Route path="/" element={< Auth />} />
       <Route path="/auth/supplier" element={< AuthSupplier />} />
+      <Route path="/supplier/fuel-log-attendant" element={< FuelLogAttendant />} />
         <Route element={<AppLayout />}>
 
           <Route path="/vehicle" element={< Vehicle />} />

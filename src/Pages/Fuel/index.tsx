@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import  { useState, useEffect } from "react";
 import {
   Card,
   Form,
@@ -10,14 +10,14 @@ import {
   Popconfirm,
   Row,
   Col,
+  Modal,
 } from "antd";
 import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import Table, { ColumnsType } from "antd/es/table";
 import api from "../../services/api";
-import { Veiculo } from "../../common/store/VehicleStore";
-import ptBRDatePicker from "antd/es/date-picker/locale/pt_BR";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
+import { Veiculo } from "../../common/store/VehicleStore";
 
 interface FuelLog {
   id: number;
@@ -44,9 +44,11 @@ export default function Fuel() {
   const [fuelLogs, setFuelLogs] = useState<FuelLog[]>([]);
   const [typesFuel, setTypesFuel] = useState<string[]>([]);
   const [veiculos, setVeiculos] = useState<Veiculo[]>([]);
+  const [pdfModalVisible, setPdfModalVisible] = useState(false);
+  const [pdfUrl, setPdfUrl] = useState<string>("");
   const navigate = useNavigate();
 
-  // Carrega logs e veículos ao montar
+  // Carrega veículos
   useEffect(() => {
     api
       .get<Veiculo[]>("/vehicle")
@@ -57,6 +59,7 @@ export default function Fuel() {
       });
   }, []);
 
+  // Carrega tipos de combustível
   useEffect(() => {
     api
       .get<string[]>("/fuel-log/types")
@@ -66,9 +69,12 @@ export default function Fuel() {
       });
   }, []);
 
-  const onSearch = async () => {
+  // Busca registros
+  const onSearch = async (values: any) => {
     try {
-      const response = await api.get<FuelLog[]>("/fuel-log/search");
+      const response = await api.get<FuelLog[]>("/fuel-log/search", {
+        params: values,
+      });
       setFuelLogs(response.data);
     } catch (error) {
       console.error("Erro ao buscar registros de abastecimento:", error);
@@ -76,6 +82,7 @@ export default function Fuel() {
     }
   };
 
+  // Exclui registro
   const onDelete = async (id: number) => {
     try {
       await api.delete(`/fuel-log/${id}`);
@@ -87,16 +94,30 @@ export default function Fuel() {
     }
   };
 
+  // Abre modal com PDF
+  const openPdfModal = async (id: number) => {
+    try {
+      const response = await api.get<Blob>(`/fuel-log/pdf/${id}`, {
+        responseType: "blob",
+      });
+      const url = URL.createObjectURL(response.data);
+      setPdfUrl(url);
+      setPdfModalVisible(true);
+    } catch (error) {
+      console.error("Erro ao gerar PDF:", error);
+      message.error("Não foi possível gerar o PDF.");
+    }
+  };
+
+  // Colunas da tabela
   const columns: ColumnsType<FuelLog> = [
     {
       title: "Veículo",
       key: "vehicle",
       width: "12%",
-      render: (_: any, record: FuelLog) => {
-        const vehicle = veiculos.find((v) => v.id === record.vehicle_id);
-        return vehicle
-          ? `${vehicle.mark} ${vehicle.model}`
-          : `#${record.vehicle_id}`;
+      render: (_, record) => {
+        const v = veiculos.find((x) => x.id === record.vehicle_id);
+        return v ? `${v.mark} ${v.model}` : `#${record.vehicle_id}`;
       },
     },
     {
@@ -116,14 +137,13 @@ export default function Fuel() {
     {
       title: "Ações",
       key: "action",
-      width: "10%",
+      width: "20%",
       render: (_, record) => (
         <Space size="middle">
-          <Button variant="solid" color="purple" onClick={() => {}}>
+          <Button type="primary" onClick={() => openPdfModal(record.id)}>
             Imprimir
           </Button>
-
-          <Button  color="cyan" variant="solid" onClick={() => navigate(`/maintenance/edit/${record.id}`)}>
+          <Button onClick={() => navigate(`/maintenance/edit/${record.id}`)}>
             Editar
           </Button>
           <Popconfirm
@@ -132,7 +152,7 @@ export default function Fuel() {
             okText="Sim"
             cancelText="Não"
           >
-            <Button  color="danger" variant="solid">Excluir</Button>
+            <Button danger>Excluir</Button>
           </Popconfirm>
         </Space>
       ),
@@ -140,18 +160,11 @@ export default function Fuel() {
   ];
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        padding: 0,
-        gap: "20px",
-      }}
-    >
+    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
       <Card>
         <Form
           form={createForm}
-          layout="horizontal"
+          layout="vertical"
           onFinish={onSearch}
           name="supplyForm"
         >
@@ -165,12 +178,10 @@ export default function Fuel() {
                   showSearch
                   options={veiculos.map((v) => ({
                     value: v.id,
-                    label: `${v.surname}-${v.plate}`,
+                    label: `${v.surname} - ${v.plate}`,
                   }))}
                   filterOption={(input, option) =>
-                    // garante sempre retornar boolean
                     (option?.label ?? "")
-                      .toString()
                       .toLowerCase()
                       .includes(input.toLowerCase())
                   }
@@ -182,7 +193,6 @@ export default function Fuel() {
               <Form.Item label="Data de Abastecimento" name="supply_date">
                 <DatePicker
                   style={{ width: "100%" }}
-                  locale={ptBRDatePicker}
                   format="DD/MM/YYYY"
                 />
               </Form.Item>
@@ -191,24 +201,22 @@ export default function Fuel() {
             <Col xs={24} sm={12} md={8} lg={6}>
               <Form.Item label="Tipo de Combustível" name="fuel_type">
                 <Select placeholder="Selecione o tipo" allowClear>
-                  <Select.Option value="GASOLINA">Gasolina</Select.Option>
-                  <Select.Option value="DIESEL">Diesel</Select.Option>
-                  <Select.Option value="ETANOL">Etanol</Select.Option>
-                  <Select.Option value="ELETRICO">Elétrico</Select.Option>
-                  <Select.Option value="OUTRO">
-                    Outro tipo de combustível
-                  </Select.Option>
+                  {typesFuel.map((tipo) => (
+                    <Select.Option key={tipo} value={tipo}>
+                      {tipo.charAt(0) + tipo.slice(1).toLowerCase()}
+                    </Select.Option>
+                  ))}
                 </Select>
               </Form.Item>
             </Col>
           </Row>
 
-          <Form.Item style={{ marginTop: 16, textAlign: "left" }}>
+          <Form.Item style={{ marginTop: 16 }}>
             <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>
               Buscar
             </Button>
             <Button
-                color="orange" variant="solid"
+              type="dashed"
               icon={<PlusOutlined />}
               style={{ marginLeft: 12 }}
               onClick={() => navigate(`/fuel/create`)}
@@ -227,6 +235,40 @@ export default function Fuel() {
           pagination={{ pageSize: 10 }}
         />
       </Card>
+
+      <Modal
+        title="Visualizar PDF"
+        visible={pdfModalVisible}
+        onCancel={() => setPdfModalVisible(false)}
+        footer={[
+          <Button key="close" onClick={() => setPdfModalVisible(false)}>
+            Fechar
+          </Button>,
+          <Button
+            key="print"
+            type="primary"
+            onClick={() => {
+              const iframe = document.getElementById(
+                "pdf-frame"
+              ) as HTMLIFrameElement;
+              iframe?.contentWindow?.focus();
+              iframe?.contentWindow?.print();
+            }}
+          >
+            Imprimir
+          </Button>,
+        ]}
+        width="80%"
+        style={{ top: 20 }}
+        bodyStyle={{ height: "80vh", padding: 0 }}
+      >
+        <iframe
+          id="pdf-frame"
+          src={pdfUrl}
+          title="PDF"
+          style={{ width: "100%", height: "100%", border: 0 }}
+        />
+      </Modal>
     </div>
   );
 }
