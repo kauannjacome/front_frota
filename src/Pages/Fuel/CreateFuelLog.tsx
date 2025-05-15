@@ -20,7 +20,7 @@ export default function CreateFuelLog() {
       };
       await api.post('/fuel-log', payload);
       message.success('Registro de abastecimento criado com sucesso!');
-      navigate('/fuel-log');
+      navigate('/fuel');
     } catch {
       message.error('Erro ao criar registro de abastecimento.');
     } finally {
@@ -33,6 +33,7 @@ export default function CreateFuelLog() {
       <FuelLogForm
         initialValues={{}}
         onFinish={handleFinish}
+        onCancel={() => navigate('/fuel')}
       />
     </Card>
   );

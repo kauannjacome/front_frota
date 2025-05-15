@@ -69,7 +69,7 @@ export default function Fuel() {
 
   const onSearch = async () => {
     try {
-      const response = await api.get<FuelLog[]>("/fuel-log");
+      const response = await api.get<FuelLog[]>("/fuel-log/search");
       setFuelLogs(response.data);
     } catch (error) {
       console.error("Erro ao buscar registros de abastecimento:", error);

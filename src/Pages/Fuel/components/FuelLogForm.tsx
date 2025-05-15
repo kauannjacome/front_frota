@@ -13,6 +13,7 @@ import {
 import moment from "moment";
 import debounce from "lodash/debounce";
 import api from "../../../services/api";
+import { useForm } from "antd/es/form/Form";
 
 export interface FuelLogFormValues {
   vehicle_id?: number;
@@ -27,7 +28,7 @@ export interface FuelLogFormValues {
   cost?: number;
   odometer?: number;
   fuel_type: "GASOLINA" | "ALCOOL" | "DIESEL" | "ELETRICO";
-  supply_type?: "COMPLETE" | "PARTIAL";
+  supply_type?: "COMPLETE" | "LITRO_ESPECIFICADO";
 }
 
 type Props = {
@@ -142,13 +143,15 @@ export default function FuelLogForm({
     fetchDrivers();
     fetchSuppliers();
   }, []);
-
+  const [form] = useForm<FuelLogFormValues>();
+  const supplyType = Form.useWatch('supply_type', form);
   return (
     <Form<FuelLogFormValues>
       layout="vertical"
       onFinish={onFinish}
       initialValues={{
         ...initialValues,
+        supply_type: initialValues.supply_type ?? 'COMPLETE',
         supply_date: initialValues.supply_date
           ? moment(initialValues.supply_date)
           : undefined,
@@ -232,7 +235,7 @@ export default function FuelLogForm({
           <Form.Item name="supply_type" label="Tipo de Abastecimento">
             <Select placeholder="Selecione o tipo">
               <Select.Option value="COMPLETE">Completo</Select.Option>
-              <Select.Option value="PARTIAL">Parcial</Select.Option>
+              <Select.Option value="LITRO_ESPECIFICADO">Parcial</Select.Option>
             </Select>
           </Form.Item>
         </Col>
@@ -264,7 +267,9 @@ export default function FuelLogForm({
         </Col>
         <Col span={6}>
           <Form.Item name="liters" label="Litros">
-            <InputNumber style={{ width: "100%" }} min={0} step={0.01} />
+            <InputNumber
+              disabled={supplyType !== 'LITRO_ESPECIFICADO'}
+               style={{ width: "100%" }} min={0} step={0.01} />
           </Form.Item>
         </Col>
         <Col span={6}>

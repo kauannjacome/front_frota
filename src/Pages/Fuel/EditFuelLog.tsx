@@ -58,7 +58,7 @@ export default function EditFuelLog() {
       <FuelLogForm
         initialValues={initialValues}
         onFinish={handleFinish}
-        onCancel={() => navigate('/fuel-log')}
+        onCancel={() => navigate('/fuel')}
       />
     </Card>
   );

@@ -40,7 +40,7 @@ export default function User() {
   const fetchUsers = async (values?: any) => {
     try {
       // Você pode passar params para filtro no back-end, ex: cpf, name, role...
-      const response = await api.get<User[]>('/user', {
+      const response = await api.get<User[]>('/user/search', {
         params: values,
       });
       setUsers(response.data);
@@ -67,10 +67,11 @@ export default function User() {
   };
 
   const columns: ColumnsType<User> = [
-    { title: 'CPF', dataIndex: 'cpf', key: 'cpf', width: '15%' },
     { title: 'Nome', dataIndex: 'name', key: 'name', width: '20%' },
+    { title: 'CPF', dataIndex: 'cpf', key: 'cpf', width: '15%' },
+
     { title: 'E-mail', dataIndex: 'email', key: 'email', width: '20%' },
-    { title: 'Telefone', dataIndex: 'phone_number', key: 'phone_number', width: '15%' },
+
     {
       title: 'Cargo',
       dataIndex: 'role',

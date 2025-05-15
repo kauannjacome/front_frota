@@ -17,6 +17,8 @@ import Table, { ColumnsType } from "antd/es/table";
 import api from "../../services/api";
 import { useSupplierStore } from "../../common/store/SupplierStore";
 import { useNavigate } from "react-router-dom";
+import { states, cities } from "estados-cidades";
+import moment from 'moment';
 
 interface Ticket {
   id: number;
@@ -36,11 +38,15 @@ interface Person {
   id: number;
   full_name: string;
 }
-
+const { Option } = Select;
 export default function Ticket() {
+  moment.locale('pt-br');
   const [form] = Form.useForm();
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [persons, setPersons] = useState<Person[]>([]);
+  const [ufs, setUfs] = useState<string[]>([]);
+  const [startCities, setStartCities] = useState<string[]>([]);
+  const [startUf, setStartUf] = useState<string>();
 
   const suppliers = useSupplierStore((state) => state.suppliers) ?? [];
   const navigate = useNavigate();
@@ -58,7 +64,8 @@ export default function Ticket() {
           ? values.travel_date.format("YYYY-MM-DD")
           : undefined,
       };
-      const response = await api.get<Ticket[]>("/ticket", { params });
+      console.log("params", params);
+      const response = await api.get<Ticket[]>("/ticket/search", { params });
       setTickets(response.data);
       message.success("Passagens carregadas com sucesso!");
     } catch (error) {
@@ -93,13 +100,11 @@ export default function Ticket() {
       title: "Passageiro",
       dataIndex: "passenger_id",
       key: "passenger_id",
-      width: "10%",
-    },
-    {
-      title: "Origem",
-      key: "origin",
-      render: (_, record) => `${record.start_state} - ${record.start_city}`,
-      width: "15%",
+      render: (_: any, record: Ticket) => {
+        const person = persons.find(p => p.id === record.passenger_id);
+        return person ? person.full_name : record.passenger_id;
+      },
+      width: "30%",
     },
     {
       title: "Destino",
@@ -111,7 +116,7 @@ export default function Ticket() {
       title: "Data de Viagem",
       dataIndex: "travel_date",
       key: "travel_date",
-      render: (date) => date || "-",
+      render: (date) =>  moment(date).format('DD/MM/YYYY') || "-",
       width: "10%",
     },
     {
@@ -142,6 +147,9 @@ export default function Ticket() {
       width: "15%",
     },
   ];
+  useEffect(() => {
+    setUfs(states());
+  }, []);
 
   // Chama fetchSuppliers só uma vez, ao montar o componente
   useEffect(() => {
@@ -169,7 +177,7 @@ export default function Ticket() {
           onFinish={onFinish}
         >
           <Row gutter={[16, 8]}>
-            <Col xs={24} sm={12} md={8} lg={6}>
+            <Col span={7}>
               <Form.Item label="Fornecedor" name="supplier_id">
                 <Select
                   placeholder="Selecione um fornecedor"
@@ -189,7 +197,43 @@ export default function Ticket() {
               </Form.Item>
             </Col>
 
-            <Col xs={24} sm={12} md={8} lg={6}>
+            <Col span={5}>
+              <Form.Item label="Estado final" name="start_state">
+                <Select
+                  placeholder="UF"
+                  showSearch
+                  allowClear
+                  onChange={setStartUf}
+                >
+                  {ufs.map((uf) => (
+                    <Option key={uf} value={uf}>
+                      {uf}
+                    </Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item label="Cidade final" name="end_city">
+                <Select
+                  placeholder="Cidade"
+                  showSearch
+                  allowClear
+                  disabled={!startUf}
+                >
+                  {startCities.map((city) => (
+                    <Option key={city} value={city}>
+                      {city}
+                    </Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+
+          
+            </Row>
+            <Row gutter={[16, 8]}>
+            <Col span={10} >
               <Form.Item label="Passageiro" name="passenger_id">
                 <Select
                   placeholder="Selecione um passageiro"

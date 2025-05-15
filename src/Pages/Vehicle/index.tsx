@@ -23,10 +23,11 @@ export default function Vehicle() {
   const [form] = Form.useForm();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const navigate = useNavigate();
+
   const onFinish = async (values: any) => {
     try {
 
-      const response = await api.get<Vehicle[]>('/vehicle');
+      const response = await api.get<Vehicle[]>('/vehicle/search',{ params: values });
       console.log(response)
       setVehicles(response.data);
       message.success('Veículo adicionado com sucesso!');

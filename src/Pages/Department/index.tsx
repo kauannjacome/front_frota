@@ -1,9 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Card, Form, Input, InputNumber, Button, message, Space, Popconfirm, Row, Col, Tag } from "antd";
+import { Card, Form, Input, Select, Button, message, Space, Popconfirm, Row, Col } from "antd";
 import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import Table, { ColumnsType } from "antd/es/table";
 import api from '../../services/api';
 import { useNavigate } from "react-router-dom";
+
+interface Subscriber {
+  id: number;
+  uuid: string;
+  name: string;
+  // outros campos, se necessário
+}
 
 interface Department {
   id: number;
@@ -20,8 +27,20 @@ export default function Department() {
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [departments, setDepartments] = useState<Department[]>([]);
+  const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
 
-  // Fetch all departments
+  // Carrega lista de assinantes
+  const loadSubscribers = async () => {
+    try {
+      const response = await api.get<Subscriber[]>('/subscriber');
+      setSubscribers(response.data);
+    } catch (error) {
+      console.error('Erro ao carregar assinantes:', error);
+      message.error('Não foi possível carregar assinantes.');
+    }
+  };
+
+  // Carrega departamentos com filtros opcionais
   const loadDepartments = async (params: any = {}) => {
     try {
       const response = await api.get<Department[]>('/department', { params });
@@ -33,21 +52,16 @@ export default function Department() {
   };
 
   useEffect(() => {
+    loadSubscribers();
     loadDepartments();
   }, []);
 
-  const onFinish = async (values: any) => {
-    try {
-      await api.post('/department', values);
-      message.success('Departamento adicionado com sucesso!');
-      form.resetFields();
-      loadDepartments();
-    } catch (error) {
-      console.error('Erro ao adicionar departamento:', error);
-      message.error('Não foi possível adicionar o departamento.');
-    }
+  // Ação de busca (submete filtros)
+  const onSearch = (values: any) => {
+    loadDepartments(values);
   };
 
+  // Excluir departamento
   const onDelete = async (id: number) => {
     try {
       await api.delete(`/department/${id}`);
@@ -60,13 +74,11 @@ export default function Department() {
   };
 
   const columns: ColumnsType<Department> = [
-
-    { title: 'Nome', dataIndex: 'name', key: 'name', width: '20%' },
-  
+    { title: 'Nome', dataIndex: 'name', key: 'name', width: '60%' },
     {
       title: 'Ações',
       key: 'action',
-      width: '10%',
+      width: '40%',
       render: (_, record) => (
         <Space size="middle">
           <Button onClick={() => navigate(`/department/edit/${record.id}`)}>Editar</Button>
@@ -84,19 +96,34 @@ export default function Department() {
     }
   ];
 
-  const onSearch = () => {
-    const values = form.getFieldsValue();
-    loadDepartments(values);
-  };
-
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
       <Card>
-        <Form form={form} layout="horizontal" name="departmentForm" onFinish={onFinish}>
+        <Form
+          form={form}
+          layout="horizontal"
+          name="departmentForm"
+          onFinish={onSearch}
+        >
           <Row gutter={[16, 8]}>
             <Col xs={24} sm={12} md={8} lg={6}>
-              <Form.Item label="ID Assinante" name="subscriber_id">
-                <InputNumber style={{ width: '100%' }} placeholder="Digite o ID do assinante" />
+              <Form.Item
+                label="Assinante"
+                name="subscriber_id"
+                rules={[{ required: true, message: 'Selecione um assinante' }]}
+              >
+                <Select<number>
+                  showSearch
+                  placeholder="Selecione um assinante"
+                  optionFilterProp="children"
+                  // sem filterOption manual, usando o interno
+                >
+                  {subscribers.map(sub => (
+                    <Select.Option key={sub.id} value={sub.id}>
+                      {sub.name}
+                    </Select.Option>
+                  ))}
+                </Select>
               </Form.Item>
             </Col>
             <Col xs={24} sm={12} md={8} lg={6}>
@@ -104,14 +131,11 @@ export default function Department() {
                 <Input placeholder="Digite o nome do departamento" allowClear />
               </Form.Item>
             </Col>
-            <Col xs={24} sm={12} md={8} lg={6}>
-              <Form.Item label="Logo (URL)" name="department_logo">
-                <Input placeholder="URL do logo" allowClear />
-              </Form.Item>
-            </Col>
           </Row>
           <Form.Item style={{ marginTop: 16, textAlign: 'left' }}>
-            <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>Buscar</Button>
+            <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>
+              Buscar
+            </Button>
             <Button
               type="default"
               icon={<PlusOutlined />}
