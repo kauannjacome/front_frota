@@ -13,10 +13,11 @@ import {
   Col,
   Row,
 } from "antd";
-import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, PlusOutlined, PrinterOutlined, SearchOutlined } from "@ant-design/icons";
 import api from "../../../services/api";
 import Table, { ColumnsType } from "antd/es/table";
 import moment from "moment";
+import { format } from 'date-fns'; 
 import {
   TripStatusColors,
   TripStatusOptions,
@@ -63,9 +64,19 @@ export default function Trip() {
   }, []);
 
   const onFinish = async (values: any) => {
+    const dateObj = values.journey_start.toDate();
+    const journey_date = format(dateObj, 'yyyy-MM-dd');
     try {
+      console.log("values", values);
       const response = await api.get<Trip[]>("/trip/search", {
-        params: values,
+        params: {
+          // mantém outros filtros se houver
+          ...values.vehicle_id && { vehicle_id: values.vehicle_id },
+          ...values.end_city   && { end_city: values.end_city },
+          // usa o nome esperado pela API:
+          journey_date,
+        }
+
       });
       setTrips(response.data);
       message.success("Dados de viagem carregados com sucesso!");
@@ -90,8 +101,8 @@ export default function Trip() {
     { title: "Propósito", dataIndex: "purpose", key: "purpose", width: "15%" },
     {
       title: "Data de Solicitação",
-      dataIndex: "request_date",
-      key: "request_date",
+      dataIndex: "journey_start",
+      key: "journey_start",
       width: "15%",
       render: (date: string) =>
         date ? moment(date).format("DD/MM/YYYY HH:mm") : "-",
@@ -135,11 +146,12 @@ export default function Trip() {
       width: "15%",
       render: (_, record) => (
         <Space size="middle">
-          <Button variant="solid" color="purple" onClick={() => {}}>
-            Imprimir
+          <Button variant="solid"               icon={<PrinterOutlined />} onClick={() => {}}>
+          imprimir
           </Button>
           <Button
-             color="cyan" variant="solid"
+             icon={<EditOutlined />} 
+
             onClick={() => message.info(`Editar viagem ID: ${record.id}`)}
           >
             Editar
@@ -150,7 +162,7 @@ export default function Trip() {
             okText="Sim"
             cancelText="Não"
           >
-            <Button  color="danger" variant="solid">Excluir</Button>
+            <Button  color="danger"            icon={<DeleteOutlined />} > Deletar</Button>
           </Popconfirm>
         </Space>
       ),
@@ -222,7 +234,7 @@ export default function Trip() {
             </Col>
 
             <Col xs={24} sm={12} md={8} lg={6}>
-              <Form.Item name="request_date" label="Data">
+              <Form.Item name="journey_start" label="Data">
                 <DatePicker style={{ width: "100%" }} />
               </Form.Item>
             </Col>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Card, Form, Input, Button, message, Space, Tag, Popconfirm, Row, Col } from "antd";
-import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import api from '../../services/api';
 import Table, { ColumnsType } from "antd/es/table";
 import { useNavigate } from "react-router-dom";
@@ -73,7 +73,7 @@ export default function Vehicle() {
       title: 'Ações', key: 'action',
       render: (_, record) => (
         <Space size="middle">
-          <Button color="cyan" variant="solid" onClick={() => {  navigate(`/vehicle/edit/${record.id}`); }}>
+          <Button icon={<EditOutlined />} onClick={() => {  navigate(`/vehicle/edit/${record.id}`); }}>
             Editar
           </Button>
 
@@ -84,7 +84,7 @@ export default function Vehicle() {
             okText="Sim"
             cancelText="Não"
           >
-            <Button variant="solid" color="red">Delete</Button>
+            <Button   icon={<DeleteOutlined />}  >Delete</Button>
           </Popconfirm>
         </Space>
       ), width: '20%'

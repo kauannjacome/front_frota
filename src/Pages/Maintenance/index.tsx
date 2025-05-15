@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Card, Form, Input, Button, message, Space, Tag, Popconfirm, Select, Row, Col } from "antd";
-import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import api from '../../services/api';
 import Table, { ColumnsType } from "antd/es/table";
 import { Veiculo } from "../../common/store/VehicleStore";
@@ -103,8 +103,8 @@ export default function Maintenance() {
       title: 'Ações', key: 'action', width: '15%',
       render: (_, record) => (
         <Space size="middle">
-          <Button   color="cyan" variant="solid"  onClick={() => {  navigate(`/maintenance/edit/${record.id}`); }}>
-            Editar
+          <Button   icon={<EditOutlined />}  onClick={() => {  navigate(`/maintenance/edit/${record.id}`); }}>
+          Editar
           </Button>
           <Popconfirm
             title="Tem certeza que deseja excluir essa manutenção?"
@@ -112,7 +112,7 @@ export default function Maintenance() {
             okText="Sim"
             cancelText="Não"
           >
-            <Button  color="danger" variant="solid">Excluir</Button>
+            <Button   icon={<DeleteOutlined />} >Deletar</Button>
           </Popconfirm>
         </Space>
       ),

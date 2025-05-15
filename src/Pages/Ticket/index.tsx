@@ -12,7 +12,7 @@ import {
   Row,
   Select,
 } from "antd";
-import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, PlusOutlined, PrinterOutlined, SearchOutlined } from "@ant-design/icons";
 import Table, { ColumnsType } from "antd/es/table";
 import api from "../../services/api";
 import { useSupplierStore } from "../../common/store/SupplierStore";
@@ -124,25 +124,26 @@ export default function Ticket() {
       key: "action",
       render: (_, record) => (
         <Space size="middle">
-          <Button variant="solid" color="purple" onClick={() => {}}>
+          <Button icon={<PrinterOutlined />} onClick={() => {}}>
             Imprimir
           </Button>
 
           <Button
-            color="cyan" variant="solid"
+              icon={<EditOutlined />} 
             onClick={() => {
               navigate(`/ticket/edit/${record.id}`);
             }}
           >
             Editar
           </Button>
+
           <Popconfirm
             title="Tem certeza que deseja excluir esta passagem?"
             onConfirm={() => onDelete(record.id)}
             okText="Sim"
             cancelText="Não"
           >
-            <Button type="primary" danger>
+            <Button icon={<DeleteOutlined />}>
               Excluir
             </Button>
           </Popconfirm>

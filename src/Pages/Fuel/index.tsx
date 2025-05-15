@@ -1,4 +1,4 @@
-import  { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Card,
   Form,
@@ -12,7 +12,13 @@ import {
   Col,
   Modal,
 } from "antd";
-import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
+import {
+  DeleteOutlined,
+  EditOutlined,
+  PlusOutlined,
+  PrinterOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
 import Table, { ColumnsType } from "antd/es/table";
 import api from "../../services/api";
 import moment from "moment";
@@ -140,10 +146,16 @@ export default function Fuel() {
       width: "20%",
       render: (_, record) => (
         <Space size="middle">
-          <Button type="primary" onClick={() => openPdfModal(record.id)}>
-            Imprimir
+          <Button
+            icon={<PrinterOutlined />}
+            onClick={() => openPdfModal(record.id)}
+          >
+            imprimir
           </Button>
-          <Button onClick={() => navigate(`/maintenance/edit/${record.id}`)}>
+          <Button
+            icon={<EditOutlined />}
+            onClick={() => navigate(`/maintenance/edit/${record.id}`)}
+          >
             Editar
           </Button>
           <Popconfirm
@@ -152,7 +164,7 @@ export default function Fuel() {
             okText="Sim"
             cancelText="Não"
           >
-            <Button danger>Excluir</Button>
+            <Button icon={<DeleteOutlined />}> Deletar</Button>
           </Popconfirm>
         </Space>
       ),
@@ -191,10 +203,7 @@ export default function Fuel() {
 
             <Col xs={24} sm={12} md={8} lg={6}>
               <Form.Item label="Data de Abastecimento" name="supply_date">
-                <DatePicker
-                  style={{ width: "100%" }}
-                  format="DD/MM/YYYY"
-                />
+                <DatePicker style={{ width: "100%" }} format="DD/MM/YYYY" />
               </Form.Item>
             </Col>
 

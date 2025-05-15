@@ -1,7 +1,7 @@
 // src/components/Person.tsx
 import React, { useState } from "react";
 import { Card, Form, Input, Button, message, Space, Tag, Popconfirm, Col, Row } from "antd";
-import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import api from '../../services/api';
 import Table, { ColumnsType } from "antd/es/table";
 import { useNavigate } from "react-router-dom";
@@ -86,7 +86,8 @@ export default function Person() {
       render: (_, record) => (
         <Space size="middle">
           <Button
-             color="cyan" variant="solid"
+          icon={<EditOutlined />} 
+
             onClick={() => {  navigate(`/person/edit/${record.id}`); }}
           >
             Editar
@@ -97,7 +98,7 @@ export default function Person() {
             okText="Sim"
             cancelText="Não"
           >
-            <Button  color="danger" variant="solid">Excluir</Button>
+            <Button  icon={<DeleteOutlined />}  >Excluir</Button>
           </Popconfirm>
         </Space>
       ),
