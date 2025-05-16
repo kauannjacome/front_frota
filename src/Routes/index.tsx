@@ -1,8 +1,8 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AppLayout from "../Layout";
 import Vehicle from "../Pages/Vehicle";
-import Trip from "../Pages/Trip/main";
-import CreateTrip from "../Pages/Trip/Create";
+import Trip from "../Pages/Trip";
+import CreateTrip from "../Pages/Trip/CreateTrip";
 import Fuel from "../Pages/Fuel";
 
 import Person from "../Pages/Person";
@@ -32,6 +32,7 @@ import EditDepartment from "../Pages/Department/EditDepartment";
 import Auth from "../Pages/Auth";
 import AuthSupplier from "../Pages/Mobile/AuthSupplier";
 import FuelLogAttendant from "../Pages/Mobile/fuelLogAttendant";
+import EditTrip from "../Pages/Trip/EditTrip";
 
 
 
@@ -50,6 +51,7 @@ export default function AppRoutes() {
 
           <Route path="/trip" element={< Trip />} />
           <Route path="/trip/create" element={< CreateTrip />} />
+          <Route path="/trip/edit/:id" element={< EditTrip />} />
 
           <Route path="/fuel" element={< Fuel />} />
           <Route path="/fuel/create" element={< CreateFuelLog />} />

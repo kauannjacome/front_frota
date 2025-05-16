@@ -12,37 +12,40 @@ import {
   Select,
   Col,
   Row,
+  Dropdown,
+  Menu,
 } from "antd";
-import { DeleteOutlined, EditOutlined, PlusOutlined, PrinterOutlined, SearchOutlined } from "@ant-design/icons";
-import api from "../../../services/api";
+import {
+  DeleteOutlined,
+  EditOutlined,
+  PlusOutlined,
+  PrinterOutlined,
+  SearchOutlined,
+  EllipsisOutlined,
+  ContainerOutlined,
+  CopyOutlined,
+} from "@ant-design/icons";
+import api from "../../services/api";
 import Table, { ColumnsType } from "antd/es/table";
 import moment from "moment";
-import { format } from 'date-fns'; 
 import {
   TripStatusColors,
   TripStatusOptions,
-} from "../../../common/types/constantsTypes";
+} from "../../common/types/constantsTypes";
 import { useNavigate } from "react-router-dom";
-import { Veiculo } from "../../../common/store/VehicleStore";
+import { Veiculo } from "../../common/store/VehicleStore";
+import TripDetailsDrawer from "./components/TripDetailsDrawer";
+import { MenuProps } from "antd/lib";
 
 interface Trip {
   id: number;
-  department_id: number;
-  subscriber_id: number;
   purpose: string;
-  notes?: string | null;
-  request_date: string;
+  journey_start: string;
   start_state: string;
   start_city: string;
   end_state: string;
   end_city: string;
-  start_time: string;
-  end_time: string;
-  distance_km: number;
   status: string;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string | null;
   vehicle_id: number;
   driver_id: number;
 }
@@ -52,7 +55,11 @@ export default function Trip() {
   const [form] = Form.useForm();
   const [trips, setTrips] = useState<Trip[]>([]);
   const [veiculos, setVeiculos] = useState<Veiculo[]>([]);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [selectedTripId, setSelectedTripId] = useState<number | null>(null);
+
   const { Option } = Select;
+
   useEffect(() => {
     api
       .get<Veiculo[]>("/vehicle")
@@ -64,20 +71,17 @@ export default function Trip() {
   }, []);
 
   const onFinish = async (values: any) => {
-    const dateObj = values.journey_start.toDate();
-    const journey_date = format(dateObj, 'yyyy-MM-dd');
-    try {
-      console.log("values", values);
-      const response = await api.get<Trip[]>("/trip/search", {
-        params: {
-          // mantém outros filtros se houver
-          ...values.vehicle_id && { vehicle_id: values.vehicle_id },
-          ...values.end_city   && { end_city: values.end_city },
-          // usa o nome esperado pela API:
-          journey_date,
-        }
+    const params: Record<string, any> = {};
+    if (values.vehicle_id) params.vehicle_id = values.vehicle_id;
+    if (values.purpose) params.purpose = values.purpose;
+    if (values.status) params.status = values.status;
+    if (values.end_city) params.end_city = values.end_city;
+    if (values.journey_start) {
+      params.journey_start = values.journey_start.toDate().toISOString();
+    }
 
-      });
+    try {
+      const response = await api.get<Trip[]>("/trip/search", { params });
       setTrips(response.data);
       message.success("Dados de viagem carregados com sucesso!");
     } catch (error) {
@@ -100,7 +104,7 @@ export default function Trip() {
   const columns: ColumnsType<Trip> = [
     { title: "Propósito", dataIndex: "purpose", key: "purpose", width: "15%" },
     {
-      title: "Data de Solicitação",
+      title: "Data de Início",
       dataIndex: "journey_start",
       key: "journey_start",
       width: "15%",
@@ -134,7 +138,6 @@ export default function Trip() {
       width: "10%",
       render: (status: string) => {
         const color = TripStatusColors[status] || "geekblue";
-        // Se você quiser exibir o label em vez do código:
         const label =
           TripStatusOptions.find((o) => o.value === status)?.label || status;
         return <Tag color={color}>{label}</Tag>;
@@ -143,29 +146,61 @@ export default function Trip() {
     {
       title: "Ações",
       key: "action",
-      width: "15%",
-      render: (_, record) => (
-        <Space size="middle">
-          <Button variant="solid"               icon={<PrinterOutlined />} onClick={() => {}}>
-          imprimir
-          </Button>
-          <Button
-             icon={<EditOutlined />} 
-
-            onClick={() => message.info(`Editar viagem ID: ${record.id}`)}
-          >
-            Editar
-          </Button>
-          <Popconfirm
-            title="Tem certeza que deseja excluir esta viagem?"
-            onConfirm={() => onDelete(record.id)}
-            okText="Sim"
-            cancelText="Não"
-          >
-            <Button  color="danger"            icon={<DeleteOutlined />} > Deletar</Button>
-          </Popconfirm>
-        </Space>
-      ),
+      width: "20%",
+      render: (_, record) => {
+        const items: MenuProps["items"] = [
+          {
+            key: "complete",
+            icon: <ContainerOutlined />,
+            label: "Completo",
+            onClick: () => {
+              setSelectedTripId(record.id);
+              setDrawerOpen(true);
+            },
+          },
+          {
+            key: "print",
+            icon: <PrinterOutlined />,
+            label: "Imprimir",
+            onClick: () => {
+              message.info(`Imprimir viagem ID: ${record.id}`);
+            },
+          },
+          {
+            key: "edit",
+            icon: <CopyOutlined  />,
+            label: "Duplicar",
+            onClick: () => {},
+          },
+          {
+            key: "edit",
+            icon: <EditOutlined />,
+            label: "Editar",
+            onClick: () => navigate(`/trip/edit/${record.id}`),
+          },
+          {
+            key: "delete",
+            icon: <DeleteOutlined />,
+            label: (
+              <Popconfirm
+                title="Tem certeza que deseja excluir?"
+                onConfirm={() => onDelete(record.id)}
+                okText="Sim"
+                cancelText="Não"
+              >
+                Deletar
+              </Popconfirm>
+            ),
+          },
+        
+        ];
+  
+        return (
+          <Dropdown menu={{ items }} trigger={["hover"]} placement="bottomRight">
+            <Button type="text" icon={<EllipsisOutlined />} />
+          </Dropdown>
+        );
+      },
     },
   ];
 
@@ -198,7 +233,6 @@ export default function Trip() {
                     label: `${v.surname} ${v.plate}`,
                   }))}
                   filterOption={(input, option) =>
-                    // garante sempre retornar boolean
                     (option?.label ?? "")
                       .toString()
                       .toLowerCase()
@@ -207,6 +241,7 @@ export default function Trip() {
                 />
               </Form.Item>
             </Col>
+
             <Col xs={24} sm={12} md={8} lg={6}>
               <Form.Item name="purpose" label="Propósito">
                 <Input placeholder="Digite o propósito" allowClear />
@@ -234,8 +269,14 @@ export default function Trip() {
             </Col>
 
             <Col xs={24} sm={12} md={8} lg={6}>
+              <Form.Item name="end_city" label="Destino (cidade)">
+                <Input placeholder="Cidade de destino" allowClear />
+              </Form.Item>
+            </Col>
+
+            <Col xs={24} sm={12} md={8} lg={6}>
               <Form.Item name="journey_start" label="Data">
-                <DatePicker style={{ width: "100%" }} />
+                <DatePicker style={{ width: "100%" }} format="DD/MM/YYYY" />
               </Form.Item>
             </Col>
           </Row>
@@ -246,9 +287,9 @@ export default function Trip() {
             </Button>
 
             <Button
-           color="orange" variant="solid"
-              icon={<PlusOutlined />}
               style={{ marginLeft: 12 }}
+              type="default"
+              icon={<PlusOutlined />}
               onClick={() => navigate("/trip/create")}
             >
               Adicionar
@@ -263,8 +304,17 @@ export default function Trip() {
           dataSource={trips}
           columns={columns}
           pagination={{ pageSize: 10 }}
+ 
         />
       </Card>
+      <TripDetailsDrawer
+        open={drawerOpen}
+        trip_id={selectedTripId}
+        onClose={() => {
+          setDrawerOpen(false);
+          setSelectedTripId(null);
+        }}
+      />
     </div>
   );
 }

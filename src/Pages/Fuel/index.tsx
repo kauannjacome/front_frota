@@ -6,11 +6,11 @@ import {
   Select,
   Button,
   message,
-  Space,
   Popconfirm,
   Row,
   Col,
   Modal,
+  Dropdown,
 } from "antd";
 import {
   DeleteOutlined,
@@ -18,6 +18,7 @@ import {
   PlusOutlined,
   PrinterOutlined,
   SearchOutlined,
+  EllipsisOutlined,
 } from "@ant-design/icons";
 import Table, { ColumnsType } from "antd/es/table";
 import api from "../../services/api";
@@ -144,30 +145,41 @@ export default function Fuel() {
       title: "Ações",
       key: "action",
       width: "20%",
-      render: (_, record) => (
-        <Space size="middle">
-          <Button
-            icon={<PrinterOutlined />}
-            onClick={() => openPdfModal(record.id)}
-          >
-            imprimir
-          </Button>
-          <Button
-            icon={<EditOutlined />}
-            onClick={() => navigate(`/maintenance/edit/${record.id}`)}
-          >
-            Editar
-          </Button>
-          <Popconfirm
-            title="Deseja excluir este registro?"
-            onConfirm={() => onDelete(record.id)}
-            okText="Sim"
-            cancelText="Não"
-          >
-            <Button icon={<DeleteOutlined />}> Deletar</Button>
-          </Popconfirm>
-        </Space>
-      ),
+      render: (_: any, record: FuelLog) => {
+        const items = [
+          {
+            key: "print",
+            icon: <PrinterOutlined />,
+            label: "Imprimir",
+            onClick: () => openPdfModal(record.id),
+          },
+          {
+            key: "edit",
+            icon: <EditOutlined />,
+            label: "Editar",
+            onClick: () => navigate(`/fuel/edit/${record.id}`),
+          },
+          {
+            key: "delete",
+            icon: <DeleteOutlined />,
+            label: (
+              <Popconfirm
+                title="Deseja excluir este registro?"
+                onConfirm={() => onDelete(record.id)}
+                okText="Sim"
+                cancelText="Não"
+              >
+                Deletar
+              </Popconfirm>
+            ),
+          },
+        ];
+        return (
+          <Dropdown menu={{ items }} trigger={["hover"]} placement="bottomRight">
+            <Button type="text" icon={<EllipsisOutlined />} />
+          </Dropdown>
+        );
+      },
     },
   ];
 
@@ -221,7 +233,11 @@ export default function Fuel() {
           </Row>
 
           <Form.Item style={{ marginTop: 16 }}>
-            <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>
+            <Button
+              type="primary"
+              htmlType="submit"
+              icon={<SearchOutlined />}
+            >
               Buscar
             </Button>
             <Button
