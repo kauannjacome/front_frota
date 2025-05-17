@@ -11,6 +11,7 @@ import {
   Col,
   Modal,
   Dropdown,
+  Space,
 } from "antd";
 import {
   DeleteOutlined,
@@ -19,12 +20,14 @@ import {
   PrinterOutlined,
   SearchOutlined,
   EllipsisOutlined,
+  EyeOutlined,
 } from "@ant-design/icons";
 import Table, { ColumnsType } from "antd/es/table";
 import api from "../../services/api";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import { Veiculo } from "../../common/store/VehicleStore";
+import FuelLogDrawer from "./components/FuelLogDrawer";
 
 interface FuelLog {
   id: number;
@@ -53,6 +56,12 @@ export default function Fuel() {
   const [veiculos, setVeiculos] = useState<Veiculo[]>([]);
   const [pdfModalVisible, setPdfModalVisible] = useState(false);
   const [pdfUrl, setPdfUrl] = useState<string>("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  // **2. estados para o Drawer**
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [selectedLogId, setSelectedLogId] = useState<number | null>(null);
+
   const navigate = useNavigate();
 
   // Carrega veículos
@@ -145,43 +154,47 @@ export default function Fuel() {
       title: "Ações",
       key: "action",
       width: "20%",
-      render: (_: any, record: FuelLog) => {
-        const items = [
-          {
-            key: "print",
-            icon: <PrinterOutlined />,
-            label: "Imprimir",
-            onClick: () => openPdfModal(record.id),
-          },
-          {
-            key: "edit",
-            icon: <EditOutlined />,
-            label: "Editar",
-            onClick: () => navigate(`/fuel/edit/${record.id}`),
-          },
-          {
-            key: "delete",
-            icon: <DeleteOutlined />,
-            label: (
-              <Popconfirm
-                title="Deseja excluir este registro?"
-                onConfirm={() => onDelete(record.id)}
-                okText="Sim"
-                cancelText="Não"
-              >
-                Deletar
-              </Popconfirm>
-            ),
-          },
-        ];
-        return (
-          <Dropdown menu={{ items }} trigger={["hover"]} placement="bottomRight">
-            <Button type="text" icon={<EllipsisOutlined />} />
-          </Dropdown>
-        );
-      },
-    },
-  ];
+      render: (_, record) => (
+        <Space size="small">
+          <Button
+            type="text"
+            icon={<EyeOutlined />}
+            onClick={() => {
+              setSelectedLogId(record.id);
+              setDrawerOpen(true);
+
+            }}
+          />
+
+          <Button
+            type="text"
+            icon={<PrinterOutlined />}
+            onClick={() => openPdfModal(record.id)}
+          />
+          <Button
+            type="text"
+            icon={<EditOutlined />}
+            onClick={() => navigate(`/fuel/edit/${record.id}`)}
+          />
+          <Popconfirm
+            title="Tem certeza que deseja excluir?"
+            onConfirm={async () => {
+
+              await onDelete(record.id);
+            }}
+            okText="Sim"
+            cancelText="Não"
+          >
+            <Button
+              type="text"
+              icon={<DeleteOutlined />}
+
+            />
+          </Popconfirm>
+        </Space>
+      ),
+
+    }]
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
@@ -258,12 +271,13 @@ export default function Fuel() {
           dataSource={fuelLogs}
           columns={columns}
           pagination={{ pageSize: 10 }}
+    
         />
       </Card>
 
       <Modal
         title="Visualizar PDF"
-        visible={pdfModalVisible}
+        open={pdfModalVisible}
         onCancel={() => setPdfModalVisible(false)}
         footer={[
           <Button key="close" onClick={() => setPdfModalVisible(false)}>
@@ -294,6 +308,14 @@ export default function Fuel() {
           style={{ width: "100%", height: "100%", border: 0 }}
         />
       </Modal>
+      <FuelLogDrawer
+        open={drawerOpen}
+        log_id={selectedLogId}
+        onClose={() => {
+          setDrawerOpen(false);
+          setSelectedLogId(null);
+        }}
+      />
     </div>
   );
 }

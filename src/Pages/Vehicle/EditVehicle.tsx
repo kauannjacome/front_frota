@@ -45,7 +45,7 @@ export default function EditVehicle() {
       };
       await api.patch(`/vehicle/${id}`, payload);
       message.success('Veículo atualizado com sucesso');
-      navigate('/vehicles');
+      navigate('/vehicle');
     } catch (err) {
       message.error('Erro ao atualizar veículo');
     } finally {

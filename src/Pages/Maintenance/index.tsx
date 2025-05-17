@@ -1,8 +1,27 @@
 import React, { useEffect, useState } from "react";
-import { Card, Form, Input, Button, message, Space, Tag, Popconfirm, Select, Row, Col } from "antd";
-import { DeleteOutlined, EditOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
-import api from '../../services/api';
+import {
+  Card,
+  Form,
+  Select,
+  Button,
+  message,
+  Row,
+  Col,
+  Dropdown,
+  Popconfirm,
+  Space,
+} from "antd";
+import {
+  DeleteOutlined,
+  EditOutlined,
+  EllipsisOutlined,
+  EyeOutlined,
+  PlusOutlined,
+  PrinterOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
 import Table, { ColumnsType } from "antd/es/table";
+import api from '../../services/api';
 import { Veiculo } from "../../common/store/VehicleStore";
 import { useNavigate } from "react-router-dom";
 
@@ -24,10 +43,13 @@ export default function Maintenance() {
   const [records, setRecords] = useState<Maintenance[]>([]);
   const [veiculos, setVeiculos] = useState<Veiculo[]>([]);
   const [maintenanceTypes, setMaintenanceTypes] = useState<string[]>([]);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
-  const onFinish = async (values: any) => {
+
+  // Buscar manutenções quando submeter o formulário
+  const onFinish = async (_values: any) => {
     try {
-      const response = await api.get<Maintenance[]>('/maintenance');
+      const response = await api.get<Maintenance[]>('/maintenance', { params: {} });
       setRecords(response.data);
       message.success('Manutenções carregadas com sucesso!');
       form.resetFields();
@@ -37,6 +59,7 @@ export default function Maintenance() {
     }
   };
 
+  // Deletar manutenção
   const onDelete = async (id: number) => {
     try {
       await api.delete(`/maintenance/${id}`);
@@ -48,88 +71,124 @@ export default function Maintenance() {
     }
   };
 
+  // Carregar lista de veículos
   useEffect(() => {
-    api.get<Veiculo[]>("/vehicle")
+    api.get<Veiculo[]>('/vehicle')
       .then(({ data }) => setVeiculos(data))
       .catch(err => {
-        console.error("Erro ao carregar veículos", err);
-        message.error("Não foi possível carregar a lista de veículos.");
+        console.error('Erro ao carregar veículos', err);
+        message.error('Não foi possível carregar a lista de veículos.');
       });
   }, []);
-  console.log(veiculos)
-  // Carrega logs e veículos ao montar
-  useEffect(() => {
 
-    api
-      .get<string[]>('/maintenance/types')
+  // Carregar tipos de manutenção
+  useEffect(() => {
+    api.get<string[]>('/maintenance/types')
       .then(({ data }) => setMaintenanceTypes(data))
       .catch(err => {
-        console.error('Erro ao carregar typoes de combustivel', err);
-
+        console.error('Erro ao carregar tipos de manutenção', err);
+        message.error('Não foi possível carregar os tipos de manutenção.');
       });
   }, []);
-  console.log(maintenanceTypes)
 
   const columns: ColumnsType<Maintenance> = [
-
     {
       title: 'Veículo',
       key: 'vehicle',
       width: '12%',
-      render: (_: any, record: Maintenance) => {
-        // procura o veículo correspondente no state
+      render: (_: any, record) => {
         const vehicle = veiculos.find(v => v.id === record.vehicle_id);
-        // aqui você pode escolher o que exibir: marca+modelo, apelido (surname), placa…
-        return vehicle
-          ? `${vehicle.mark} ${vehicle.model}`    // ou vehicle.surname, ou vehicle.plate
-          : `#${record.vehicle_id}`;               // fallback caso não ache
+        return vehicle ? `${vehicle.mark} ${vehicle.model}` : `#${record.vehicle_id}`;
       }
     },
     {
-      title: 'Tipo', dataIndex: 'type', key: 'type', width: '15%',
-      render: (type: string) => <Tag color={type === 'PREVENTIVA' ? 'blue' : 'volcano'}>{type}</Tag>
+      title: 'Tipo',
+      dataIndex: 'type',
+      key: 'type',
+      width: '15%',
+      render: (type: string) => (
+        <span style={{ textTransform: 'capitalize' }}>{type.toLowerCase()}</span>
+      )
     },
     {
-      title: 'Data', dataIndex: 'date', key: 'date', width: '15%',
-      render: (date: string) => new Date(date).toLocaleDateString('pt-BR')
+      title: 'Data',
+      dataIndex: 'date',
+      key: 'date',
+      width: '15%',
+      render: date => new Date(date).toLocaleDateString('pt-BR')
     },
-    { title: 'Descrição', dataIndex: 'description', key: 'description', width: '25%' },
     {
-      title: 'Custo', dataIndex: 'cost', key: 'cost', width: '10%',
-      render: (cost: number) => `R$ ${cost.toFixed(2)}`
+      title: 'Descrição',
+      dataIndex: 'description',
+      key: 'description',
+      width: '25%'
     },
+    {
+      title: 'Custo',
+      dataIndex: 'cost',
+      key: 'cost',
+      width: '10%',
+      render: cost => `R$ ${cost.toFixed(2)}`
+    },
+    {
+      title: 'Ações',
+      key: 'action',
+      width: '15%',
 
-    {
-      title: 'Ações', key: 'action', width: '15%',
-      render: (_, record) => (
-        <Space size="middle">
-          <Button   icon={<EditOutlined />}  onClick={() => {  navigate(`/maintenance/edit/${record.id}`); }}>
-          Editar
-          </Button>
+
+
+  render: (_, record) => (
+        <Space size="small">
+          <Button
+            type="text"
+            icon={<EyeOutlined />}
+      
+          />
+
+
+          <Button
+            type="text"
+            icon={<PrinterOutlined />}
+            onClick={(e) => {
+
+              message.info(`Imprimir viagem ID: ${record.id}`);
+            }}
+          />
+          <Button
+            type="text"
+            icon={<EditOutlined />}
+            onClick={(e) => {
+
+              navigate(`/maintenance/edit/${record.id}`);
+            }}
+          />
           <Popconfirm
-            title="Tem certeza que deseja excluir essa manutenção?"
-            onConfirm={() => onDelete(record.id)}
+            title="Tem certeza que deseja excluir?"
+            onConfirm={async () => {
+
+              await onDelete(record.id);
+            }}
             okText="Sim"
             cancelText="Não"
           >
-            <Button   icon={<DeleteOutlined />} >Deletar</Button>
+            <Button
+              type="text"
+              icon={<DeleteOutlined />}
+
+            />
           </Popconfirm>
         </Space>
       ),
-    },
-  ];
+    }
+  ]
+
 
   return (
-    <div style={{
-      display: "flex",
-      flexDirection: "column",
-      padding: 0,
-      gap: "20px",
-    }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       <Card>
         <Form
           form={form}
-          layout="horizontal"
+          layout="vertical"
           name="maintenanceForm"
           onFinish={onFinish}
         >
@@ -141,16 +200,9 @@ export default function Maintenance() {
                   loading={!veiculos.length}
                   allowClear
                   showSearch
-                  options={veiculos.map((v) => ({
-                    value: v.id,
-                    label: `${v.mark} ${v.model}`,
-                  }))}
+                  options={veiculos.map(v => ({ value: v.id, label: `${v.mark} ${v.model}` }))}
                   filterOption={(input, option) =>
-                    // garante sempre retornar boolean
-                    (option?.label ?? "")
-                      .toString()
-                      .toLowerCase()
-                      .includes(input.toLowerCase())
+                    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                   }
                 />
               </Form.Item>
@@ -158,10 +210,7 @@ export default function Maintenance() {
 
             <Col xs={24} sm={12} md={8} lg={6}>
               <Form.Item label="Tipo" name="type">
-                <Select
-                  placeholder="Selecione o tipo"
-                  style={{ width: '100%' }}
-                >
+                <Select placeholder="Selecione o tipo" style={{ width: '100%' }}>
                   {maintenanceTypes.map(type => (
                     <Select.Option key={type} value={type}>
                       {type}
@@ -172,25 +221,18 @@ export default function Maintenance() {
             </Col>
           </Row>
 
-          <Form.Item style={{ marginTop: 16, textAlign: 'left' }}>
+          <Form.Item style={{ marginTop: 16 }}>
+            <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>Buscar</Button>
             <Button
-              type="primary"
-              htmlType="submit"
-              icon={<SearchOutlined />}
-            >
-              Buscar
-            </Button>
-            <Button
-                   color="orange" variant="solid"
+              type="dashed"
               icon={<PlusOutlined />}
               style={{ marginLeft: 12 }}
-              onClick={() =>  navigate('/maintenance/create')}
+              onClick={() => navigate('/maintenance/create')}
             >
               Adicionar
             </Button>
           </Form.Item>
         </Form>
-
       </Card>
 
       <Card title="Lista de Manutenções">

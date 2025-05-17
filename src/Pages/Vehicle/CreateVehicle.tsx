@@ -15,10 +15,12 @@ export default function CreateVehicle() {
       const payload = {
         ...values,
         licensing: values.licensing?.toISOString(),
+
       };
       await api.post('/vehicle', payload);
       message.success('Veículo criado com sucesso');
-      
+      navigate('/vehicle')
+
       // TODO: redirecionar
     } catch {
       message.error('Erro ao criar veículo');

@@ -1,10 +1,31 @@
 // src/components/Person.tsx
 import React, { useState } from "react";
-import { Card, Form, Input, Button, message, Space, Tag, Popconfirm, Col, Row } from "antd";
-import { DeleteOutlined, EditOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
+import {
+  Card,
+  Form,
+  Input,
+  Button,
+  message,
+  Popconfirm,
+  Col,
+  Row,
+  Dropdown,
+  Space,
+} from "antd";
+import {
+  DeleteOutlined,
+  EditOutlined,
+  PlusOutlined,
+  SearchOutlined,
+  EllipsisOutlined,
+  PrinterOutlined,
+  EyeOutlined,
+} from "@ant-design/icons";
 import api from '../../services/api';
 import Table, { ColumnsType } from "antd/es/table";
 import { useNavigate } from "react-router-dom";
+import type { MenuProps } from "antd";
+import PersonDetailsDrawer from "./components/PersonDetailsDrawer";
 
 interface Person {
   id: number;
@@ -39,20 +60,22 @@ interface Person {
 export default function Person() {
   const [form] = Form.useForm();
   const [persons, setPersons] = useState<Person[]>([]);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [selectedPersonId, setSelectedPersonId] = useState<number | null>(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
+
   // Buscar pessoas com base nos filtros do formulário
   const onFinish = async (values: any) => {
     try {
       const response = await api.get<Person[]>('/person', { params: values });
       setPersons(response.data);
       message.success('Busca realizada com sucesso!');
-      // Não resetamos campos aqui, para permitir ajustar filtros
     } catch (error: any) {
       console.error('Erro ao buscar pessoas:', error);
       message.error('Não foi possível buscar as pessoas.');
     }
   };
-
 
   // Excluir (soft delete) pessoa
   const onDelete = async (id: number) => {
@@ -68,7 +91,6 @@ export default function Person() {
 
   // Colunas da tabela
   const columns: ColumnsType<Person> = [
-
     { title: 'Nome Completo', dataIndex: 'full_name', key: 'full_name', width: '25%' },
     { title: 'CPF', dataIndex: 'cpf', key: 'cpf', width: '15%' },
     {
@@ -78,35 +100,67 @@ export default function Person() {
       width: '15%',
       render: (d: string) => new Date(d).toLocaleDateString(),
     },
-
     {
       title: 'Ações',
       key: 'action',
       width: '10%',
-      render: (_, record) => (
-        <Space size="middle">
-          <Button
-          icon={<EditOutlined />} 
 
-            onClick={() => {  navigate(`/person/edit/${record.id}`); }}
-          >
-            Editar
-          </Button>
+
+
+  render: (_, record) => (
+        <Space size="small">
+          <Button
+            type="text"
+            icon={<EyeOutlined />}
+            onClick={(e) => {
+              setSelectedPersonId(record.id);
+              setDrawerOpen(true)
+
+            }}
+          />
+
+
+          <Button
+            type="text"
+            icon={<PrinterOutlined />}
+            onClick={() => {
+
+              message.info(`Imprimir viagem ID: ${record.id}`);
+            }}
+          />
+          <Button
+            type="text"
+            icon={<EditOutlined />}
+            onClick={() => {
+
+               navigate(`/person/edit/${record.id}`);
+            }}
+          />
           <Popconfirm
-            title="Tem certeza que deseja excluir esta pessoa?"
-            onConfirm={() => onDelete(record.id)}
+            title="Tem certeza que deseja excluir?"
+            onConfirm={async () => {
+
+              await onDelete(record.id);
+            }}
             okText="Sim"
             cancelText="Não"
           >
-            <Button  icon={<DeleteOutlined />}  >Excluir</Button>
+            <Button
+              type="text"
+              icon={<DeleteOutlined />}
+
+            />
           </Popconfirm>
         </Space>
       ),
-    },
-  ];
+
+          },
+        ];
+
+   
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", padding: 0, gap: "20px" }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       {/* Formulário de busca e adição */}
       <Card>
         <Form
@@ -134,24 +188,21 @@ export default function Person() {
           </Row>
 
           <Form.Item style={{ marginTop: 16, textAlign: 'left' }}>
-            <Button
-              type="primary"
-              htmlType="submit"
-              icon={<SearchOutlined />}
-            >
+            <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>
               Buscar
             </Button>
             <Button
-                  color="orange" variant="solid"
+              type="default"
               icon={<PlusOutlined />}
               style={{ marginLeft: 12 }}
-              onClick={() =>  navigate('/person/create')}
+              onClick={() => navigate('/person/create')}
             >
               Adicionar
             </Button>
           </Form.Item>
         </Form>
       </Card>
+
       {/* Tabela de pessoas */}
       <Card title="Lista de Pessoas">
         <Table<Person>
@@ -159,9 +210,20 @@ export default function Person() {
           dataSource={persons}
           columns={columns}
           pagination={{ pageSize: 10 }}
-          rowClassName={record => record.deletedAt ? 'ant-table-row-disabled' : ''}
+          rowClassName={r => (r.deletedAt ? 'ant-table-row-disabled' : '')}
+   
         />
       </Card>
+
+      {/* Drawer de detalhes da pessoa */}
+      <PersonDetailsDrawer
+        open={drawerOpen}
+        person_id={selectedPersonId}
+        onClose={() => {
+          setDrawerOpen(false);
+          setSelectedPersonId(null);
+        }}
+      />
     </div>
   );
 }

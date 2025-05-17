@@ -12,8 +12,6 @@ import {
   Select,
   Col,
   Row,
-  Dropdown,
-  Menu,
 } from "antd";
 import {
   DeleteOutlined,
@@ -21,9 +19,8 @@ import {
   PlusOutlined,
   PrinterOutlined,
   SearchOutlined,
-  EllipsisOutlined,
-  ContainerOutlined,
-  CopyOutlined,
+
+  EyeOutlined,
 } from "@ant-design/icons";
 import api from "../../services/api";
 import Table, { ColumnsType } from "antd/es/table";
@@ -35,7 +32,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { Veiculo } from "../../common/store/VehicleStore";
 import TripDetailsDrawer from "./components/TripDetailsDrawer";
-import { MenuProps } from "antd/lib";
+
 
 interface Trip {
   id: number;
@@ -147,56 +144,55 @@ export default function Trip() {
       title: "Ações",
       key: "action",
       width: "20%",
-      render: (_, record) => {
-        const items: MenuProps["items"] = [
+      render: (_, record) => (
+        <Space size="small">
+          <Button
+            type="text"
+            icon={<EyeOutlined />}
+            onClick={(e) => {
+              setSelectedTripId(record.id);
+              setDrawerOpen(true)
 
-          {
-            key: "print",
-            icon: <PrinterOutlined />,
-            label: "Imprimir",
-            onClick: () => {
+            }}
+          />
+
+
+          <Button
+            type="text"
+            icon={<PrinterOutlined />}
+            onClick={(e) => {
+
               message.info(`Imprimir viagem ID: ${record.id}`);
-            },
-          },
-          {
-            key: "edit",
-            icon: <EditOutlined />,
-            label: "Editar",
-            onClick: () => navigate(`/trip/edit/${record.id}`),
-          },
-          {
-            key: "delete",
-            icon: <DeleteOutlined />,
-            label: (
-              <Popconfirm
-                title="Tem certeza que deseja excluir?"
-                onConfirm={() => onDelete(record.id)}
-                okText="Sim"
-                cancelText="Não"
-              >
-                Deletar
-              </Popconfirm>
-            ),
-          },
-        ];
+            }}
+          />
+          <Button
+            type="text"
+            icon={<EditOutlined />}
+            onClick={(e) => {
 
-        return (
-          <Dropdown
-            menu={{ items }}
-            trigger={["hover"]}
-            placement="bottomRight"
+              navigate(`/trip/edit/${record.id}`);
+            }}
+          />
+          <Popconfirm
+            title="Tem certeza que deseja excluir?"
+            onConfirm={async () => {
+
+              await onDelete(record.id);
+            }}
+            okText="Sim"
+            cancelText="Não"
           >
             <Button
-              style={{ width: "10vw", height: "100%" }}
               type="text"
-              icon={<EllipsisOutlined />}
-              onClick={(e) => e.stopPropagation()}
-            ></Button>
-          </Dropdown>
-        );
-      },
-    },
-  ];
+              icon={<DeleteOutlined />}
+
+            />
+          </Popconfirm>
+        </Space>
+      ),
+    }]
+
+
 
   return (
     <div
@@ -299,21 +295,19 @@ export default function Trip() {
           columns={columns}
           pagination={{ pageSize: 10 }}
           showHeader={true}
-          onRow={(record) => ({
-            onClick: () => {
-              setSelectedTripId(record.id);
-              setDrawerOpen(true);
-            },
-          })}
+
         />
       </Card>
       <TripDetailsDrawer
         open={drawerOpen}
         trip_id={selectedTripId}
         onClose={() => {
+
           setDrawerOpen(false);
           setSelectedTripId(null);
-        }}
+        }
+
+        }
       />
     </div>
   );

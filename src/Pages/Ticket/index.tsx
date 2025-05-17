@@ -12,7 +12,7 @@ import {
   Row,
   Select,
 } from "antd";
-import { DeleteOutlined, EditOutlined, PlusOutlined, PrinterOutlined, SearchOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, EyeOutlined, PlusOutlined, PrinterOutlined, SearchOutlined } from "@ant-design/icons";
 import Table, { ColumnsType } from "antd/es/table";
 import api from "../../services/api";
 import { useSupplierStore } from "../../common/store/SupplierStore";
@@ -122,33 +122,55 @@ export default function Ticket() {
     {
       title: "Ações",
       key: "action",
-      render: (_, record) => (
-        <Space size="middle">
-          <Button icon={<PrinterOutlined />} onClick={() => {}}>
-            Imprimir
-          </Button>
+
+
+  render: (_, record) => (
+        <Space size="small">
+          <Button
+            type="text"
+            icon={<EyeOutlined />}
+            onClick={() => {
+            
+
+            }}
+          />
+
 
           <Button
-              icon={<EditOutlined />} 
-            onClick={() => {
-              navigate(`/ticket/edit/${record.id}`);
-            }}
-          >
-            Editar
-          </Button>
+            type="text"
+            icon={<PrinterOutlined />}
+            onClick={(e) => {
 
+              message.info(`Imprimir viagem ID: ${record.id}`);
+            }}
+          />
+          <Button
+            type="text"
+            icon={<EditOutlined />}
+            onClick={(e) => {
+
+             navigate(`/ticket/edit/${record.id}`);
+            }}
+          />
           <Popconfirm
-            title="Tem certeza que deseja excluir esta passagem?"
-            onConfirm={() => onDelete(record.id)}
+            title="Tem certeza que deseja excluir?"
+            onConfirm={async () => {
+
+              await onDelete(record.id);
+            }}
             okText="Sim"
             cancelText="Não"
           >
-            <Button icon={<DeleteOutlined />}>
-              Excluir
-            </Button>
+            <Button
+              type="text"
+              icon={<DeleteOutlined />}
+
+            />
           </Popconfirm>
         </Space>
       ),
+
+
       width: "15%",
     },
   ];

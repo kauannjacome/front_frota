@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Card, Form, Input, Select, Button, message, Space, Popconfirm, Row, Col } from "antd";
-import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, EyeOutlined, PlusOutlined, PrinterOutlined, SearchOutlined } from "@ant-design/icons";
 import Table, { ColumnsType } from "antd/es/table";
 import api from '../../services/api';
 import { useNavigate } from "react-router-dom";
@@ -79,22 +79,54 @@ export default function Department() {
       title: 'Ações',
       key: 'action',
       width: '40%',
-      render: (_, record) => (
-        <Space size="middle">
-          <Button  color="cyan" variant="solid" onClick={() => navigate(`/department/edit/${record.id}`)}>Editar</Button>
+
+render: (_, record) => (
+        <Space size="small">
+          <Button
+            type="text"
+            icon={<EyeOutlined />}
+            onClick={(e) => {
+             
+
+            }}
+          />
+
+
+          <Button
+            type="text"
+            icon={<PrinterOutlined />}
+            onClick={(e) => {
+
+              
+            }}
+          />
+          <Button
+            type="text"
+            icon={<EditOutlined />}
+            onClick={
+
+              () => navigate(`/department/edit/${record.id}`)
+            }
+          />
           <Popconfirm
-            title="Excluir"
-            description="Tem certeza que deseja excluir este departamento?"
-            onConfirm={() => onDelete(record.id)}
+            title="Tem certeza que deseja excluir?"
+            onConfirm={async () => {
+
+              await onDelete(record.id);
+            }}
             okText="Sim"
             cancelText="Não"
           >
-            <Button  color="danger" variant="solid">Excluir</Button>
+            <Button
+              type="text"
+              icon={<DeleteOutlined />}
+
+            />
           </Popconfirm>
         </Space>
-      )
-    }
-  ];
+      ),
+    }]
+
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>

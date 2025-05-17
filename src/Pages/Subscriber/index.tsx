@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Card, Form, Input, Button, message, Space, Tag, Popconfirm, Row, Col } from "antd";
-import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, EyeOutlined, PlusOutlined, PrinterOutlined, SearchOutlined } from "@ant-design/icons";
 import Table, { ColumnsType } from "antd/es/table";
 import api from '../../services/api';
 import { useNavigate } from "react-router-dom";
@@ -77,24 +77,56 @@ export default function Subscriber() {
     },
     {
       title: 'Ações', key: 'action', width: '20%',
-      render: (_, record) => (
-        <Space size="middle">
-          <Button  color="cyan" variant="solid"  onClick={() => {  navigate(`/subscriber/edit/${record.id}`); }}>
-            Editar
-          </Button>
+
+render: (_, record) => (
+        <Space size="small">
+          <Button
+            type="text"
+            icon={<EyeOutlined />}
+            onClick={(e) => {
+       
+
+            }}
+          />
+
+
+          <Button
+            type="text"
+            icon={<PrinterOutlined />}
+            onClick={(e) => {
+
+              message.info(`Imprimir viagem ID: ${record.id}`);
+            }}
+          />
+          <Button
+            type="text"
+            icon={<EditOutlined />}
+            onClick={(e) => {
+
+             navigate(`/subscriber/edit/${record.id}`);
+            }}
+          />
           <Popconfirm
-            title="Excluir"
-            description="Tem certeza que deseja excluir este assinante?"
-            onConfirm={() => onDelete(record.id)}
+            title="Tem certeza que deseja excluir?"
+            onConfirm={async () => {
+
+              await onDelete(record.id);
+            }}
             okText="Sim"
             cancelText="Não"
           >
-            <Button  color="danger" variant="solid">Excluir</Button>
+            <Button
+              type="text"
+              icon={<DeleteOutlined />}
+
+            />
           </Popconfirm>
         </Space>
-      )
-    }
-  ];
+      ),
+    }]
+
+
+ 
 
   const onSearch = () => {
     const values = form.getFieldsValue();

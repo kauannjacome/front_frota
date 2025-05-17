@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Card, Form, Input, Button, message, Row, Col, Tag, Popconfirm, Dropdown } from "antd";
-import { DeleteOutlined, EditOutlined, EllipsisOutlined, PlusOutlined, PrinterOutlined, SearchOutlined } from "@ant-design/icons";
+import { Card, Form, Input, Button, message, Row, Col, Tag, Popconfirm, Dropdown, Space } from "antd";
+import { DeleteOutlined, EditOutlined, EllipsisOutlined, EyeOutlined, PlusOutlined, PrinterOutlined, SearchOutlined } from "@ant-design/icons";
 import api from '../../services/api';
 import Table, { ColumnsType } from "antd/es/table";
 import { useNavigate } from "react-router-dom";
@@ -27,6 +27,7 @@ export default function Vehicle() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [drawerOpen, setDrawerOpen] = useState(false);                     // Estado para controlar o Drawer
   const [selectedVehicleId, setSelectedVehicleId] = useState<number | null>(null); // Estado para o ID selecionado
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
 
   const onFinish = async (values: any) => {
@@ -63,45 +64,57 @@ export default function Vehicle() {
     },
     {
       title: 'Ações', key: 'action', width: '20%',
-      render: (_: any, record: Vehicle) => {
-        const items = [
-          {
-            key: "print",
-            icon: <PrinterOutlined />,
-            label: "Mostrar",
-            onClick: () => {
+
+
+  render: (_, record) => (
+        <Space size="small">
+          <Button
+            type="text"
+            icon={<EyeOutlined />}
+            onClick={() => {
               setSelectedVehicleId(record.id);
-              setDrawerOpen(true);
-            },
-          },
-          {
-            key: "edit",
-            icon: <EditOutlined />,
-            label: "Editar",
-            onClick: () => navigate(`/vehicle/edit/${record.id}`),
-          },
-          {
-            key: "delete",
-            icon: <DeleteOutlined />,
-            label: (
-              <Popconfirm
-                title="Tem certeza que deseja excluir?"
-                onConfirm={() => onDelete(record.id)}
-                okText="Sim"
-                cancelText="Não"
-              >
-                Deletar
-              </Popconfirm>
-            ),
-          },
-        ];
-        return (
-          <Dropdown menu={{ items }} trigger={["hover"]} placement="bottomRight">
-            <Button type="text" icon={<EllipsisOutlined />} />
-          </Dropdown>
-        );
-      },
-    },
+              setDrawerOpen(true)
+
+            }}
+          />
+
+
+          <Button
+            type="text"
+            icon={<PrinterOutlined />}
+            onClick={(e) => {
+
+              message.info(`Imprimir viagem ID: ${record.id}`);
+            }}
+          />
+          <Button
+            type="text"
+            icon={<EditOutlined />}
+            onClick={() => {
+
+              navigate(`/vehicle/edit/${record.id}`);
+            }}
+          />
+          <Popconfirm
+            title="Tem certeza que deseja excluir?"
+            onConfirm={async () => {
+
+              await onDelete(record.id);
+            }}
+            okText="Sim"
+            cancelText="Não"
+          >
+            <Button
+              type="text"
+              icon={<DeleteOutlined />}
+
+            />
+          </Popconfirm>
+        </Space>
+      ),
+
+
+    }
   ];
 
   return (
@@ -138,6 +151,7 @@ export default function Vehicle() {
           dataSource={vehicles}
           columns={columns}
           pagination={{ pageSize: 10 }}
+
         />
       </Card>
 

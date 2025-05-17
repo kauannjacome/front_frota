@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Card, Form, Input, Button, message, Space, Tag, Popconfirm, Row, Col } from "antd";
-import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, EyeOutlined, PlusOutlined, PrinterOutlined, SearchOutlined } from "@ant-design/icons";
 import api from '../../services/api';
 import Table, { ColumnsType } from "antd/es/table";
 import { useNavigate } from "react-router-dom";
@@ -69,22 +69,49 @@ export default function Supplier() {
     },
     {
       title: 'Ações', key: 'action', width: '20%',
-      render: (_, record) => (
-        <Space size="middle">
-          
+
+  render: (_, record) => (
+        <Space size="small">
           <Button
-           color="cyan" variant="solid"
-            onClick={() => { navigate(`/supplier/edit/${record.id}`); }}
-          >
-            Editar
-          </Button>
+            type="text"
+            icon={<EyeOutlined />}
+            onClick={(e) => {
+              
+
+            }}
+          />
+
+
+          <Button
+            type="text"
+            icon={<PrinterOutlined />}
+            onClick={(e) => {
+
+              message.info(`Imprimir viagem ID: ${record.id}`);
+            }}
+          />
+          <Button
+            type="text"
+            icon={<EditOutlined />}
+            onClick={(e) => {
+
+              navigate(`/supplier/edit/${record.id}`); ;
+            }}
+          />
           <Popconfirm
-            title="Tem certeza que deseja excluir este fornecedor?"
-            onConfirm={() => onDelete(record.id)}
+            title="Tem certeza que deseja excluir?"
+            onConfirm={async () => {
+
+              await onDelete(record.id);
+            }}
             okText="Sim"
             cancelText="Não"
           >
-            <Button  color="danger" variant="solid" >Excluir</Button>
+            <Button
+              type="text"
+              icon={<DeleteOutlined />}
+
+            />
           </Popconfirm>
         </Space>
       ),

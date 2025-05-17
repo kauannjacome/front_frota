@@ -1,7 +1,8 @@
-import { Drawer, Descriptions, Divider, Spin } from "antd";
+import { Drawer, Descriptions, Divider, Spin, Button } from "antd";
 import moment from "moment";
 import api from "../../../services/api";
 import { useEffect, useState } from "react";
+import { PrinterOutlined } from "@ant-design/icons";
 
 interface VehicleDetailsDrawerProps {
   open: boolean;
@@ -18,21 +19,18 @@ export default function VehicleDetailsDrawer({
   const [vehicleDetails, setVehicleDetails] = useState<any>(null);
 
   useEffect(() => {
-    if (vehicle_id == null) return;
-
-    const fetchVehicle = async () => {
-      setLoading(true);
-      try {
-        const res = await api.get(`/vehicle/${vehicle_id}`);
+    if (vehicle_id === null) return;
+    setLoading(true);
+    api
+      .get(`/vehicle/${vehicle_id}`)
+      .then((res) => {
         setVehicleDetails(res.data);
-      } catch (err) {
-        console.error("Erro ao buscar detalhes do veículo:", err);
-      } finally {
         setLoading(false);
-      }
-    };
-
-    fetchVehicle();
+      })
+      .catch((err) => {
+        console.error("Erro ao buscar detalhes do veículo:", err);
+        setLoading(false);
+      });
   }, [vehicle_id]);
 
   return (
@@ -42,14 +40,25 @@ export default function VehicleDetailsDrawer({
       placement="right"
       onClose={onClose}
       open={open}
+      extra={
+        <Button
+          type="primary"
+          icon={<PrinterOutlined />}
+          onClick={() => {
+            console.log("Imprimir detalhes do veículo");
+          }}
+        >
+          Imprimir
+        </Button>
+      }
     >
       {loading ? (
         <Spin />
       ) : vehicleDetails ? (
         <>
-          <Descriptions bordered column={2} layout="horizontal">
-  
-            <Descriptions.Item label="Capacidade">
+          <Descriptions bordered column={1} layout="horizontal">
+
+            <Descriptions.Item label="Capacidade (pessoas)">
               {vehicleDetails.capacity_person}
             </Descriptions.Item>
             <Descriptions.Item label="Apelido">
@@ -67,13 +76,13 @@ export default function VehicleDetailsDrawer({
             <Descriptions.Item label="Renavam">
               {vehicleDetails.renavam}
             </Descriptions.Item>
-            <Descriptions.Item label="Para Pessoas">
+            <Descriptions.Item label="Transporte de pessoas">
               {vehicleDetails.is_people ? "Sim" : "Não"}
             </Descriptions.Item>
-            <Descriptions.Item label="Departamento Interno">
+            <Descriptions.Item label="Interno ao departamento">
               {vehicleDetails.is_internal_department ? "Sim" : "Não"}
             </Descriptions.Item>
-            <Descriptions.Item label="Em Serviço">
+            <Descriptions.Item label="Em serviço">
               {vehicleDetails.in_service ? "Sim" : "Não"}
             </Descriptions.Item>
             <Descriptions.Item label="Disponível">
@@ -84,21 +93,9 @@ export default function VehicleDetailsDrawer({
                 ? moment(vehicleDetails.licensing).format("DD/MM/YYYY")
                 : "-"}
             </Descriptions.Item>
-            <Descriptions.Item label="Depto Origem">
-              {vehicleDetails.from_department_id ?? "-"}
-            </Descriptions.Item>
-            <Descriptions.Item label="Depto Destino">
-              {vehicleDetails.to_department_id ?? "-"}
-            </Descriptions.Item>
-            <Descriptions.Item label="Criado em">
-              {moment(vehicleDetails.created_at).format(
-                "DD/MM/YYYY HH:mm"
-              )}
-            </Descriptions.Item>
-          </Descriptions>
 
-          <Divider />
-          {/* Seções adicionais, se necessário */}
+          </Descriptions>
+          {/* Se houver dados relacionados, pode adicionar tabelas aqui */}
         </>
       ) : (
         <p>Sem dados para exibir.</p>
