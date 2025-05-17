@@ -18,6 +18,7 @@ export default function CreateVehicle() {
       };
       await api.post('/vehicle', payload);
       message.success('Veículo criado com sucesso');
+      
       // TODO: redirecionar
     } catch {
       message.error('Erro ao criar veículo');

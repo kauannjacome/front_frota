@@ -42,7 +42,7 @@ export default function EditFuelLog() {
       };
       await api.patch(`/fuel-log/${id}`, payload);
       message.success('Registro de abastecimento atualizado com sucesso!');
-      navigate('/fuel-log');
+      navigate('/fuel');
     } catch {
       message.error('Erro ao atualizar registro de abastecimento.');
     } finally {
