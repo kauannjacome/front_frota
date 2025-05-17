@@ -55,6 +55,13 @@ import Subscriber from "../Pages/Subscriber";
 import CreateSubscriber from "../Pages/Subscriber/CreateSubscriber";
 import EditSubscriber from "../Pages/Subscriber/EditSubscriber";
 
+// relatorios
+import DailyAllowanceReport from '../Pages/Report/DailyAllowanceReport'
+import FuelLogReport from "../Pages/Report/FuelLogReport";
+import MaintenanceReport from "../Pages/Report/MaintenanceReport";
+import TripReport from "../Pages/Report/TripReport";
+import VehicleReport from "../Pages/Report/VehicleReport";
+
 export default function AppRoutes() {
   return (
     <BrowserRouter>
@@ -95,6 +102,13 @@ export default function AppRoutes() {
           <Route path="/supplier" element={<Supplier />} />
           <Route path="/supplier/create" element={<CreateSupplier />} />
           <Route path="/supplier/edit/:id" element={<EditSupplier />} />
+
+          <Route path="/report/daily" element={<DailyAllowanceReport />} />
+          <Route path="/report/fuel-log" element={<FuelLogReport />} />
+          <Route path="/report/maintenance" element={<MaintenanceReport />} />
+          <Route path="/report/trip" element={<TripReport />} />
+          <Route path="/report/vehicle" element={<VehicleReport />} />
+
 
           <Route path="/department" element={<Department />} />
           <Route path="/department/create" element={<CreateDepartment />} />

@@ -39,12 +39,12 @@ export default function EditTrip() {
         // Mapeia passageiros existentes
         const passengers = Array.isArray(data.trip_passengers)
           ? data.trip_passengers.map((p: any) => ({
-              id: p.passenger_id,
-              full_name: p.passenger.full_name, 
-              birth_date: p.passenger.birth_date, 
-              dropoff_location: p.dropoff_location,
-              notes: p.notes,
-            }))
+            id: p.passenger_id,
+            full_name: p.passenger.full_name,
+            birth_date: p.passenger.birth_date,
+            dropoff_location: p.dropoff_location,
+            notes: p.notes,
+          }))
           : [];
         setInitialPersons(passengers);
       } catch (error) {
@@ -79,8 +79,8 @@ export default function EditTrip() {
         driver_id: values.driver_id,
         authorizer_id: rawData.authorizer_id,
         attendant_id: rawData.attendant_id,
-        trip_passengers: persons.map(p => ({
-          passenger_id: p.id,
+        persons: persons.map((p) => ({
+          person_id: p.id,
           dropoff_location: p.dropoff_location,
           notes: p.notes,
         })),

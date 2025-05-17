@@ -40,7 +40,7 @@ const menuItems: AppMenuItem[] = [
     icon: <FileTextOutlined />,
     children: [
       { key: '10-1', label: 'Viagens',     path: '/report/trip' },
-      { key: '10-2', label: 'Combustível', path: '/report/fuel' },
+      { key: '10-2', label: 'Combustível', path: '/report/fuel-log' },
       { key: '10-3', label: 'Manutenção',  path: '/report/maintenance' },
       { key: '10-4', label: 'Motorista',   path: '/report/driver' },
       { key: '10-5', label: 'Veículos',    path: '/report/vehicle' },
