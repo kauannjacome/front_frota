@@ -86,7 +86,7 @@ export default function FuelLogForm({
   const fetchDrivers = async (search?: string) => {
     setLoadingDrivers(true);
     try {
-      const { data } = await api.get<Driver[]>("/user/drive", {
+      const { data } = await api.get<Driver[]>("/user/driver", {
         params: search ? { q: search } : {},
       });
       setDrivers(data);

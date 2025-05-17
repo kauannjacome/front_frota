@@ -149,15 +149,7 @@ export default function Trip() {
       width: "20%",
       render: (_, record) => {
         const items: MenuProps["items"] = [
-          {
-            key: "complete",
-            icon: <ContainerOutlined />,
-            label: "Completo",
-            onClick: () => {
-              setSelectedTripId(record.id);
-              setDrawerOpen(true);
-            },
-          },
+
           {
             key: "print",
             icon: <PrinterOutlined />,
@@ -165,12 +157,6 @@ export default function Trip() {
             onClick: () => {
               message.info(`Imprimir viagem ID: ${record.id}`);
             },
-          },
-          {
-            key: "edit",
-            icon: <CopyOutlined  />,
-            label: "Duplicar",
-            onClick: () => {},
           },
           {
             key: "edit",
@@ -192,12 +178,20 @@ export default function Trip() {
               </Popconfirm>
             ),
           },
-        
         ];
-  
+
         return (
-          <Dropdown menu={{ items }} trigger={["hover"]} placement="bottomRight">
-            <Button type="text" icon={<EllipsisOutlined />} />
+          <Dropdown
+            menu={{ items }}
+            trigger={["hover"]}
+            placement="bottomRight"
+          >
+            <Button
+              style={{ width: "10vw", height: "100%" }}
+              type="text"
+              icon={<EllipsisOutlined />}
+              onClick={(e) => e.stopPropagation()}
+            ></Button>
           </Dropdown>
         );
       },
@@ -304,7 +298,13 @@ export default function Trip() {
           dataSource={trips}
           columns={columns}
           pagination={{ pageSize: 10 }}
- 
+          showHeader={true}
+          onRow={(record) => ({
+            onClick: () => {
+              setSelectedTripId(record.id);
+              setDrawerOpen(true);
+            },
+          })}
         />
       </Card>
       <TripDetailsDrawer

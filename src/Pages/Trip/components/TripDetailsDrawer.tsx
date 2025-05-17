@@ -1,7 +1,8 @@
-import { Drawer, Descriptions, Divider, Table, Spin } from "antd";
+import { Drawer, Descriptions, Divider, Table, Spin, Button } from "antd";
 import moment from "moment";
 import api from "../../../services/api";
 import { useEffect, useState } from "react";
+import { PrinterOutlined } from "@ant-design/icons";
 
 interface TripDetailsDrawerProps {
   open: boolean;
@@ -47,6 +48,17 @@ export default function TripDetailsDrawer({
       placement="right"
       onClose={onClose}
       open={open}
+      extra={
+          <Button
+            type="primary"
+            icon={<PrinterOutlined  />}
+            onClick={() => {
+              console.log("Ação simples!");
+            }}
+        >
+          Imprimir
+        </Button>
+      }
     >
       {loading ? (
         <Spin />

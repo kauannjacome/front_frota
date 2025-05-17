@@ -13,7 +13,7 @@ import {
   Col,
 } from "antd";
 import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
-import api from '../../../services/api';
+import api from '../../services/api';
 import Table, { ColumnsType } from "antd/es/table";
 import { useNavigate } from "react-router-dom";
 
