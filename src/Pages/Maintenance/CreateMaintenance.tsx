@@ -11,6 +11,7 @@ export default function CreateMaintenance() {
   const navigate = useNavigate();
 
   const handleFinish = async (values: MaintenanceFormValues) => {
+    console.log(values)
     setLoading(true);
     try {
       const payload = {

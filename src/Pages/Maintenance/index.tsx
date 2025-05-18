@@ -7,7 +7,6 @@ import {
   message,
   Row,
   Col,
-  Dropdown,
   Popconfirm,
   Space,
   DatePicker,
@@ -15,7 +14,6 @@ import {
 import {
   DeleteOutlined,
   EditOutlined,
-  EllipsisOutlined,
   EyeOutlined,
   PlusOutlined,
   PrinterOutlined,
@@ -25,6 +23,7 @@ import Table, { ColumnsType } from "antd/es/table";
 import api from '../../services/api';
 import { Veiculo } from "../../common/store/VehicleStore";
 import { useNavigate } from "react-router-dom";
+import MaintenanceDetailsDrawer from "./components/MaintenanceDetailsDrawer";
 
 interface Maintenance {
   id: number;
@@ -43,6 +42,8 @@ export default function Maintenance() {
   const [form] = Form.useForm();
   const [records, setRecords] = useState<Maintenance[]>([]);
   const [veiculos, setVeiculos] = useState<Veiculo[]>([]);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [selectedMaintenanceId, setSelectedMaintenanceId] = useState<number | null>(null);
   const navigate = useNavigate();
 
   // Buscar manutenções quando submeter o formulário
@@ -54,11 +55,9 @@ export default function Maintenance() {
           ? values.date.format('YYYY-MM-DD')
           : undefined,
       };
-      console.log(params)
-      const response = await api.get<Maintenance[]>('/maintenance/search', {   params: params, });
+      const response = await api.get<Maintenance[]>('/maintenance/search', { params });
       setRecords(response.data);
       message.success('Manutenções carregadas com sucesso!');
-   
     } catch (error) {
       console.error('Erro ao buscar manutenções:', error);
       message.error('Não foi possível carregar manutenções.');
@@ -86,8 +85,6 @@ export default function Maintenance() {
         message.error('Não foi possível carregar a lista de veículos.');
       });
   }, []);
-
-
 
   const columns: ColumnsType<Maintenance> = [
     {
@@ -132,54 +129,40 @@ export default function Maintenance() {
       title: 'Ações',
       key: 'action',
       width: '15%',
-
-
-
       render: (_, record) => (
         <Space size="small">
           <Button
             type="text"
             icon={<EyeOutlined />}
-
+            onClick={() => {
+              setSelectedMaintenanceId(record.id);
+              setDrawerOpen(true);
+            }}
           />
-
-
           <Button
             type="text"
             icon={<PrinterOutlined />}
-            onClick={(e) => {
-
-              message.info(`Imprimir viagem ID: ${record.id}`);
+            onClick={() => {
+              message.info(`Imprimir manutenção ID: ${record.id}`);
             }}
           />
           <Button
             type="text"
             icon={<EditOutlined />}
-            onClick={(e) => {
-
-              navigate(`/maintenance/edit/${record.id}`);
-            }}
+            onClick={() => navigate(`/maintenance/edit/${record.id}`)}
           />
           <Popconfirm
             title="Tem certeza que deseja excluir?"
-            onConfirm={async () => {
-
-              await onDelete(record.id);
-            }}
+            onConfirm={async () => await onDelete(record.id)}
             okText="Sim"
             cancelText="Não"
           >
-            <Button
-              type="text"
-              icon={<DeleteOutlined />}
-
-            />
+            <Button type="text" icon={<DeleteOutlined />} />
           </Popconfirm>
         </Space>
       ),
     }
-  ]
-
+  ];
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
@@ -205,13 +188,11 @@ export default function Maintenance() {
                 />
               </Form.Item>
             </Col>
-
             <Col xs={24} sm={12} md={8} lg={6}>
-              <Form.Item label="Data de Abastecimento" name="date">
+              <Form.Item label="Data" name="date">
                 <DatePicker style={{ width: "100%" }} format="DD/MM/YYYY" />
               </Form.Item>
             </Col>
-
             <Col xs={24} sm={12} md={8} lg={6}>
               <Form.Item label="Tipo" name="type">
                 <Select placeholder="Selecione o tipo de manutenção" allowClear style={{ width: '100%' }}>
@@ -219,13 +200,13 @@ export default function Maintenance() {
                   <Select.Option value="CORRETIVA">Corretiva</Select.Option>
                   <Select.Option value="INSPECAO">Inspeção</Select.Option>
                 </Select>
-
               </Form.Item>
             </Col>
           </Row>
-
           <Form.Item style={{ marginTop: 16 }}>
-            <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>Buscar</Button>
+            <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>
+              Buscar
+            </Button>
             <Button
               type="dashed"
               icon={<PlusOutlined />}
@@ -246,6 +227,15 @@ export default function Maintenance() {
           pagination={{ pageSize: 10 }}
         />
       </Card>
+
+      <MaintenanceDetailsDrawer
+        open={drawerOpen}
+        maintenance_id={selectedMaintenanceId}
+        onClose={() => {
+          setDrawerOpen(false);
+          setSelectedMaintenanceId(null);
+        }}
+      />
     </div>
   );
 }

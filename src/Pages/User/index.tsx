@@ -16,6 +16,7 @@ import { DeleteOutlined, EditOutlined, EyeOutlined, PlusOutlined, PrinterOutline
 import api from '../../services/api';
 import Table, { ColumnsType } from "antd/es/table";
 import { useNavigate } from "react-router-dom";
+import UserDetailsDrawer from "./components/UserDetailsDrawer";
 
 const { Option } = Select;
 
@@ -36,6 +37,8 @@ interface User {
 export default function User() {
   const [form] = Form.useForm();
   const [users, setUsers] = useState<User[]>([]);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const navigate = useNavigate();
   const fetchUsers = async (values?: any) => {
     try {
@@ -101,21 +104,13 @@ export default function User() {
           <Button
             type="text"
             icon={<EyeOutlined />}
-            onClick={(e) => {
-       
+             onClick={(e) => {
+              setSelectedUserId(record.id);
+              setDrawerOpen(true)
 
             }}
           />
-
-
-          <Button
-            type="text"
-            icon={<PrinterOutlined />}
-            onClick={(e) => {
-
-              message.info(`Imprimir viagem ID: ${record.id}`);
-            }}
-          />
+          
           <Button
             type="text"
             icon={<EditOutlined />}
@@ -219,6 +214,17 @@ export default function User() {
           pagination={{ pageSize: 10 }}
         />
       </Card>
+            <UserDetailsDrawer
+              open={drawerOpen}
+              user_id={selectedUserId}
+              onClose={() => {
+      
+                setDrawerOpen(false);
+                setSelectedUserId(null);
+              }
+      
+              }
+            />
     </div>
   );
 }

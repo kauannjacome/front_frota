@@ -88,8 +88,8 @@ export default function MaintenanceForm({ initialValues, onFinish, onCancel }: P
         <Col span={6}>
           <Form.Item
             name="vehicle_id"
-            label="Veículo (ID)"
-            rules={[{ required: true, message: 'Informe o ID do veículo' }]}
+            label="Veículo"
+            rules={[{ required: true, message: 'Informe o veículo' }]}
           >
             <Select
               placeholder="Selecione o veículo"
@@ -111,7 +111,7 @@ export default function MaintenanceForm({ initialValues, onFinish, onCancel }: P
           </Form.Item>
         </Col>
         <Col span={6}>
-          <Form.Item name="supplier_id" label="Fornecedor (ID)">
+          <Form.Item name="supplier_id" label="Fornecedor">
             <Select
               showSearch
               placeholder="Digite para buscar..."

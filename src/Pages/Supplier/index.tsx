@@ -4,6 +4,7 @@ import { DeleteOutlined, EditOutlined, EyeOutlined, PlusOutlined, PrinterOutline
 import api from '../../services/api';
 import Table, { ColumnsType } from "antd/es/table";
 import { useNavigate } from "react-router-dom";
+import SupplierDetailsDrawer from "./components/SupplierDetailsDrawer";
 
 interface Supplier {
   id: number;
@@ -20,6 +21,9 @@ interface Supplier {
 export default function Supplier() {
   const [form] = Form.useForm();
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
+    const [drawerOpen, setDrawerOpen] = useState(false);
+  const [selectedSupplierId, setSelectedSupplierId] = useState<number | null>(null);
+
   const navigate = useNavigate();
 
   const fetchSuppliers = async () => {
@@ -75,8 +79,9 @@ export default function Supplier() {
           <Button
             type="text"
             icon={<EyeOutlined />}
-            onClick={(e) => {
-              
+           onClick={(e) => {
+              setSelectedSupplierId(record.id);
+              setDrawerOpen(true)
 
             }}
           />
@@ -177,6 +182,18 @@ export default function Supplier() {
           pagination={{ pageSize: 10 }}
         />
       </Card>
+
+            <SupplierDetailsDrawer
+              open={drawerOpen}
+              supplier_id={selectedSupplierId}
+              onClose={() => {
+      
+                setDrawerOpen(false);
+                setSelectedSupplierId(null);
+              }
+      
+              }
+            />
     </div>
   );
 }

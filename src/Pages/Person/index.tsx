@@ -122,14 +122,6 @@ export default function Person() {
 
           <Button
             type="text"
-            icon={<PrinterOutlined />}
-            onClick={() => {
-
-              message.info(`Imprimir viagem ID: ${record.id}`);
-            }}
-          />
-          <Button
-            type="text"
             icon={<EditOutlined />}
             onClick={() => {
 

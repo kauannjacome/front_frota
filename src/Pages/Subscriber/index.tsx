@@ -82,24 +82,6 @@ render: (_, record) => (
         <Space size="small">
           <Button
             type="text"
-            icon={<EyeOutlined />}
-            onClick={(e) => {
-       
-
-            }}
-          />
-
-
-          <Button
-            type="text"
-            icon={<PrinterOutlined />}
-            onClick={(e) => {
-
-              message.info(`Imprimir viagem ID: ${record.id}`);
-            }}
-          />
-          <Button
-            type="text"
             icon={<EditOutlined />}
             onClick={(e) => {
 

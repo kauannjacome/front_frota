@@ -19,6 +19,7 @@ import { useSupplierStore } from "../../common/store/SupplierStore";
 import { useNavigate } from "react-router-dom";
 import { states, cities } from "estados-cidades";
 import moment from "moment";
+import TicketDetailsDrawer from "./components/TicketDetailsDrawer";
 
 interface Ticket {
   id: number;
@@ -48,6 +49,8 @@ export default function Ticket() {
   const [startCities, setStartCities] = useState<string[]>([]);
   const [startUf, setStartUf] = useState<string>();
 
+    const [drawerOpen, setDrawerOpen] = useState(false);
+  const [selectedTiketId, setSelectedTiketId] = useState<number | null>(null);
   const suppliers = useSupplierStore((state) => state.suppliers) ?? [];
   const navigate = useNavigate();
   const fetchSuppliers = useSupplierStore((state) => state.fetchSuppliers);
@@ -130,8 +133,9 @@ export default function Ticket() {
             type="text"
             icon={<EyeOutlined />}
             onClick={() => {
-            
-
+                   
+              setSelectedTiketId(record.id);
+              setDrawerOpen(true)
             }}
           />
 
@@ -307,6 +311,17 @@ export default function Ticket() {
           columns={columns}
           pagination={{ pageSize: 10 }}
         />
+              <TicketDetailsDrawer
+                open={drawerOpen}
+                ticket_id={selectedTiketId}
+                onClose={() => {
+        
+                  setDrawerOpen(false);
+                setSelectedTiketId(null);
+                }
+        
+                }
+              />
       </Card>
     </div>
   );
