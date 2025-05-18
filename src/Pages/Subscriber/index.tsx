@@ -78,14 +78,14 @@ export default function Subscriber() {
     {
       title: 'Ações', key: 'action', width: '20%',
 
-render: (_, record) => (
+      render: (_, record) => (
         <Space size="small">
           <Button
             type="text"
             icon={<EditOutlined />}
             onClick={(e) => {
 
-             navigate(`/subscriber/edit/${record.id}`);
+              navigate(`/subscriber/edit/${record.id}`);
             }}
           />
           <Popconfirm
@@ -108,7 +108,7 @@ render: (_, record) => (
     }]
 
 
- 
+
 
   const onSearch = () => {
     const values = form.getFieldsValue();
@@ -163,10 +163,10 @@ render: (_, record) => (
               Buscar
             </Button>
             <Button
-                  color="orange" variant="solid"
+              color="orange" variant="solid"
               icon={<PlusOutlined />}
               style={{ marginLeft: 12 }}
-              onClick={() =>  navigate('/subscriber/create')}
+              onClick={() => navigate('/subscriber/create')}
             >
               Adicionar
             </Button>

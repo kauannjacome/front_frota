@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Card,
   Form,
@@ -19,23 +20,23 @@ import {
   PlusOutlined,
   PrinterOutlined,
   SearchOutlined,
-
   EyeOutlined,
 } from "@ant-design/icons";
-import api from "../../services/api";
 import Table, { ColumnsType } from "antd/es/table";
 import moment from "moment";
+import dayjs from "dayjs";
+import "dayjs/locale/pt-br";
+import { states, cities } from "estados-cidades";
+
+import api from "../../services/api";
 import {
   TripStatusColors,
   TripStatusOptions,
 } from "../../common/types/constantsTypes";
-import { useNavigate } from "react-router-dom";
 import { Veiculo } from "../../common/store/VehicleStore";
 import TripDetailsDrawer from "./components/TripDetailsDrawer";
-import dayjs from 'dayjs';
-import 'dayjs/locale/pt-br';
-dayjs.locale('pt-br');
 
+dayjs.locale("pt-br");
 
 interface Trip {
   id: number;
@@ -57,12 +58,20 @@ export default function Trip() {
   const [veiculos, setVeiculos] = useState<Veiculo[]>([]);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedTripId, setSelectedTripId] = useState<number | null>(null);
+  const [endCities, setEndCities] = useState<string[]>([]);
 
-  const { Option } = Select;
+  // lista de UFs
+  const ufs = states();
 
+  // watcher para estado final
+  const endUf = Form.useWatch("end_state", form);
 
+  // carrega cidades de destino quando endUf mudar
+  useEffect(() => {
+    setEndCities(endUf ? cities(endUf) : []);
+  }, [endUf]);
 
-
+  // carrega veículos
   useEffect(() => {
     api
       .get<Veiculo[]>("/vehicle")
@@ -73,15 +82,23 @@ export default function Trip() {
       });
   }, []);
 
+  // busca inicial ao montar
+  useEffect(() => {
+    onFinish(form.getFieldsValue());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const onFinish = async (values: any) => {
     const params: Record<string, any> = {};
     if (values.vehicle_id) params.vehicle_id = values.vehicle_id;
     if (values.purpose) params.purpose = values.purpose;
     if (values.status) params.status = values.status;
+    if (values.end_state) params.end_state = values.end_state;
     if (values.end_city) params.end_city = values.end_city;
-    if (values.journey_start) {
-      params.journey_start = values.journey_start.toDate().toISOString();
-    }
+  if (values.journey_start) {
+    // values.journey_start é um Dayjs (DatePicker do Ant)
+    params.journey_start = values.journey_start.format("YYYY-MM-DD");
+  }
 
     try {
       const response = await api.get<Trip[]>("/trip/search", { params });
@@ -92,12 +109,7 @@ export default function Trip() {
       message.error("Não foi possível buscar as viagens.");
     }
   };
-  useEffect(() => {
-    // Pega os valores atuais do formulário
-    const values = form.getFieldsValue();
-    // Chama onFinish passando esses valores
-    onFinish(values);
-  }, []); // só na montagem
+
   const onDelete = async (id: number) => {
     try {
       await api.delete(`/trip/${id}`);
@@ -110,7 +122,12 @@ export default function Trip() {
   };
 
   const columns: ColumnsType<Trip> = [
-    { title: "Propósito", dataIndex: "purpose", key: "purpose", width: "15%" },
+    {
+      title: "Propósito",
+      dataIndex: "purpose",
+      key: "purpose",
+      width: "15%",
+    },
     {
       title: "Data de Início",
       dataIndex: "journey_start",
@@ -160,60 +177,38 @@ export default function Trip() {
           <Button
             type="text"
             icon={<EyeOutlined />}
-            onClick={(e) => {
+            onClick={() => {
               setSelectedTripId(record.id);
-              setDrawerOpen(true)
-
+              setDrawerOpen(true);
             }}
           />
-
-
           <Button
             type="text"
             icon={<PrinterOutlined />}
-            onClick={(e) => {
-
+            onClick={() => {
               message.info(`Imprimir viagem ID: ${record.id}`);
             }}
           />
           <Button
             type="text"
             icon={<EditOutlined />}
-            onClick={(e) => {
-
-              navigate(`/trip/edit/${record.id}`);
-            }}
+            onClick={() => navigate(`/trip/edit/${record.id}`)}
           />
           <Popconfirm
             title="Tem certeza que deseja excluir?"
-            onConfirm={async () => {
-
-              await onDelete(record.id);
-            }}
+            onConfirm={() => onDelete(record.id)}
             okText="Sim"
             cancelText="Não"
           >
-            <Button
-              type="text"
-              icon={<DeleteOutlined />}
-
-            />
+            <Button type="text" icon={<DeleteOutlined />} />
           </Popconfirm>
         </Space>
       ),
-    }]
-
-
+    },
+  ];
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        padding: 0,
-        gap: "20px",
-      }}
-    >
+    <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
       <Card>
         <Form
           form={form}
@@ -221,10 +216,9 @@ export default function Trip() {
           name="tripForm"
           onFinish={onFinish}
           initialValues={{ journey_start: dayjs() }}
-       
         >
           <Row gutter={[16, 8]}>
-            <Col xs={24} sm={12} md={8} lg={6}>
+            <Col span={8}>
               <Form.Item label="Veículo" name="vehicle_id">
                 <Select
                   placeholder="Selecione o veículo"
@@ -237,7 +231,6 @@ export default function Trip() {
                   }))}
                   filterOption={(input, option) =>
                     (option?.label ?? "")
-                      .toString()
                       .toLowerCase()
                       .includes(input.toLowerCase())
                   }
@@ -245,13 +238,7 @@ export default function Trip() {
               </Form.Item>
             </Col>
 
-            <Col xs={24} sm={12} md={8} lg={6}>
-              <Form.Item name="purpose" label="Propósito">
-                <Input placeholder="Digite o propósito" allowClear />
-              </Form.Item>
-            </Col>
-
-            <Col xs={24} sm={12} md={8} lg={6}>
+            <Col span={8}>
               <Form.Item name="status" label="Status">
                 <Select
                   placeholder="Selecione o status"
@@ -263,7 +250,6 @@ export default function Trip() {
                   }))}
                   filterOption={(input, option) =>
                     (option?.label ?? "")
-                      .toString()
                       .toLowerCase()
                       .includes(input.toLowerCase())
                   }
@@ -271,25 +257,50 @@ export default function Trip() {
               </Form.Item>
             </Col>
 
-            <Col xs={24} sm={12} md={8} lg={6}>
-              <Form.Item name="end_city" label="Destino (cidade)">
-                <Input placeholder="Cidade de destino" allowClear />
+            <Col span={8}>
+              <Form.Item name="journey_start" label="Data de Início">
+                <DatePicker
+                  style={{ width: "100%" }}
+                  format="DD/MM/YYYY"
+                />
               </Form.Item>
             </Col>
 
-            <Col xs={24} sm={12} md={8} lg={6}>
-              <Form.Item name="journey_start" label="Data">
-                <DatePicker
-                  style={{ width: "100%" }}
-                  format="DD/MM/YYYY "
-               
-                />
+            <Col span={3}>
+              <Form.Item name="end_state" label="Estado final">
+                <Select placeholder="UF" showSearch allowClear>
+                  {ufs.map((uf) => (
+                    <Select.Option key={uf} value={uf}>
+                      {uf}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={5}>
+              <Form.Item name="end_city" label="Cidade final">
+                <Select
+                  placeholder="Cidade"
+                  showSearch
+                  allowClear
+                  disabled={!endUf}
+                >
+                  {endCities.map((city) => (
+                    <Select.Option key={city} value={city}>
+                      {city}
+                    </Select.Option>
+                  ))}
+                </Select>
               </Form.Item>
             </Col>
           </Row>
 
           <Form.Item style={{ marginTop: 16, textAlign: "left" }}>
-            <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>
+            <Button
+              type="primary"
+              htmlType="submit"
+              icon={<SearchOutlined />}
+            >
               Buscar
             </Button>
 
@@ -311,20 +322,16 @@ export default function Trip() {
           dataSource={trips}
           columns={columns}
           pagination={{ pageSize: 10 }}
-          showHeader={true}
-
         />
       </Card>
+
       <TripDetailsDrawer
         open={drawerOpen}
         trip_id={selectedTripId}
         onClose={() => {
-
           setDrawerOpen(false);
           setSelectedTripId(null);
-        }
-
-        }
+        }}
       />
     </div>
   );
