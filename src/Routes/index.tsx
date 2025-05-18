@@ -62,6 +62,7 @@ import MaintenanceReport from "../Pages/Report/MaintenanceReport";
 import TripReport from "../Pages/Report/TripReport";
 import VehicleReport from "../Pages/Report/VehicleReport";
 import SubscriberList from "../Pages/admin/SubscriberList";
+import DepartmentList from "../Pages/admin/DepartmentList";
 
 export default function AppRoutes() {
   return (
@@ -69,6 +70,8 @@ export default function AppRoutes() {
       <Routes>
         <Route path="/" element={<Auth />} />
         <Route path="/admin/subscriber" element={<SubscriberList />} />
+        <Route path="/admin/department/:id" element={<DepartmentList />} />
+
         <Route path="/auth/supplier" element={<AuthSupplier />} />
         <Route path="/supplier/fuel-log-attendant" element={<FuelLogAttendant />} />
 
