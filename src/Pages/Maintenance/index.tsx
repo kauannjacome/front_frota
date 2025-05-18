@@ -10,6 +10,7 @@ import {
   Dropdown,
   Popconfirm,
   Space,
+  DatePicker,
 } from "antd";
 import {
   DeleteOutlined,
@@ -42,17 +43,22 @@ export default function Maintenance() {
   const [form] = Form.useForm();
   const [records, setRecords] = useState<Maintenance[]>([]);
   const [veiculos, setVeiculos] = useState<Veiculo[]>([]);
-  const [maintenanceTypes, setMaintenanceTypes] = useState<string[]>([]);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
 
   // Buscar manutenções quando submeter o formulário
-  const onFinish = async (_values: any) => {
+  const onFinish = async (values: any) => {
     try {
-      const response = await api.get<Maintenance[]>('/maintenance', { params: {} });
+      const params = {
+        ...values,
+        date: values.date
+          ? values.date.format('YYYY-MM-DD')
+          : undefined,
+      };
+      console.log(params)
+      const response = await api.get<Maintenance[]>('/maintenance/search', {   params: params, });
       setRecords(response.data);
       message.success('Manutenções carregadas com sucesso!');
-      form.resetFields();
+   
     } catch (error) {
       console.error('Erro ao buscar manutenções:', error);
       message.error('Não foi possível carregar manutenções.');
@@ -81,15 +87,7 @@ export default function Maintenance() {
       });
   }, []);
 
-  // Carregar tipos de manutenção
-  useEffect(() => {
-    api.get<string[]>('/maintenance/types')
-      .then(({ data }) => setMaintenanceTypes(data))
-      .catch(err => {
-        console.error('Erro ao carregar tipos de manutenção', err);
-        message.error('Não foi possível carregar os tipos de manutenção.');
-      });
-  }, []);
+
 
   const columns: ColumnsType<Maintenance> = [
     {
@@ -137,12 +135,12 @@ export default function Maintenance() {
 
 
 
-  render: (_, record) => (
+      render: (_, record) => (
         <Space size="small">
           <Button
             type="text"
             icon={<EyeOutlined />}
-      
+
           />
 
 
@@ -209,14 +207,19 @@ export default function Maintenance() {
             </Col>
 
             <Col xs={24} sm={12} md={8} lg={6}>
+              <Form.Item label="Data de Abastecimento" name="date">
+                <DatePicker style={{ width: "100%" }} format="DD/MM/YYYY" />
+              </Form.Item>
+            </Col>
+
+            <Col xs={24} sm={12} md={8} lg={6}>
               <Form.Item label="Tipo" name="type">
-                <Select placeholder="Selecione o tipo" style={{ width: '100%' }}>
-                  {maintenanceTypes.map(type => (
-                    <Select.Option key={type} value={type}>
-                      {type}
-                    </Select.Option>
-                  ))}
+                <Select placeholder="Selecione o tipo de manutenção" allowClear style={{ width: '100%' }}>
+                  <Select.Option value="PREVENTIVA">Preventiva</Select.Option>
+                  <Select.Option value="CORRETIVA">Corretiva</Select.Option>
+                  <Select.Option value="INSPECAO">Inspeção</Select.Option>
                 </Select>
+
               </Form.Item>
             </Col>
           </Row>

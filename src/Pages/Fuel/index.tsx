@@ -9,8 +9,6 @@ import {
   Popconfirm,
   Row,
   Col,
-  Modal,
-  Dropdown,
   Space,
 } from "antd";
 import {
@@ -19,7 +17,6 @@ import {
   PlusOutlined,
   PrinterOutlined,
   SearchOutlined,
-  EllipsisOutlined,
   EyeOutlined,
 } from "@ant-design/icons";
 import Table, { ColumnsType } from "antd/es/table";
@@ -28,6 +25,9 @@ import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import { Veiculo } from "../../common/store/VehicleStore";
 import FuelLogDrawer from "./components/FuelLogDrawer";
+import dayjs from "dayjs";
+import 'dayjs/locale/pt-br';
+dayjs.locale('pt-br');
 
 interface FuelLog {
   id: number;
@@ -52,11 +52,7 @@ interface FuelLog {
 export default function Fuel() {
   const [createForm] = Form.useForm();
   const [fuelLogs, setFuelLogs] = useState<FuelLog[]>([]);
-  const [typesFuel, setTypesFuel] = useState<string[]>([]);
   const [veiculos, setVeiculos] = useState<Veiculo[]>([]);
-  const [pdfModalVisible, setPdfModalVisible] = useState(false);
-  const [pdfUrl, setPdfUrl] = useState<string>("");
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   // **2. estados para o Drawer**
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -75,28 +71,34 @@ export default function Fuel() {
       });
   }, []);
 
-  // Carrega tipos de combustível
-  useEffect(() => {
-    api
-      .get<string[]>("/fuel-log/types")
-      .then(({ data }) => setTypesFuel(data))
-      .catch((err) => {
-        console.error("Erro ao carregar tipos de combustível", err);
-      });
-  }, []);
+
 
   // Busca registros
   const onSearch = async (values: any) => {
     try {
+      const params = {
+        ...values,
+        supply_date: values.supply_date
+          ? values.supply_date.format('YYYY-MM-DD')
+          : undefined,
+      };
       const response = await api.get<FuelLog[]>("/fuel-log/search", {
-        params: values,
+        params: params,
       });
+      console.log(response)
       setFuelLogs(response.data);
     } catch (error) {
       console.error("Erro ao buscar registros de abastecimento:", error);
       message.error("Não foi possível carregar os registros.");
     }
   };
+
+  useEffect(() => {
+    // Pega os valores atuais do formulário
+    const values = createForm.getFieldsValue();
+    // Chama onFinish passando esses valores
+    onSearch(values);
+  }, []); // só na montagem
 
   // Exclui registro
   const onDelete = async (id: number) => {
@@ -110,20 +112,32 @@ export default function Fuel() {
     }
   };
 
-  // Abre modal com PDF
-  const openPdfModal = async (id: number) => {
+
+
+
+
+  const printPdfDirect = async (id: number) => {
     try {
       const response = await api.get<Blob>(`/fuel-log/pdf/${id}`, {
         responseType: "blob",
       });
       const url = URL.createObjectURL(response.data);
-      setPdfUrl(url);
-      setPdfModalVisible(true);
-    } catch (error) {
-      console.error("Erro ao gerar PDF:", error);
-      message.error("Não foi possível gerar o PDF.");
+      const iframe = document.createElement("iframe");
+      iframe.style.display = "none";
+      iframe.src = url;
+      document.body.appendChild(iframe);
+      iframe.onload = () => {
+
+        iframe?.contentWindow?.focus();
+        iframe?.contentWindow?.print();
+      };
+    } catch (err) {
+      message.error("Falha ao gerar PDF para impressão");
     }
   };
+
+
+
 
   // Colunas da tabela
   const columns: ColumnsType<FuelLog> = [
@@ -169,7 +183,10 @@ export default function Fuel() {
           <Button
             type="text"
             icon={<PrinterOutlined />}
-            onClick={() => openPdfModal(record.id)}
+            onClick={() => 
+                printPdfDirect(record.id)}
+              
+            
           />
           <Button
             type="text"
@@ -204,6 +221,7 @@ export default function Fuel() {
           layout="vertical"
           onFinish={onSearch}
           name="supplyForm"
+          initialValues={{ supply_date: dayjs() }}
         >
           <Row gutter={[16, 8]}>
             <Col xs={24} sm={12} md={8} lg={6}>
@@ -234,14 +252,17 @@ export default function Fuel() {
 
             <Col xs={24} sm={12} md={8} lg={6}>
               <Form.Item label="Tipo de Combustível" name="fuel_type">
+
                 <Select placeholder="Selecione o tipo" allowClear>
-                  {typesFuel.map((tipo) => (
-                    <Select.Option key={tipo} value={tipo}>
-                      {tipo.charAt(0) + tipo.slice(1).toLowerCase()}
-                    </Select.Option>
-                  ))}
+                  <Select.Option value="GASOLINA">Gasolina</Select.Option>
+                  <Select.Option value="DIESEL">Diesel</Select.Option>
+                  <Select.Option value="ETANOL">Etanol</Select.Option>
+                  <Select.Option value="ELETRICO">Elétrico</Select.Option>
+                  <Select.Option value="OUTRO">Outro</Select.Option>
                 </Select>
               </Form.Item>
+
+
             </Col>
           </Row>
 
@@ -271,43 +292,10 @@ export default function Fuel() {
           dataSource={fuelLogs}
           columns={columns}
           pagination={{ pageSize: 10 }}
-    
+
         />
       </Card>
 
-      <Modal
-        title="Visualizar PDF"
-        open={pdfModalVisible}
-        onCancel={() => setPdfModalVisible(false)}
-        footer={[
-          <Button key="close" onClick={() => setPdfModalVisible(false)}>
-            Fechar
-          </Button>,
-          <Button
-            key="print"
-            type="primary"
-            onClick={() => {
-              const iframe = document.getElementById(
-                "pdf-frame"
-              ) as HTMLIFrameElement;
-              iframe?.contentWindow?.focus();
-              iframe?.contentWindow?.print();
-            }}
-          >
-            Imprimir
-          </Button>,
-        ]}
-        width="80%"
-        style={{ top: 20 }}
-        bodyStyle={{ height: "80vh", padding: 0 }}
-      >
-        <iframe
-          id="pdf-frame"
-          src={pdfUrl}
-          title="PDF"
-          style={{ width: "100%", height: "100%", border: 0 }}
-        />
-      </Modal>
       <FuelLogDrawer
         open={drawerOpen}
         log_id={selectedLogId}

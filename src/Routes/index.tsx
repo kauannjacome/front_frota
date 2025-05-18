@@ -61,12 +61,14 @@ import FuelLogReport from "../Pages/Report/FuelLogReport";
 import MaintenanceReport from "../Pages/Report/MaintenanceReport";
 import TripReport from "../Pages/Report/TripReport";
 import VehicleReport from "../Pages/Report/VehicleReport";
+import SubscriberList from "../Pages/admin/SubscriberList";
 
 export default function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Auth />} />
+        <Route path="/admin/subscriber" element={<SubscriberList />} />
         <Route path="/auth/supplier" element={<AuthSupplier />} />
         <Route path="/supplier/fuel-log-attendant" element={<FuelLogAttendant />} />
 

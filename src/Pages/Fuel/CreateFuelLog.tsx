@@ -18,7 +18,9 @@ export default function CreateFuelLog() {
         supply_date: values.supply_date.toISOString(),
         deadline: values.deadline?.toISOString() ?? null,
       };
+           console.log(payload)
       await api.post('/fuel-log', payload);
+ 
       message.success('Registro de abastecimento criado com sucesso!');
       navigate('/fuel');
     } catch {

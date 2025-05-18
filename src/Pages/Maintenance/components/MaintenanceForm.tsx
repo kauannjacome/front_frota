@@ -1,7 +1,10 @@
 // src/components/MaintenanceForm.tsx
-import React from 'react';
-import { Form, Input, DatePicker, InputNumber, Select, Button, Row, Col } from 'antd';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Form, Input, DatePicker, InputNumber, Select, Button, Row, Col, message, Spin } from 'antd';
 import moment from 'moment';
+import { Supplier, Vehicle } from '../../../common/types';
+import api from '../../../services/api';
+import { debounce } from 'lodash';
 
 export interface MaintenanceFormValues {
   subscriber_id: number;
@@ -23,6 +26,54 @@ type Props = {
 };
 
 export default function MaintenanceForm({ initialValues, onFinish, onCancel }: Props) {
+
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [loadingVehicles, setLoadingVehicles] = useState(false);
+  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
+  const [loadingSuppliers, setLoadingSuppliers] = useState(false);
+
+  const fetchVehicles = async (search?: string) => {
+    setLoadingVehicles(true);
+    try {
+      const { data } = await api.get<Vehicle[]>("/vehicle", {
+        params: search ? { q: search } : {},
+      });
+      setVehicles(data);
+    } catch (err) {
+      console.error("Erro ao buscar veículos:", err);
+      message.error("Falha ao carregar lista de veículos.");
+    } finally {
+      setLoadingVehicles(false);
+    }
+  };
+
+  const handleSupplierSearch = useCallback(
+    debounce((value: string) => {
+      fetchSuppliers(value);
+    }, 500),
+    []
+  );
+
+  const fetchSuppliers = async (search?: string) => {
+    setLoadingSuppliers(true);
+    try {
+      const { data } = await api.get<Supplier[]>("/supplier/fuel", {
+        params: search ? { q: search } : {},
+      });
+      setSuppliers(data);
+    } catch (err) {
+      console.error("Erro ao buscar fornecedores:", err);
+      message.error("Falha ao carregar lista de fornecedores.");
+    } finally {
+      setLoadingSuppliers(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchVehicles();
+    fetchSuppliers()
+
+  }, []);
   return (
     <Form<MaintenanceFormValues>
       layout="vertical"
@@ -40,12 +91,42 @@ export default function MaintenanceForm({ initialValues, onFinish, onCancel }: P
             label="Veículo (ID)"
             rules={[{ required: true, message: 'Informe o ID do veículo' }]}
           >
-            <InputNumber style={{ width: '100%' }} />
+            <Select
+              placeholder="Selecione o veículo"
+              loading={!vehicles.length}
+              allowClear
+              showSearch
+              options={vehicles.map((v) => ({
+                value: v.id,
+                label: `${v.mark} ${v.model}`,
+              }))}
+              filterOption={(input, option) =>
+                // garante sempre retornar boolean
+                (option?.label ?? "")
+                  .toString()
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
+            />
           </Form.Item>
         </Col>
         <Col span={6}>
           <Form.Item name="supplier_id" label="Fornecedor (ID)">
-            <InputNumber style={{ width: '100%' }} />
+            <Select
+              showSearch
+              placeholder="Digite para buscar..."
+              notFoundContent={loadingSuppliers ? <Spin size="small" /> : null}
+              filterOption={false}
+              onSearch={handleSupplierSearch}
+              loading={loadingSuppliers}
+              allowClear
+            >
+              {suppliers.map((supplier) => (
+                <Select.Option key={supplier.id} value={supplier.id}>
+                  {supplier.name}
+                </Select.Option>
+              ))}
+            </Select>
           </Form.Item>
         </Col>
 
@@ -74,7 +155,7 @@ export default function MaintenanceForm({ initialValues, onFinish, onCancel }: P
 
       </Row>
 
-  
+
 
       <Form.Item name="description" label="Descrição">
         <Input.TextArea rows={3} />

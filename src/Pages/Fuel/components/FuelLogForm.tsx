@@ -163,7 +163,10 @@ export default function FuelLogForm({
       <Row gutter={16}>
 
         <Col xs={24} sm={12} md={8} lg={6}>
-          <Form.Item label="Veículo" name="vehicle_id">
+          <Form.Item label="Veículo" name="vehicle_id"
+            rules={[{ required: true, message: "Selecione o veiculo" }]}
+          >
+
             <Select
               placeholder="Selecione o veículo"
               loading={!vehicles.length}
@@ -188,7 +191,7 @@ export default function FuelLogForm({
           <Form.Item
             name="driver_id"
             label="Motorista"
-            rules={[{ required: true, message: "Selecione o motorista" }]}
+
           >
             <Select
               showSearch
@@ -259,7 +262,7 @@ export default function FuelLogForm({
           >
             <Select placeholder="Selecione o tipo">
               <Select.Option value="GASOLINA">Gasolina</Select.Option>
-              <Select.Option value="ALCOOL">Álcool</Select.Option>
+              <Select.Option value="ETANOL">Álcool</Select.Option>
               <Select.Option value="DIESEL">Diesel</Select.Option>
               <Select.Option value="ELETRICO">Elétrico</Select.Option>
             </Select>
@@ -269,7 +272,7 @@ export default function FuelLogForm({
           <Form.Item name="liters" label="Litros">
             <InputNumber
               disabled={supplyType !== 'LITRO_ESPECIFICADO'}
-               style={{ width: "100%" }} min={0} step={0.01} />
+              style={{ width: "100%" }} min={0} step={0.01} />
           </Form.Item>
         </Col>
         <Col span={6}>
@@ -303,10 +306,10 @@ export default function FuelLogForm({
       </Row>
 
       <Form.Item>
-      <Button  variant="solid"   color="purple"  onClick={onCancel}>
+        <Button variant="solid" color="purple" onClick={onCancel}>
           Salvar e Imprimir
         </Button>
-        <Button style={{ marginLeft: 8 }}  type="primary" htmlType="submit">
+        <Button style={{ marginLeft: 8 }} type="primary" htmlType="submit">
           Salvar
         </Button>
 

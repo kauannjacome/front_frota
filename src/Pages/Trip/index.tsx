@@ -32,6 +32,9 @@ import {
 import { useNavigate } from "react-router-dom";
 import { Veiculo } from "../../common/store/VehicleStore";
 import TripDetailsDrawer from "./components/TripDetailsDrawer";
+import dayjs from 'dayjs';
+import 'dayjs/locale/pt-br';
+dayjs.locale('pt-br');
 
 
 interface Trip {
@@ -56,6 +59,9 @@ export default function Trip() {
   const [selectedTripId, setSelectedTripId] = useState<number | null>(null);
 
   const { Option } = Select;
+
+
+
 
   useEffect(() => {
     api
@@ -86,7 +92,12 @@ export default function Trip() {
       message.error("Não foi possível buscar as viagens.");
     }
   };
-
+  useEffect(() => {
+    // Pega os valores atuais do formulário
+    const values = form.getFieldsValue();
+    // Chama onFinish passando esses valores
+    onFinish(values);
+  }, []); // só na montagem
   const onDelete = async (id: number) => {
     try {
       await api.delete(`/trip/${id}`);
@@ -209,6 +220,8 @@ export default function Trip() {
           layout="horizontal"
           name="tripForm"
           onFinish={onFinish}
+          initialValues={{ journey_start: dayjs() }}
+       
         >
           <Row gutter={[16, 8]}>
             <Col xs={24} sm={12} md={8} lg={6}>
@@ -266,7 +279,11 @@ export default function Trip() {
 
             <Col xs={24} sm={12} md={8} lg={6}>
               <Form.Item name="journey_start" label="Data">
-                <DatePicker style={{ width: "100%" }} format="DD/MM/YYYY" />
+                <DatePicker
+                  style={{ width: "100%" }}
+                  format="DD/MM/YYYY "
+               
+                />
               </Form.Item>
             </Col>
           </Row>
