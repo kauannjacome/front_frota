@@ -95,10 +95,10 @@ export default function Trip() {
     if (values.status) params.status = values.status;
     if (values.end_state) params.end_state = values.end_state;
     if (values.end_city) params.end_city = values.end_city;
-  if (values.journey_start) {
-    // values.journey_start é um Dayjs (DatePicker do Ant)
-    params.journey_start = values.journey_start.format("YYYY-MM-DD");
-  }
+    if (values.journey_start) {
+      // values.journey_start é um Dayjs (DatePicker do Ant)
+      params.journey_start = values.journey_start.format("YYYY-MM-DD");
+    }
 
     try {
       const response = await api.get<Trip[]>("/trip/search", { params });

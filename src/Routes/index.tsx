@@ -3,7 +3,7 @@ import AppLayout from "../Layout";
 
 // Autenticação
 import Auth from "../Pages/Auth";
-import AuthSupplier from "../Pages/Mobile/AuthSupplier";
+import AuthSupplier from "../Pages/Mobile/AuthMobile";
 import FuelLogAttendant from "../Pages/Mobile/fuelLogAttendant";
 
 // Veículos
@@ -63,6 +63,7 @@ import TripReport from "../Pages/Report/TripReport";
 import VehicleReport from "../Pages/Report/VehicleReport";
 import SubscriberList from "../Pages/admin/SubscriberList";
 import DepartmentList from "../Pages/admin/DepartmentList";
+import AuthMobile from "../Pages/Mobile/AuthMobile";
 
 export default function AppRoutes() {
   return (
@@ -72,7 +73,7 @@ export default function AppRoutes() {
         <Route path="/admin/subscriber" element={<SubscriberList />} />
         <Route path="/admin/department/:id" element={<DepartmentList />} />
 
-        <Route path="/auth/supplier" element={<AuthSupplier />} />
+        <Route path="/auth/mobile" element={<AuthMobile />} />
         <Route path="/supplier/fuel-log-attendant" element={<FuelLogAttendant />} />
 
         <Route element={<AppLayout />}>

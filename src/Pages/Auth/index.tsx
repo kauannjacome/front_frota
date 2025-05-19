@@ -1,6 +1,8 @@
 import { Layout, Card, Form, Input, Button, message } from "antd";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
+import { jwtDecode } from "jwt-decode";
+
 
 const { Item } = Form;
 const { Password } = Input;
@@ -35,22 +37,30 @@ const styles = {
 // Tipagens para a resposta da API
 interface UserStorage {
   id: string;
-  full_name: string;
-  sex: string;
-  email: string;
-  status: string;       // status de pagamento
-  postalCode: string;
+  name: string;
+  role: string;
+  subscribe_name: string;
 }
 
 interface AuthResponse {
-  token: string;
+  status: number;
+  message: string;
   userStorage: UserStorage;
+  token: string;
 }
 
 // Tipagem do formulário de login
 interface LoginForm {
-  login: string;
+  email: string;
   password: string;
+}
+export interface JWTPayload {
+  id: number;
+  role: string;
+  subscriber_id?: number;
+  department_id?: number;
+  iat: number;
+  exp: number;
 }
 
 export default function Auth() {
@@ -58,12 +68,12 @@ export default function Auth() {
   const [messageApi, contextHolder] = message.useMessage();
 
   const handleLogin = async (values: LoginForm) => {
-    const { login, password } = values;
+    const { email, password } = values;
 
     try {
-      // Especifica AuthResponse para response.data
+      // Enviamos email e password, conforme o backend espera
       const response = await api.post<AuthResponse>("/auth", {
-        login,
+        email,
         password,
       });
 
@@ -73,17 +83,27 @@ export default function Auth() {
         const { token, userStorage } = response.data;
         const storageData = {
           id: userStorage.id,
-          full_name: userStorage.full_name,
-          sex: userStorage.sex,
-          email: userStorage.email,
-          late_payment: userStorage.status,
-          postalCode: userStorage.postalCode,
+          name: userStorage.name,
+          role: userStorage.role,
+          subscribe_name: userStorage.subscribe_name,
         };
 
-        sessionStorage.setItem("token_akautec_protocol", token);
-        sessionStorage.setItem("user_data", JSON.stringify(storageData));
+        localStorage.setItem("authTokenFrota", token);
+        sessionStorage.setItem("userStorage", JSON.stringify(storageData));
+        const payload = jwtDecode<JWTPayload>(token);
+        if (storageData.role === 'MANAGE') {
+          navigate("admin/subscriber");
+        }
+        if (storageData.role === 'ADMIN_LOCAL') {
+          navigate(`/admin/department/${payload.subscriber_id}`);
+        }
+        if (storageData.role === 'SECRETARY') {
+          navigate(`/trip`);
+        }
+        if (storageData.role === 'TYPIST') {
+          navigate(`/trip`);
+        }
 
-        navigate("/home");
       } else {
         console.error("Resposta inesperada da API:", response);
         messageApi.error("Ocorreu um erro inesperado ao fazer login.");
@@ -99,8 +119,7 @@ export default function Auth() {
             break;
           default:
             messageApi.error(
-              `Erro: ${error.response.status} - ${
-                error.response.data.message || "Ocorreu um erro inesperado"
+              `Erro: ${error.response.status} - ${error.response.data.message || "Ocorreu um erro inesperado"
               }`
             );
         }
@@ -112,9 +131,6 @@ export default function Auth() {
     }
   };
 
-  const navigateToRecovery = () => {
-    navigate("/recovery");
-  };
 
   return (
     <>
@@ -122,20 +138,21 @@ export default function Auth() {
       <Layout style={styles.layout}>
         <Card style={{ width: "40vw", maxWidth: 400 }}>
           <Form<LoginForm> onFinish={handleLogin}>
+            {/* Se estiver usando Create React App, a pasta public já está no root */}
             <img
-              src="/imagens/logo_com_nome_colorido.svg"
+              src="/logo_larga.png"
               alt="Logo"
               width={200}
               style={styles.imagem}
             />
 
             <div style={styles.formItem}>
-              <span style={styles.fieldLabel}>Login</span>
+              <span style={styles.fieldLabel}>E-mail</span>
               <Item
-                name="login"
-                rules={[{ required: true, message: "Por favor, insira seu login!" }]}
+                name="email"
+                rules={[{ required: true, message: "Por favor, insira seu e-mail!" }]}
               >
-                <Input />
+                <Input type="email" />
               </Item>
             </div>
 
@@ -156,7 +173,6 @@ export default function Auth() {
               <Button type="primary" htmlType="submit" block>
                 Entrar
               </Button>
-
             </div>
           </Form>
         </Card>
