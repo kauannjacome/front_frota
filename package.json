@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "postinstall": "npm run build",  
+    "postinstall": "npm run build",
     "start": "vite preview --host 0.0.0.0 --port $PORT",
     "lint": "eslint .",
     "preview": "vite preview"
@@ -41,6 +41,7 @@
     "@eslint/js": "^9.22.0",
     "@types/axios": "^0.9.36",
     "@types/lodash": "^4.17.16",
+    "@types/node": "^22.15.19",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "@vitejs/plugin-react-swc": "^3.8.0",

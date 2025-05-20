@@ -5,8 +5,15 @@ import react from '@vitejs/plugin-react-swc'
 export default defineConfig({
   plugins: [react()],
   server: {
-    host: true,       // equivale a host: '0.0.0.0'
-    port: 5173,       // você pode mudar a porta, se quiser
-    strictPort: false // tenta próxima porta caso a 5173 já esteja em uso
+    host: true,
+    port: 5173,
+    strictPort: false
+  },
+  preview: {
+    host: '0.0.0.0',  // escuta em todas as interfaces
+    port: parseInt(process.env.PORT) || 4173,
+    allowedHosts: [
+      'front-frota-simplificada-991de2926ab5.herokuapp.com'
+    ]
   }
 })
