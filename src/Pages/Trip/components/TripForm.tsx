@@ -26,8 +26,8 @@ export interface TripFormValues {
   start_city?: string;
   end_state?: string;
   end_city?: string;
-  start_time?: moment.Moment;
-  back_time?: moment.Moment;
+  journey_start?: moment.Moment;
+  journey_back?: moment.Moment;
   purpose?: string;
   driver_id?: number;
   vehicle_id?: number;
@@ -193,6 +193,7 @@ export default function TripForm({
 
   // quando o formulário for enviado
   const onFormFinish = (values: TripFormValues) => {
+    console.log(values,persons)
     onFinish(values, persons);
   };
 
@@ -261,12 +262,12 @@ export default function TripForm({
               </Form.Item>
             </Col>
             <Col span={4}>
-              <Form.Item name="start_time" label="Data Ida">
+              <Form.Item name="journey_start" label="Data Ida">
                 <DatePicker showTime format="DD/MM/YYYY HH:mm" style={{ width: '100%' }} />
               </Form.Item>
             </Col>
             <Col span={4}>
-              <Form.Item name="back_time" label="Data Volta">
+              <Form.Item name="journey_back" label="Data Volta">
                 <DatePicker showTime format="DD/MM/YYYY HH:mm" style={{ width: '100%' }} />
               </Form.Item>
             </Col>

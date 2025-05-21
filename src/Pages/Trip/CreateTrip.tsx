@@ -16,8 +16,12 @@ export default function CreateTrip() {
     try {
       const payload = {
         ...values,
-        start_time: values.start_time?.toISOString(),
-        back_time: values.back_time?.toISOString(),
+        journey_start: values.journey_start
+          ? values.journey_start.format('YYYY-MM-DDTHH:mm:ss')
+          : undefined,
+        journey_back: values.journey_back
+          ? values.journey_back.format('YYYY-MM-DDTHH:mm:ss')
+          : undefined,
         persons: persons.map((p) => ({
           person_id: p.id,
           dropoff_location: p.dropoff_location,
