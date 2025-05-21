@@ -133,8 +133,8 @@ export default function Trip() {
       dataIndex: "journey_start",
       key: "journey_start",
       width: "15%",
-render: (date: string) =>
-  date ? moment(date).local().format("DD/MM/YYYY HH:mm") : "-",
+      render: (date: string) =>
+        date ? moment(date).local().format("DD/MM/YYYY HH:mm") : "-",
 
     },
     {
