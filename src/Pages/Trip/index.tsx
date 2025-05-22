@@ -134,7 +134,9 @@ export default function Trip() {
       key: "journey_start",
       width: "15%",
       render: (date: string) =>
-        date ? moment(date).local().format("DD/MM/YYYY HH:mm") : "-",
+        date
+          ? moment.parseZone(date).format("DD/MM/YYYY HH:mm")
+          : "-",
 
     },
     {
