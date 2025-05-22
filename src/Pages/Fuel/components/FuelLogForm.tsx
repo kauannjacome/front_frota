@@ -67,6 +67,7 @@ export default function FuelLogForm({
   const [loadingDrivers, setLoadingDrivers] = useState(false);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [loadingSuppliers, setLoadingSuppliers] = useState(false);
+    const [status, setStatus] = useState('');
 
   const fetchVehicles = async (search?: string) => {
     setLoadingVehicles(true);
@@ -236,7 +237,7 @@ export default function FuelLogForm({
         </Col>
         <Col span={6}>
           <Form.Item name="supply_type" label="Tipo de Abastecimento">
-            <Select placeholder="Selecione o tipo">
+            <Select placeholder="Selecione o tipo"   onChange={setStatus} >
               <Select.Option value="COMPLETE">Completo</Select.Option>
               <Select.Option value="LITRO_ESPECIFICADO">Parcial</Select.Option>
             </Select>
@@ -271,7 +272,7 @@ export default function FuelLogForm({
         <Col span={6}>
           <Form.Item name="liters" label="Litros">
             <InputNumber
-              disabled={supplyType !== 'LITRO_ESPECIFICADO'}
+              disabled={status === 'COMPLETE'}
               style={{ width: "100%" }} min={0} step={0.01} />
           </Form.Item>
         </Col>
