@@ -97,7 +97,7 @@ export default function Trip() {
     if (values.end_city) params.end_city = values.end_city;
     if (values.journey_start) {
       // values.journey_start é um Dayjs (DatePicker do Ant)
-      params.journey_start = values.journey_start.format('YYYY-MM-DD');
+      params.journey_start = values.journey_start.format("YYYY-MM-DDTHH:mm:ssZ");
     }
 
     try {
