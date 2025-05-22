@@ -109,6 +109,7 @@ export default function Auth() {
         messageApi.error("Ocorreu um erro inesperado ao fazer login.");
       }
     } catch (error: any) {
+        console.log("Erro no login:", error);
       if (error.response) {
         switch (error.response.status) {
           case 401:

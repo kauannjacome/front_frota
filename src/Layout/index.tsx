@@ -13,6 +13,7 @@ import {
   BankOutlined,
   ApartmentOutlined,
 } from '@ant-design/icons';
+import UserButton from './components/UserButton';
 
 const { Title } = Typography;
 const { Header, Sider, Content, Footer } = Layout;
@@ -148,7 +149,7 @@ const App: React.FC = () => {
 
       <Layout>
         <Header style={{ padding: 0, background: '#001529' }}>
-          <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+          <div style={{ display: 'flex', alignItems: 'center', height: '100%',justifyContent: 'space-between', padding: '0 16px' }}>
             <Title level={4} style={{ color: '#fff', margin: 0 }}>
               {(() => {
                 const findLabel = (items: AppMenuItem[]): string | null => {
@@ -164,6 +165,7 @@ const App: React.FC = () => {
                 return findLabel(menuItems) ?? 'Dashboard';
               })()}
             </Title>
+                <UserButton />
           </div>
         </Header>
 
