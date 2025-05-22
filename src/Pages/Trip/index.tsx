@@ -135,7 +135,7 @@ export default function Trip() {
       width: "15%",
       render: (date: string) =>
         date
-          ? moment.parseZone(date).format("DD/MM/YYYY HH:mm")
+          ? moment(date).format("DD/MM/YYYY HH:mm")
           : "-",
 
     },
