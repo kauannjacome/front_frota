@@ -152,7 +152,7 @@ export default function FuelLogForm({
       onFinish={onFinish}
       initialValues={{
         ...initialValues,
-        supply_type: initialValues.supply_type ?? 'COMPLETE',
+        supply_type: initialValues.supply_type ?? 'LITRO_ESPECIFICADO',
         supply_date: initialValues.supply_date
           ? moment(initialValues.supply_date)
           : undefined,
