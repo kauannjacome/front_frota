@@ -27,7 +27,7 @@ export default function Vehicle() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [drawerOpen, setDrawerOpen] = useState(false);                     // Estado para controlar o Drawer
   const [selectedVehicleId, setSelectedVehicleId] = useState<number | null>(null); // Estado para o ID selecionado
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
 
   const onFinish = async (values: any) => {
@@ -53,6 +53,25 @@ export default function Vehicle() {
     }
   };
 
+  const printPdfDirect = async (id: number) => {
+    try {
+      const response = await api.get<Blob>(`/vehicle/pdf/${id}`, {
+        responseType: "blob",
+      });
+      const url = URL.createObjectURL(response.data);
+      const iframe = document.createElement("iframe");
+      iframe.style.display = "none";
+      iframe.src = url;
+      document.body.appendChild(iframe);
+      iframe.onload = () => {
+
+        iframe?.contentWindow?.focus();
+        iframe?.contentWindow?.print();
+      };
+    } catch (err) {
+      message.error("Falha ao gerar PDF para impressão");
+    }
+  };
   const columns: ColumnsType<Vehicle> = [
     { title: 'Nome', dataIndex: 'surname', key: 'surname', width: '20%' },
     { title: 'Marca', dataIndex: 'mark', key: 'mark', width: '20%' },
@@ -66,7 +85,7 @@ export default function Vehicle() {
       title: 'Ações', key: 'action', width: '20%',
 
 
-  render: (_, record) => (
+      render: (_, record) => (
         <Space size="small">
           <Button
             type="text"
@@ -82,9 +101,9 @@ export default function Vehicle() {
           <Button
             type="text"
             icon={<PrinterOutlined />}
-            onClick={(e) => {
+            onClick={() => {
 
-              message.info(`Imprimir viagem ID: ${record.id}`);
+              printPdfDirect(record.id)
             }}
           />
           <Button

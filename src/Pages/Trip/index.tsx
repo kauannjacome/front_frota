@@ -121,6 +121,26 @@ export default function Trip() {
     }
   };
 
+    const printPdfDirect = async (id: number) => {
+    try {
+      const response = await api.get<Blob>(`/trip/pdf/${id}`, {
+        responseType: "blob",
+      });
+      const url = URL.createObjectURL(response.data);
+      const iframe = document.createElement("iframe");
+      iframe.style.display = "none";
+      iframe.src = url;
+      document.body.appendChild(iframe);
+      iframe.onload = () => {
+
+        iframe?.contentWindow?.focus();
+        iframe?.contentWindow?.print();
+      };
+    } catch (err) {
+      message.error("Falha ao gerar PDF para impressão");
+    }
+  };
+
   const columns: ColumnsType<Trip> = [
     {
       title: "Propósito",
@@ -188,9 +208,9 @@ export default function Trip() {
           <Button
             type="text"
             icon={<PrinterOutlined />}
-            onClick={() => {
-              message.info(`Imprimir viagem ID: ${record.id}`);
-            }}
+       
+              onClick={() => printPdfDirect(record.id)}
+
           />
           <Button
             type="text"

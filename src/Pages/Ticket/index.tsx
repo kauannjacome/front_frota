@@ -87,7 +87,25 @@ export default function Ticket() {
       message.error("Não foi possível excluir a passagem.");
     }
   };
+ const printPdfDirect = async (id: number) => {
+    try {
+      const response = await api.get<Blob>(`/ticket/pdf/${id}`, {
+        responseType: "blob",
+      });
+      const url = URL.createObjectURL(response.data);
+      const iframe = document.createElement("iframe");
+      iframe.style.display = "none";
+      iframe.src = url;
+      document.body.appendChild(iframe);
+      iframe.onload = () => {
 
+        iframe?.contentWindow?.focus();
+        iframe?.contentWindow?.print();
+      };
+    } catch (err) {
+      message.error("Falha ao gerar PDF para impressão");
+    }
+  };
   const columns: ColumnsType<Ticket> = [
     {
       title: "Fornecedor",
@@ -145,7 +163,7 @@ export default function Ticket() {
             icon={<PrinterOutlined />}
             onClick={(e) => {
 
-              message.info(`Imprimir viagem ID: ${record.id}`);
+           printPdfDirect(record.id)
             }}
           />
           <Button
