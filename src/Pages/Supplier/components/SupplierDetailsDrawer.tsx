@@ -54,27 +54,21 @@ export default function SupplierDetailsDrawer({
         <Spin />
       ) : supplier ? (
         <>
-          <Descriptions bordered column={2} layout="horizontal">
-            <Descriptions.Item label="ID">{supplier.id}</Descriptions.Item>
-            <Descriptions.Item label="UUID">{supplier.uuid}</Descriptions.Item>
+          <Descriptions bordered column={1} layout="horizontal">
+
             <Descriptions.Item label="Nome">{supplier.name}</Descriptions.Item>
             <Descriptions.Item label="Telefone">{supplier.telephone ?? "-"}</Descriptions.Item>
             <Descriptions.Item label="E-mail">{supplier.email ?? "-"}</Descriptions.Item>
             <Descriptions.Item label="CNPJ">{supplier.cnpj}</Descriptions.Item>
             <Descriptions.Item label="Categoria">{supplier.category}</Descriptions.Item>
-            <Descriptions.Item label="Criado Em">
-              {moment(supplier.created_at).format("DD/MM/YYYY HH:mm")}
-            </Descriptions.Item>
-            <Descriptions.Item label="Atualizado Em">
-              {moment(supplier.updated_at).format("DD/MM/YYYY HH:mm")}
-            </Descriptions.Item>
-            <Descriptions.Item label="Deletado Em">
-              {supplier.deleted_at
-                ? moment(supplier.deleted_at).format("DD/MM/YYYY HH:mm")
-                : "-"}
-            </Descriptions.Item>
+
           </Descriptions>
           <Divider />
+
+          <p style={{ textAlign: "center", color: "#999" }}>
+            Registrado em{" "}
+            {moment(supplier.created_at).format("DD/MM/YYYY HH:mm")}, Atualizado em{" "}{moment(supplier.created_at).format("DD/MM/YYYY HH:mm")}
+          </p>
           {/* Espaço para informações adicionais, histórico de pedidos, etc. */}
         </>
       ) : (

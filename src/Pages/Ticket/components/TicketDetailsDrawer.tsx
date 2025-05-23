@@ -31,7 +31,7 @@ export default function TicketDetailsDrawer({
         console.error("Erro ao buscar detalhes do ticket:", err);
         setLoading(false)
       })
- 
+
   }, [ticket_id]);
 
   return (
@@ -58,7 +58,7 @@ export default function TicketDetailsDrawer({
         <Spin />
       ) : ticket ? (
         <>
-          <Descriptions bordered column={2} layout="horizontal">
+          <Descriptions bordered column={1} layout="horizontal">
 
             <Descriptions.Item label="Fornecedor">
               {ticket.supplier?.name}
@@ -89,12 +89,14 @@ export default function TicketDetailsDrawer({
             <Descriptions.Item label="Visualizado pelo Atendente">
               {ticket.attendant_viewed ? "Sim" : "Não"}
             </Descriptions.Item>
-            <Descriptions.Item label="Criado Em">
-              {moment(ticket.created_at).format("DD/MM/YYYY HH:mm")}
-            </Descriptions.Item>
+
           </Descriptions>
 
           <Divider />
+          <p style={{ textAlign: "center", color: "#999" }}>
+            Registrado em{" "}
+            {moment(ticket.created_at).format("DD/MM/YYYY HH:mm")}, Atualizado em{" "}{moment(ticket.created_at).format("DD/MM/YYYY HH:mm")}
+          </p>
 
           {/* Se houver outras informações relevantes, pode-se adicionar aqui */}
         </>

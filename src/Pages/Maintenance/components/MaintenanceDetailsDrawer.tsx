@@ -78,10 +78,7 @@ export default function MaintenanceDetailsDrawer({
         <Spin />
       ) : maintenanceDetails ? (
         <>
-          <Descriptions bordered column={2} layout="horizontal">
-            <Descriptions.Item label="ID">
-              {maintenanceDetails.id}
-            </Descriptions.Item>
+          <Descriptions bordered column={1} layout="horizontal">
             <Descriptions.Item label="Tipo">
               {maintenanceTypeLabels[
                 maintenanceDetails.type as MaintenanceTypeKey
@@ -174,6 +171,11 @@ export default function MaintenanceDetailsDrawer({
               />
             </>
           )}
+                   <Divider />
+                    <p style={{ textAlign: "center", color: "#999" }}>
+                      Registrado em{" "}
+                      {moment(maintenanceDetails.created_at).format("DD/MM/YYYY HH:mm")}, Atualizado em{" "}{moment(maintenanceDetails.created_at).format("DD/MM/YYYY HH:mm")}
+                    </p>
         </>
       ) : (
         <p>Sem dados para exibir.</p>

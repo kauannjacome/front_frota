@@ -58,10 +58,8 @@ export default function VehicleDetailsDrawer({
         <>
           <Descriptions bordered column={1} layout="horizontal">
 
-            <Descriptions.Item label="Capacidade (pessoas)">
-              {vehicleDetails.capacity_person}
-            </Descriptions.Item>
-            <Descriptions.Item label="Apelido">
+
+            <Descriptions.Item label="Nome">
               {vehicleDetails.surname}
             </Descriptions.Item>
             <Descriptions.Item label="Marca">
@@ -75,6 +73,9 @@ export default function VehicleDetailsDrawer({
             </Descriptions.Item>
             <Descriptions.Item label="Renavam">
               {vehicleDetails.renavam}
+            </Descriptions.Item>
+            <Descriptions.Item label="Capacidade (pessoas)">
+              {vehicleDetails.capacity_person}
             </Descriptions.Item>
             <Descriptions.Item label="Transporte de pessoas">
               {vehicleDetails.is_people ? "Sim" : "Não"}
@@ -95,6 +96,11 @@ export default function VehicleDetailsDrawer({
             </Descriptions.Item>
 
           </Descriptions>
+          <Divider />
+          <p style={{ textAlign: "center", color: "#999" }}>
+            Registrado em{" "}
+            {moment(vehicleDetails.created_at).format("DD/MM/YYYY HH:mm")}, Atualizado em{" "}{moment(vehicleDetails.created_at).format("DD/MM/YYYY HH:mm")}
+          </p>
           {/* Se houver dados relacionados, pode adicionar tabelas aqui */}
         </>
       ) : (

@@ -54,7 +54,7 @@ export default function Vehicle() {
   };
 
   const columns: ColumnsType<Vehicle> = [
-    { title: 'Apelido', dataIndex: 'surname', key: 'surname', width: '20%' },
+    { title: 'Nome', dataIndex: 'surname', key: 'surname', width: '20%' },
     { title: 'Marca', dataIndex: 'mark', key: 'mark', width: '20%' },
     { title: 'Modelo', dataIndex: 'model', key: 'model', width: '20%' },
     { title: 'Placa', dataIndex: 'plate', key: 'plate', width: '10%' },
@@ -128,7 +128,7 @@ export default function Vehicle() {
         >
           <Row gutter={[16, 8]}>
             <Col xs={24} sm={12} md={8} lg={6}>
-              <Form.Item label="Apelido" name="surname">
+              <Form.Item label="Nome" name="surname">
                 <Input placeholder="Digite o apelido" allowClear />
               </Form.Item>
             </Col>

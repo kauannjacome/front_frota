@@ -25,11 +25,11 @@ export default function UserDetailsDrawer({
       .get(`/user/${user_id}`)
       .then((res) => {
         setUserDetails(res.data);
-            setLoading(false);
+        setLoading(false);
       })
       .catch((err) => {
         console.error("Erro ao buscar detalhes do usuário:", err);
-            setLoading(false);
+        setLoading(false);
       })
 
   }, [user_id]);
@@ -55,46 +55,24 @@ export default function UserDetailsDrawer({
         <Spin />
       ) : userDetails ? (
         <>
-          <Descriptions bordered column={2} layout="horizontal">
-            <Descriptions.Item label="ID">{userDetails.id}</Descriptions.Item>
-            <Descriptions.Item label="UUID">{userDetails.uuid}</Descriptions.Item>
+          <Descriptions bordered column={1} layout="horizontal">
+
             <Descriptions.Item label="Nome">{userDetails.name}</Descriptions.Item>
             <Descriptions.Item label="CPF">{userDetails.cpf}</Descriptions.Item>
             <Descriptions.Item label="CNH">{userDetails.cnh ?? "-"}</Descriptions.Item>
             <Descriptions.Item label="E-mail">{userDetails.email ?? "-"}</Descriptions.Item>
             <Descriptions.Item label="Telefone">{userDetails.phone_number ?? "-"}</Descriptions.Item>
             <Descriptions.Item label="Cargo">{userDetails.role}</Descriptions.Item>
-            <Descriptions.Item label="Tipo">{userDetails.type}</Descriptions.Item>
-            <Descriptions.Item label="Bloqueado">
-              {userDetails.is_blocked ? "Sim" : "Não"}
-            </Descriptions.Item>
-            <Descriptions.Item label="Senha Temporária">
-              {userDetails.is_password_temp ? "Sim" : "Não"}
-            </Descriptions.Item>
-            <Descriptions.Item label="Tentativas Falhas">
-              {userDetails.number_try}
-            </Descriptions.Item>
-            <Descriptions.Item label="Termos Aceitos">
-              {userDetails.accepted_terms ? "Sim" : "Não"}
-            </Descriptions.Item>
-            <Descriptions.Item label="Data Aceite Termos">
-              {userDetails.accepted_terms_at
-                ? moment(userDetails.accepted_terms_at).format("DD/MM/YYYY HH:mm")
-                : "-"}
-            </Descriptions.Item>
-            <Descriptions.Item label="Criado Em">
-              {moment(userDetails.created_at).format("DD/MM/YYYY HH:mm")}
-            </Descriptions.Item>
-            <Descriptions.Item label="Atualizado Em">
-              {moment(userDetails.updated_at).format("DD/MM/YYYY HH:mm")}
-            </Descriptions.Item>
-            <Descriptions.Item label="Deletado Em">
-              {userDetails.deleted_at
-                ? moment(userDetails.deleted_at).format("DD/MM/YYYY HH:mm")
-                : "-"}
-            </Descriptions.Item>
+
+
           </Descriptions>
+
           <Divider />
+          <p style={{ textAlign: "center", color: "#999" }}>
+            Registrado em{" "}
+            {moment(userDetails.created_at).format("DD/MM/YYYY HH:mm")}, Atualizado em{" "}{moment(userDetails.created_at).format("DD/MM/YYYY HH:mm")}
+          </p>
+
           {/* Espaço para informações adicionais, se necessário */}
         </>
       ) : (

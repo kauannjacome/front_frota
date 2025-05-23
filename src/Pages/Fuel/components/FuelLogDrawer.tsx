@@ -76,7 +76,7 @@ export default function FuelLogDrawer({
         <Spin />
       ) : logDetails ? (
         <>
-          <Descriptions bordered column={2} layout="horizontal">
+          <Descriptions bordered column={1} layout="horizontal">
             <Descriptions.Item label="Veículo">
               {logDetails.vehicle
                 ? `${logDetails.vehicle.mark} ${logDetails.vehicle.model} (${logDetails.vehicle.plate})`
@@ -136,8 +136,9 @@ export default function FuelLogDrawer({
 
           <p style={{ textAlign: "center", color: "#999" }}>
             Registrado em{" "}
-            {moment(logDetails.created_at).format("DD/MM/YYYY HH:mm")}
+            {moment(logDetails.created_at).format("DD/MM/YYYY HH:mm")}, Atualizado em{" "}{moment(logDetails.created_at).format("DD/MM/YYYY HH:mm")}
           </p>
+
         </>
       ) : (
         <p>Sem dados para exibir.</p>

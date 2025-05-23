@@ -120,7 +120,14 @@ export default function TripDetailsDrawer({
               },
             ]}
           />
-        </>
+  
+                 <Divider />
+          <p style={{ textAlign: "center", color: "#999" }}>
+            Registrado em{" "}
+            {moment(tripDetails.created_at).format("DD/MM/YYYY HH:mm")}, Atualizado em{" "}{moment(tripDetails.created_at).format("DD/MM/YYYY HH:mm")}
+          </p>
+             </>
+        
       ) : (
         <p>Sem dados para exibir.</p>
       )}
