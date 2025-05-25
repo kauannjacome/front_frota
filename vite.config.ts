@@ -13,7 +13,9 @@ export default defineConfig({
     host: '0.0.0.0',  // escuta em todas as interfaces
     port: parseInt(process.env.PORT) || 4173,
     allowedHosts: [
-      'front-frota-simplificada-991de2926ab5.herokuapp.com'
+      'front-frota-simplificada-991de2926ab5.herokuapp.com',
+      'www.frota.simplescity.com.br',
+      'frota.simplescity.com.br'
     ]
   }
 })
