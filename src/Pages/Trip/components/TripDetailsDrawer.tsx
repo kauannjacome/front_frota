@@ -6,7 +6,7 @@ import { PrinterOutlined } from "@ant-design/icons";
 
 interface TripDetailsDrawerProps {
   open: boolean;
-  trip_id: number | null;
+  tripId: number | null;
   onClose: () => void;
 }
 // logo no topo do seu componente ou num arquivo de constantes
@@ -21,16 +21,19 @@ const typeTripLabels = {
   
 export default function TripDetailsDrawer({
   open,
-  trip_id,
+  tripId,
   onClose,
 }: TripDetailsDrawerProps) {
   const [loading, setLoading] = useState<boolean>(false);
   const [tripDetails, setTripDetails] = useState<any>(null);
 
   useEffect(() => {
+      if (!open || tripId == null) {
+    return;
+  }
     setLoading(true);
     api
-      .get(`/trip/${trip_id}`)
+      .get(`/trip/${tripId}`)
       .then((res) => {
         setTripDetails(res.data);
         setLoading(false);
@@ -39,7 +42,7 @@ export default function TripDetailsDrawer({
         console.error("Erro ao buscar detalhes:", err);
         setLoading(false);
       });
-  }, [trip_id]);
+  }, [tripId]);
 
   return (
     <Drawer

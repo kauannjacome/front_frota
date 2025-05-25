@@ -88,7 +88,7 @@ export default function Auth() {
           subscribe_name: userStorage.subscribe_name,
         };
 
-        localStorage.setItem("authTokenFrota", token);
+        sessionStorage.setItem("authTokenFrota", token);
         sessionStorage.setItem("userStorage", JSON.stringify(storageData));
         const payload = jwtDecode<JWTPayload>(token);
         if (storageData.role === 'MANAGE') {

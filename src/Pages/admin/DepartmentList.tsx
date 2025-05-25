@@ -18,6 +18,12 @@ interface Department {
   updated_at: string;
   deleted_at: string | null;
 }
+// Defina a tipagem da resposta de refresh
+interface RefreshResponse {
+  status: number;
+  message: string;
+  token: string;
+}
 
 export default function DepartmentList() {
   const [departments, setDepartments] = useState<Department[]>([]);
@@ -36,19 +42,25 @@ export default function DepartmentList() {
 
   const onFinish = async (id: number) => {
     try {
-      // Monta corretamente o objeto de valores
-      // const values = {
-      //   department_id: id,
-      //   // Converte subscriberId (string) para number
-      //   subscriber_id: subscriberId ? Number(subscriberId) : undefined,
-      // };
+      const values = { "departament_id": id };
 
-      // await api.post('/subscriber', values);
+      // Chama o endpoint de refresh
+      const response = await api.post<RefreshResponse>('/auth/admin/refresh', values);
+      // Para apagar apenas esse item específico
+      sessionStorage.removeItem('authTokenFrota');
+      console.log(response.data.token)
+
+      sessionStorage.setItem('authTokenFrota', response.data.token);
+      message.success('Token regenerado com sucesso.');
+
+      // Redireciona para a página de viagens
       navigate('/trip');
-    } catch (error) {
-      console.error('Erro ao adicionar assinante:', error);
-      message.error('Não foi possível adicionar o assinante.');
+
+    } catch (error: any) {
+      console.error('Erro ao regenerar token:', error);
+      message.error('Erro ao regenerar o token. Tente novamente.');
     }
+
   };
 
   return (

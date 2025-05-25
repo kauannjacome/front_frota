@@ -350,7 +350,7 @@ export default function Trip() {
 
       <TripDetailsDrawer
         open={drawerOpen}
-        trip_id={selectedTripId}
+        tripId={selectedTripId}
         onClose={() => {
           setDrawerOpen(false);
           setSelectedTripId(null);
