@@ -16,11 +16,21 @@ export default function UserButton() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
 
-  // Pega os dados do usuário armazenados no sessionStorage
-  const stored = sessionStorage.getItem("userStorage");
-  const user: UserStorage = stored
-    ? JSON.parse(stored)
-    : { id: "", name: "Usuário Teste", role: "", subscribe_name: "" };
+let user: UserStorage = {
+  id: "",
+  name: "Usuário Teste",
+  role: "",
+  subscribe_name: "",
+};
+
+try {
+  const json = sessionStorage.getItem("userStorage");
+  if (json) {
+    user = JSON.parse(json);
+  }
+} catch (e) {
+  console.warn("Erro ao ler ou parsear userStorage:", e);
+}
 
   const handleMenuClick = ({ key }: { key: string }) => {
     if (key === "logout") {

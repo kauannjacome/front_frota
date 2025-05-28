@@ -38,41 +38,64 @@ interface AppMenuItem {
   roles: role_user[];
 }
 
+interface UserStorage {
+  id: string;
+  name: string;
+  role: role_user;
+  subscribe_name: string;
+}
+
 // Itens de menu com permissões por role
 const menuItems: AppMenuItem[] = [
-  { key: '1',  label: 'Viagem',      icon: <CalendarOutlined />,    path: '/trip',            roles: [role_user.MANAGE, role_user.ADMIN_LOCAL, role_user.SECRETARY, role_user.TYPIST] },
-  { key: '2',  label: 'Combustível', icon: <ThunderboltOutlined />, path: '/fuel',            roles: [role_user.MANAGE,role_user.SECRETARY, role_user.ADMIN_LOCAL] },
-  { key: '3',  label: 'Manutenção',  icon: <ToolOutlined />,         path: '/maintenance',     roles: [role_user.MANAGE,role_user.SECRETARY, role_user.ADMIN_LOCAL] },
-  { key: '5',  label: 'Veículos',    icon: <CarOutlined />,          path: '/vehicle',         roles: [role_user.MANAGE,role_user.SECRETARY, role_user.ADMIN_LOCAL, role_user.DRIVE] },
-  { key: '6',  label: 'Pessoas',     icon: <TeamOutlined />,         path: '/person',          roles: [role_user.MANAGE,role_user.SECRETARY, role_user.ADMIN_LOCAL, role_user.SECRETARY,role_user.TYPIST] },
-  { key: '7',  label: 'Ticket',      icon: <SnippetsOutlined />,     path: '/ticket',          roles: [role_user.MANAGE,role_user.SECRETARY, role_user.ADMIN_LOCAL, role_user.TYPIST] },
-  { key: '8',  label: 'Usuários',    icon: <ShopOutlined />,         path: '/user',            roles: [role_user.MANAGE,role_user.SECRETARY,role_user.ADMIN_LOCAL] },
-  { key: '9',  label: 'Fornecedor',  icon: <ShopOutlined />,         path: '/supplier',        roles: [role_user.MANAGE,role_user.SECRETARY, role_user.ADMIN_SUPPLY] },
+  { key: '1', label: 'Viagem', icon: <CalendarOutlined />, path: '/trip', roles: [role_user.MANAGE, role_user.ADMIN_LOCAL, role_user.SECRETARY, role_user.TYPIST] },
+  { key: '2', label: 'Combustível', icon: <ThunderboltOutlined />, path: '/fuel', roles: [role_user.MANAGE, role_user.SECRETARY, role_user.ADMIN_LOCAL] },
+  { key: '3', label: 'Manutenção', icon: <ToolOutlined />, path: '/maintenance', roles: [role_user.MANAGE, role_user.SECRETARY, role_user.ADMIN_LOCAL] },
+  { key: '5', label: 'Veículos', icon: <CarOutlined />, path: '/vehicle', roles: [role_user.MANAGE, role_user.SECRETARY, role_user.ADMIN_LOCAL, role_user.DRIVE] },
+  { key: '6', label: 'Pessoas', icon: <TeamOutlined />, path: '/person', roles: [role_user.MANAGE, role_user.SECRETARY, role_user.ADMIN_LOCAL, role_user.SECRETARY, role_user.TYPIST] },
+  { key: '7', label: 'Ticket', icon: <SnippetsOutlined />, path: '/ticket', roles: [role_user.MANAGE, role_user.SECRETARY, role_user.ADMIN_LOCAL, role_user.TYPIST] },
+  { key: '8', label: 'Usuários', icon: <ShopOutlined />, path: '/user', roles: [role_user.MANAGE, role_user.SECRETARY, role_user.ADMIN_LOCAL] },
+  { key: '9', label: 'Fornecedor', icon: <ShopOutlined />, path: '/supplier', roles: [role_user.MANAGE, role_user.SECRETARY, role_user.ADMIN_SUPPLY] },
   {
     key: '10',
     label: 'Relatórios',
     icon: <FileTextOutlined />,
-    roles: [role_user.MANAGE,role_user.SECRETARY, role_user.ADMIN_LOCAL, role_user.ADMIN_SUPPLY],
+    roles: [role_user.MANAGE, role_user.SECRETARY, role_user.ADMIN_LOCAL, role_user.ADMIN_SUPPLY],
     children: [
-      { key: '10-1', label: 'Viagens',     path: '/report/trip',         roles: [role_user.MANAGE, role_user.ADMIN_LOCAL] },
-      { key: '10-2', label: 'Combustível', path: '/report/fuel-log',     roles: [role_user.MANAGE, role_user.ADMIN_LOCAL] },
-      { key: '10-3', label: 'Manutenção',  path: '/report/maintenance',  roles: [role_user.MANAGE, role_user.ADMIN_LOCAL] },
-      { key: '10-4', label: 'Motorista',   path: '/report/driver',       roles: [role_user.MANAGE, role_user.ADMIN_LOCAL] },
-      { key: '10-5', label: 'Veículos',    path: '/report/vehicle',      roles: [role_user.MANAGE, role_user.ADMIN_LOCAL] },
+      { key: '10-1', label: 'Viagens', path: '/report/trip', roles: [role_user.MANAGE, role_user.ADMIN_LOCAL] },
+      { key: '10-2', label: 'Combustível', path: '/report/fuel-log', roles: [role_user.MANAGE, role_user.ADMIN_LOCAL] },
+      { key: '10-3', label: 'Manutenção', path: '/report/maintenance', roles: [role_user.MANAGE, role_user.ADMIN_LOCAL] },
+      { key: '10-4', label: 'Motorista', path: '/report/driver', roles: [role_user.MANAGE, role_user.ADMIN_LOCAL] },
+      { key: '10-5', label: 'Veículos', path: '/report/vehicle', roles: [role_user.MANAGE, role_user.ADMIN_LOCAL] },
     ],
   },
-  { key: '4',  label: 'Departamento', icon: <ApartmentOutlined />,  path: '/department',        roles: [role_user.MANAGE] },
-  { key: '11', label: 'Assinante',    icon: <BankOutlined />,        path: '/subscriber',        roles: [role_user.MANAGE] },
+  { key: '4', label: 'Departamento', icon: <ApartmentOutlined />, path: '/department', roles: [role_user.MANAGE] },
+  { key: '11', label: 'Assinante', icon: <BankOutlined />, path: '/subscriber', roles: [role_user.MANAGE] },
 ];
 
 const App: React.FC = () => {
-  const userInfo = JSON.parse(sessionStorage.getItem("userStorage")!);
+
+  let userInfo: UserStorage = {
+    id: "",
+    name: "Usuário Teste",
+    role: role_user.MANAGE,
+    subscribe_name: "",
+  };
+
+  try {
+    const json = sessionStorage.getItem("userStorage");
+    if (json) {
+      userInfo = JSON.parse(json);
+    }
+  } catch (e) {
+    console.warn("Erro ao ler ou parsear userStorage:", e);
+  }
+
   const userRole: role_user = userInfo.role;
 
-  const [collapsed, setCollapsed]     = useState(false);
-  const [loading, setLoading]         = useState(true);
-  const navigate                      = useNavigate();
-  const location                      = useLocation();
+  const [collapsed, setCollapsed] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  const location = useLocation();
   const [selectedKey, setSelectedKey] = useState('1');
 
   // Filtra menu e submenu baseado no role do usuário
@@ -98,9 +121,9 @@ const App: React.FC = () => {
     const flat: FlatItem[] = filteredMenuItems.flatMap(item =>
       item.children
         ? [
-            { ...item, parentKey: undefined },
-            ...item.children!.map(child => ({ ...child, parentKey: item.key })),
-          ]
+          { ...item, parentKey: undefined },
+          ...item.children!.map(child => ({ ...child, parentKey: item.key })),
+        ]
         : [{ ...item, parentKey: undefined }]
     );
     flat.sort((a, b) => (b.path?.length ?? 0) - (a.path?.length ?? 0));
