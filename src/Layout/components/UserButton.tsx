@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Dropdown, Button, Avatar, Typography } from "antd";
-import { UserOutlined, DownOutlined } from "@ant-design/icons";
+import { UserOutlined, DownOutlined, SettingOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 
 const { Text } = Typography;
@@ -32,10 +32,16 @@ export default function UserButton() {
   };
 
   const menuItems = [
+
     {
       label: "Meu Perfil",
       key: "profile",
       icon: <UserOutlined />,
+    },
+    user.role === "ADMIN_LOCAL" && {
+      label: "Painel de Admin",
+      key: "admin",
+      icon: <SettingOutlined />,
     },
     {
       label: "Sair",

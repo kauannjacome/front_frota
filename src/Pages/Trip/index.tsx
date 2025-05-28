@@ -21,6 +21,7 @@ import {
   PrinterOutlined,
   SearchOutlined,
   EyeOutlined,
+  DashboardOutlined,
 } from "@ant-design/icons";
 import Table, { ColumnsType } from "antd/es/table";
 import moment from "moment";
@@ -35,6 +36,7 @@ import {
 } from "../../common/types/constantsTypes";
 import { Veiculo } from "../../common/store/VehicleStore";
 import TripDetailsDrawer from "./components/TripDetailsDrawer";
+import CreateFuelLogDrawer from "./components/CreateFuelLogDrawer";
 
 dayjs.locale("pt-br");
 
@@ -50,6 +52,13 @@ interface Trip {
   vehicle_id: number;
   driver_id: number;
 }
+interface UserStorage {
+  id: string;
+  name: string;
+  role: string;
+  subscribe_name: string;
+}
+
 
 export default function Trip() {
   const navigate = useNavigate();
@@ -59,7 +68,13 @@ export default function Trip() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedTripId, setSelectedTripId] = useState<number | null>(null);
   const [endCities, setEndCities] = useState<string[]>([]);
+  const [fuelDrawerOpen, setFuelDrawerOpen] = useState(false);
 
+
+  const stored = sessionStorage.getItem("userStorage");
+  const user: UserStorage = stored
+    ? JSON.parse(stored)
+    : { id: "", name: "Usuário Teste", role: "", subscribe_name: "" };
   // lista de UFs
   const ufs = states();
 
@@ -97,7 +112,7 @@ export default function Trip() {
     if (values.end_city) params.end_city = values.end_city;
     if (values.journey_start) {
       // values.journey_start é um Dayjs (DatePicker do Ant)
-  params.journey_start = values.journey_start.format('YYYY-MM-DDTHH:mm:ssZ');
+      params.journey_start = values.journey_start.format('YYYY-MM-DDTHH:mm:ssZ');
     }
 
     try {
@@ -121,7 +136,7 @@ export default function Trip() {
     }
   };
 
-    const printPdfDirect = async (id: number) => {
+  const printPdfDirect = async (id: number) => {
     try {
       const response = await api.get<Blob>(`/trip/pdf/${id}`, {
         responseType: "blob",
@@ -197,6 +212,16 @@ export default function Trip() {
       width: "20%",
       render: (_, record) => (
         <Space size="small">
+          {(user.role === "MANAGE" || user.role === "ADMIN_LOCAL" || user.role === "SECRETARY" || user.role === "SUPERVISOR") && (
+            <Button
+              type="text"
+              icon={<DashboardOutlined />}
+              onClick={() => {
+                setSelectedTripId(record.id);
+                setFuelDrawerOpen(true);
+              }}
+            />
+          )}
           <Button
             type="text"
             icon={<EyeOutlined />}
@@ -208,8 +233,8 @@ export default function Trip() {
           <Button
             type="text"
             icon={<PrinterOutlined />}
-       
-              onClick={() => printPdfDirect(record.id)}
+
+            onClick={() => printPdfDirect(record.id)}
 
           />
           <Button
@@ -356,6 +381,17 @@ export default function Trip() {
           setSelectedTripId(null);
         }}
       />
+      <CreateFuelLogDrawer
+        open={fuelDrawerOpen}
+        tripId={selectedTripId}
+        onClose={() => setFuelDrawerOpen(false)}
+        onCreated={() => {
+          setFuelDrawerOpen(false);
+          // talvez dar um refresh na lista de viagens ou recarregar detalhes
+          onFinish(form.getFieldsValue());
+        }}
+      />
+
     </div>
   );
 }

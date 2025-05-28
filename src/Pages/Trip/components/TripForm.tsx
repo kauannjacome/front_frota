@@ -1,4 +1,4 @@
-import  { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Form,
   Input,
@@ -75,7 +75,7 @@ export default function TripForm({
   const [veiculos, setVeiculos] = useState<Veiculo[]>([]);
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [persons, setPersons] = useState<PersonRow[]>(initialPersons);
-
+  const [searchValue, setSearchValue] = useState('');
   // carrega veículos e motoristas
   useEffect(() => {
     api.get<Veiculo[]>('/vehicle')
@@ -138,6 +138,7 @@ export default function TripForm({
       .then(res => {
         const newPerson: PersonRow = { ...res.data, dropoff_location: '', notes: '' };
         setPersons(prev => [...prev, newPerson]);
+        setSearchValue('');
       })
       .catch(err => console.error('Erro ao carregar pessoa', err));
   };
@@ -193,7 +194,7 @@ export default function TripForm({
 
   // quando o formulário for enviado
   const onFormFinish = (values: TripFormValues) => {
-    console.log(values,persons)
+    console.log(values, persons)
     onFinish(values, persons);
   };
 
@@ -322,12 +323,18 @@ export default function TripForm({
           <Row gutter={[8, 0]} wrap={false} align="middle" style={{ marginBottom: 24 }}>
             <Col flex="auto">
               <AutoComplete
+
                 style={{ width: '80%' }}
                 options={suggestions}
+                value={searchValue}
+                onChange={setSearchValue}
                 onSearch={handleSearch}
                 onSelect={handleSelect}
+
                 placeholder="Digite nome da pessoa"
                 filterOption={false}
+
+
               >
                 <Input.Search enterButton />
               </AutoComplete>
