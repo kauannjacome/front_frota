@@ -64,6 +64,7 @@ import VehicleReport from "../Pages/Report/VehicleReport";
 import SubscriberList from "../Pages/admin/SubscriberList";
 import DepartmentList from "../Pages/admin/DepartmentList";
 import AuthMobile from "../Pages/Mobile/AuthMobile";
+import UploadPersonCsvForm from "../Pages/Person/UploadPersonCsvForm";
 
 export default function AppRoutes() {
   return (
@@ -72,6 +73,7 @@ export default function AppRoutes() {
         <Route path="/" element={<Auth />} />
         <Route path="/admin/subscriber" element={<SubscriberList />} />
         <Route path="/admin/department/:id" element={<DepartmentList />} />
+ 
 
         <Route path="/auth/mobile" element={<AuthMobile />} />
         <Route path="/supplier/fuel-log-attendant" element={<FuelLogAttendant />} />
@@ -96,6 +98,7 @@ export default function AppRoutes() {
           <Route path="/person" element={<Person />} />
           <Route path="/person/create" element={<CreatePerson />} />
           <Route path="/person/edit/:id" element={<CreatePerson />} />
+          <Route path="/person/lot/create" element={<UploadPersonCsvForm />} />
 
           <Route path="/ticket" element={<Ticket />} />
           <Route path="/ticket/create" element={<CreateTicket />} />

@@ -68,7 +68,7 @@ export default function Person() {
   // Buscar pessoas com base nos filtros do formulário
   const onFinish = async (values: any) => {
     try {
-      const response = await api.get<Person[]>('/person', { params: values });
+      const response = await api.get<Person[]>('/person/search', { params: values });
       setPersons(response.data);
       message.success('Busca realizada com sucesso!');
     } catch (error: any) {
@@ -163,20 +163,11 @@ export default function Person() {
         >
           <Row gutter={[16, 8]}>
             <Col xs={24} sm={12} md={8} lg={6}>
-              <Form.Item label="Nome" name="full_name">
+              <Form.Item label="Buscar" name="quickSearch">
                 <Input placeholder="Digite o nome" allowClear />
               </Form.Item>
             </Col>
 
-            <Col xs={24} sm={12} md={8} lg={6}>
-              <Form.Item label="CPF" name="cpf">
-                <Input
-                  placeholder="000.000.000-00"
-                  maxLength={14}
-                  allowClear
-                />
-              </Form.Item>
-            </Col>
           </Row>
 
           <Form.Item style={{ marginTop: 16, textAlign: 'left' }}>

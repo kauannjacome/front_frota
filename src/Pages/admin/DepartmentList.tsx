@@ -47,8 +47,6 @@ export default function DepartmentList() {
       // Chama o endpoint de refresh
       const response = await api.post<RefreshResponse>('/auth/admin/refresh', values);
       // Para apagar apenas esse item específico
-      sessionStorage.removeItem('authTokenFrota');
-      console.log(response.data.token)
 
       sessionStorage.setItem('authTokenFrota', response.data.token);
       message.success('Token regenerado com sucesso.');
