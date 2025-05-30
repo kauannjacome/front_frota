@@ -24,7 +24,7 @@ interface User {
   id: number;
   uuid: string;
   cpf: string;
-  name: string;
+  full_name: string;
   email: string | null;
   phone_number: string | null;
   role: string;
@@ -70,7 +70,7 @@ export default function User() {
   };
 
   const columns: ColumnsType<User> = [
-    { title: 'Nome', dataIndex: 'name', key: 'name', width: '20%' },
+    { title: 'Nome', dataIndex: 'full_name', key: 'full_name', width: '20%' },
     { title: 'CPF', dataIndex: 'cpf', key: 'cpf', width: '15%' },
 
     { title: 'E-mail', dataIndex: 'email', key: 'email', width: '20%' },
@@ -152,7 +152,7 @@ export default function User() {
         >
           <Row gutter={[16, 8]}>
             <Col xs={24} sm={12} md={8} lg={6}>
-              <Form.Item label="Nome" name="name">
+              <Form.Item label="Nome" name="full_name">
                 <Input
                   placeholder="Digite o nome"
                   allowClear

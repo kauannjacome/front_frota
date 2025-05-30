@@ -37,7 +37,7 @@ const styles = {
 // Tipagens para a resposta da API
 interface UserStorage {
   id: string;
-  name: string;
+  full_name: string;
   role: string;
   subscribe_name: string;
 }
@@ -83,7 +83,7 @@ export default function Auth() {
         const { token, userStorage } = response.data;
         const storageData = {
           id: userStorage.id,
-          name: userStorage.name,
+          full_name: userStorage.full_name,
           role: userStorage.role,
           subscribe_name: userStorage.subscribe_name,
         };

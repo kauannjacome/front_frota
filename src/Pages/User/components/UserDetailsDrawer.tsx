@@ -57,7 +57,7 @@ export default function UserDetailsDrawer({
         <>
           <Descriptions bordered column={1} layout="horizontal">
 
-            <Descriptions.Item label="Nome">{userDetails.name}</Descriptions.Item>
+            <Descriptions.Item label="Nome">{userDetails.full_name}</Descriptions.Item>
             <Descriptions.Item label="CPF">{userDetails.cpf}</Descriptions.Item>
             <Descriptions.Item label="CNH">{userDetails.cnh ?? "-"}</Descriptions.Item>
             <Descriptions.Item label="E-mail">{userDetails.email ?? "-"}</Descriptions.Item>

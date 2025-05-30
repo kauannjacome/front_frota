@@ -7,7 +7,7 @@ const { Text } = Typography;
 
 interface UserStorage {
   id: string;
-  name: string;
+  full_name: string;
   role: string;
   subscribe_name: string;
 }
@@ -18,7 +18,7 @@ export default function UserButton() {
 
 let user: UserStorage = {
   id: "",
-  name: "Usuário Teste",
+  full_name: "Usuário Teste",
   role: "",
   subscribe_name: "",
 };
@@ -70,7 +70,7 @@ try {
       <Button type="text" style={{ display: "flex", alignItems: "center" }}>
         <Avatar icon={<UserOutlined />} />
         <Text strong style={{ color: "#fff", margin: "0 8px" }}>
-          {user.name}
+          {user.full_name}
         </Text>
         <Text type="secondary" style={{ marginRight: 8 }}>
           {user.subscribe_name}

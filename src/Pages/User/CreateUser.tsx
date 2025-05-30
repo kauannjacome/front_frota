@@ -1,5 +1,4 @@
-// src/pages/CreateUser.tsx
-import  { useState } from 'react';
+import React, { useState } from 'react';
 import { Card, message } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import UserForm, { UserFormValues } from './components/UserForm';
@@ -14,12 +13,16 @@ export default function CreateUser() {
     try {
       const payload = {
         ...values,
+        birth_date: values.birth_date?.toISOString(),
+        death_date: values.death_date?.toISOString(),
         accepted_terms_at: values.accepted_terms_at?.toISOString(),
       };
+
       await api.post('/user', payload);
       message.success('Usuário criado com sucesso!');
       navigate('/user');
-    } catch {
+    } catch (error) {
+      console.error(error);
       message.error('Erro ao criar usuário.');
     } finally {
       setLoading(false);
@@ -31,10 +34,15 @@ export default function CreateUser() {
       <UserForm
         initialValues={{
           cpf: '',
-          name: '',
+          full_name: '',
           cnh: null,
           email: null,
-          phone_number: '',
+          phone_number: null,
+          nationality: null,
+          birth_date: undefined,
+          death_date: undefined,
+          mother_name: null,
+          father_name: null,
           password_hash: '',
           is_password_temp: false,
           number_try: 0,
@@ -42,12 +50,14 @@ export default function CreateUser() {
           role: 'ADMIN_LOCAL',
           type: 'CONTRATADO',
           accepted_terms: false,
-          accepted_terms_at: undefined as any,
+          accepted_terms_at: undefined,
           accepted_terms_version: null,
           subscriber_id: 1, // substituir pelo ID real
           supplier_id: null,
+          department_ids: [],
         }}
         onFinish={handleFinish}
+        onCancel={() => navigate(-1)}
       />
     </Card>
   );

@@ -54,7 +54,7 @@ interface Trip {
 }
 interface UserStorage {
   id: string;
-  name: string;
+  full_name: string;
   role: string;
   subscribe_name: string;
 }
@@ -74,7 +74,7 @@ export default function Trip() {
   const stored = sessionStorage.getItem("userStorage");
   const user: UserStorage = stored
     ? JSON.parse(stored)
-    : { id: "", name: "Usuário Teste", role: "", subscribe_name: "" };
+    : { id: "", full_name: "Usuário Teste", role: "", subscribe_name: "" };
   // lista de UFs
   const ufs = states();
 

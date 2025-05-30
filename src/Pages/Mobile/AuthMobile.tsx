@@ -7,7 +7,7 @@ import {jwtDecode} from "jwt-decode";
 // Tipagens
 interface UserStorage {
   id: string;
-  name: string;
+  full_name: string;
   role: string;
   subscribe_name: string;
 }

@@ -40,7 +40,7 @@ interface AppMenuItem {
 
 interface UserStorage {
   id: string;
-  name: string;
+  full_name: string;
   role: role_user;
   subscribe_name: string;
 }
@@ -76,7 +76,7 @@ const App: React.FC = () => {
 
   let userInfo: UserStorage = {
     id: "",
-    name: "Usuário Teste",
+    full_name: "Usuário Teste",
     role: role_user.MANAGE,
     subscribe_name: "",
   };
