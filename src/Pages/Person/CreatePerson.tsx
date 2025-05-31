@@ -17,6 +17,7 @@ export default function CreatePerson() {
         birth_date: values.birth_date.toISOString(),
         death_date: values.death_date?.toISOString(),
       };
+      console.log(payload)
       await api.post('/person', payload);
       message.success('Pessoa criada com sucesso!');
       navigate('/person');

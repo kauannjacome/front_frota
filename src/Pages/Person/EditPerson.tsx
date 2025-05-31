@@ -17,6 +17,7 @@ export default function EditPerson() {
     async function load() {
       try {
         const res = await api.get<PersonFormValues>(`/person/${id}`);
+        console.log(res)
         const data = res.data;
         setInitialValues({
           ...data,
