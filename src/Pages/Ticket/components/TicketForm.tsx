@@ -157,7 +157,7 @@ export default function TicketForm({
         </Col>
         <Col span={4}>
           <Form.Item name="travel_date" label="Data da Viagem">
-            <DatePicker style={{ width: "100%" }} showTime />
+            <DatePicker style={{ width: "100%" }} showTime format="DD/MM/YYYY HH:mm" />
           </Form.Item>
         </Col>
         <Col span={6}>

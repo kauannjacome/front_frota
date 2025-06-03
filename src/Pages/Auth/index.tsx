@@ -40,6 +40,9 @@ interface UserStorage {
   full_name: string;
   role: string;
   subscribe_name: string;
+  subscribe_id?: number;
+  state?: string;          // acrônimos do estado do subscriber (ex.: “SP”, “RJ”)
+  city?: string;
 }
 
 interface AuthResponse {
@@ -86,10 +89,15 @@ export default function Auth() {
           full_name: userStorage.full_name,
           role: userStorage.role,
           subscribe_name: userStorage.subscribe_name,
+          subscribe_id: userStorage.subscribe_id,
+          state: userStorage.state,
+          city: userStorage.city
+
         };
 
         sessionStorage.setItem("authTokenFrota", token);
         sessionStorage.setItem("userStorage", JSON.stringify(storageData));
+
         const payload = jwtDecode<JWTPayload>(token);
         if (storageData.role === 'MANAGE') {
           navigate("admin/subscriber");
@@ -109,7 +117,7 @@ export default function Auth() {
         messageApi.error("Ocorreu um erro inesperado ao fazer login.");
       }
     } catch (error: any) {
-        console.log("Erro no login:", error);
+      console.log("Erro no login:", error);
       if (error.response) {
         switch (error.response.status) {
           case 401:

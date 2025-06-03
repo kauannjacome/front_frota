@@ -149,7 +149,7 @@ export default function MaintenanceForm({ initialValues, onFinish, onCancel }: P
             label="Data"
 
           >
-            <DatePicker style={{ width: '100%' }} />
+            <DatePicker format="DD/MM/YYYY" style={{ width: '100%' }} />
           </Form.Item>
         </Col>
 

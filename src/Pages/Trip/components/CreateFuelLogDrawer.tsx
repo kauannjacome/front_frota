@@ -9,12 +9,16 @@ import {
   InputNumber,
   Button,
   Spin,
-  message
+  message,
+  Typography,
+  Descriptions,
+  Divider,
+  Switch
 } from "antd";
 import moment from "moment";
 import debounce from "lodash/debounce";
 import api from "../../../services/api";
-import { jwtDecode } from "jwt-decode";            // 1) named export, pois não há default export
+import { jwtDecode } from "jwt-decode"; // 1) named export, pois não há default export
 import { Trip, PayloadTokenDto } from "../../../types";
 
 const { Option } = Select;
@@ -30,8 +34,179 @@ export interface FuelLogFormValues {
   liters?: number;
   cost?: number;
   odometer?: number;
+  is_success?: boolean;
   fuel_type: "GASOLINA" | "ETANOL" | "DIESEL" | "ELETRICO" | "OUTRO";
   supply_type?: "COMPLETE" | "LITRO_ESPECIFICADO";
+}
+
+interface UserStorage {
+  id: string;
+  full_name: string;
+  role: string;
+  subscribe_name?: string; // pode ser undefined se não houver subscriber
+  subscribe_id?: string;
+  state?: string; // acrônimos do estado do subscriber (ex.: “SP”, “RJ”)
+  city?: string;
+}
+
+// Definição das interfaces TypeScript com base no JSON fornecido
+
+export interface Tripid {
+  id: number;
+  uuid: string;
+  purpose: string;
+  request_date: string;
+  start_state: string;
+  start_city: string;
+  end_state: string;
+  end_city: string;
+  journey_start: string;
+  journey_back: string;
+  status: string;
+  vehicle_id: number;
+  department_id: number;
+  subscriber_id: number;
+  driver_id: number;
+  authorizer_id: number;
+  attendant_id: number;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+  trip_passengers: TripPassenger[];
+  fuel_logs: FuelLog[];
+  driver: Driver;
+  vehicle: Vehicle;
+}
+
+export interface TripPassenger {
+  id: number;
+  uuid: string;
+  type: string;
+  trip_id: number;
+  passenger_id: number;
+  confirm_journey_start: string | null;
+  confirm_journey_back: string | null;
+  needs_accessibility: boolean;
+  notes: string;
+  dropoff_location: string;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+  passenger: PassengerInfo;
+}
+
+export interface PassengerInfo {
+  full_name: string;
+  phone_number: string | null;
+}
+
+export interface FuelLog {
+  id: number;
+  uuid: string;
+  vehicle_id: number;
+  driver_id: number;
+  authorizer_id: number;
+  attendant_id: number | null;
+  supplier_id: number;
+  department_id: number;
+  subscriber_id: number;
+  fuel_price_id: number | null;
+  attendant_viewed: boolean;
+  trip_id: number;
+  supply_date: string;
+  deadline: string;
+  liters: number;
+  cost: number;
+  odometer: number;
+  fuel_type: string;
+  supply_type: string;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+}
+
+export interface Driver {
+  id: number;
+  uuid: string;
+  cpf: string;
+  cnh: string | null;
+  email: string;
+  phone_number: string;
+  full_name: string;
+  name_search: string | null;
+  nationality: string | null;
+  birth_date: string | null;
+  death_date: string | null;
+  mother_name: string | null;
+  father_name: string | null;
+  password_hash: string;
+  is_password_temp: boolean;
+  number_try: number;
+  is_blocked: boolean;
+  role: string;
+  type: string;
+  accepted_terms: boolean;
+  accepted_terms_at: string | null;
+  accepted_terms_version: string | null;
+  department_id: number;
+  subscriber_id: number;
+  supplier_id: number | null;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+}
+
+export interface Vehicle {
+  id: number;
+  uuid: string;
+  subscriber_id: number;
+  capacity_person: number;
+  surname: string;
+  mark: string;
+  model: string;
+  plate: string;
+  renavam: string;
+  is_people: boolean;
+  is_internal_department: boolean;
+  fuel_type_vehicle: string;
+  in_service: boolean;
+  available: boolean;
+  licensing: string | null;
+  from_department_id: number | null;
+  to_department_id: number;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+}
+
+export interface Subscriber {
+  id: number;
+  uuid: string;
+  name: string;
+  subscriber_name: string;
+  cnpj: string;
+  email: string;
+  telephone: string;
+  postal_code: string;
+  street: string;
+  number: string;
+  neighborhood: string;
+  city: string;
+  state_full_name: string;
+  state_acronyms: string;
+  state_logo: string | null;
+  municipal_logo: string | null;
+  administration_logo: string | null;
+  is_success_fuel_log: boolean;
+  status: "PAGO" | "ATRASADO" | "BLOQUEADO";
+  user_supply_fuel:
+  | "COMPLETE_FRENTISTA_PADRAO"
+  | "COMPLETE_FRENTISTA_INSERCAO"
+  | "COMPLETE_MOTORISTA_PADRAO"
+  | "COMPLETE_MOTORISTA_INSERCAO";
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
 }
 
 interface Props {
@@ -49,57 +224,37 @@ export default function CreateFuelLogDrawer({
 }: Props) {
   const [form] = Form.useForm<FuelLogFormValues>();
   const [loading, setLoading] = useState(false);
-
-  // estados para listas e loaders
-  const [vehicles, setVehicles] = useState<any[]>([]);
-  const [loadingVehicles, setLoadingVehicles] = useState(false);
-
-  const [drivers, setDrivers] = useState<any[]>([]);
-  const [loadingDrivers, setLoadingDrivers] = useState(false);
-
+  const [subscriber, setSubscriber] = useState<Subscriber | null>(null);
   const [suppliers, setSuppliers] = useState<any[]>([]);
   const [loadingSuppliers, setLoadingSuppliers] = useState(false);
-
-  const [departments, setDepartments] = useState<any[]>([]);
-  const [loadingDepartments, setLoadingDepartments] = useState(false);
-
-  const [trip, setTrip] = useState<Trip | null>(null);
+  const [trip, setTrip] = useState<Tripid>();
   const [payload, setPayload] = useState<PayloadTokenDto | null>(null);
 
-  // 1) Decodifica o JWT e armazena o payload
+  // 1) Estado para armazenar os dados do userStorage
+  const [userStorage, setUserStorage] = useState<UserStorage | null>(null);
+
+  // 2) Ao montar o componente, recuperar userStorage do localStorage
   useEffect(() => {
-    const token = localStorage.getItem("authTokenFrota");
-    if (!token) return;
-    try {
-      const decoded = jwtDecode<PayloadTokenDto>(token);
-      setPayload(decoded);
-    } catch (err) {
-      console.error("Token inválido:", err);
+    const raw = localStorage.getItem("userStorage"); // raw é string ou null
+    if (raw) {
+      const parsed = JSON.parse(raw) as UserStorage;
+      setUserStorage(parsed);
+      console.log("UserStorage carregado:", parsed.id, parsed.full_name);
     }
   }, []);
 
-  // Funções de fetch para veículos, motoristas, fornecedores e departamentos
-  const fetchVehicles = async (q?: string) => {
-    setLoadingVehicles(true);
+  const fetchSubscriber = async (id: number) => {
+    setLoading(true);
     try {
-      const { data } = await api.get<any[]>("/vehicle", { params: q ? { q } : {} });
-      setVehicles(data);
-    } catch {
-      message.error("Erro ao carregar veículos");
+      // supondo que seu endpoint seja GET /subscriber/:id
+      const { data } = await api.get<Subscriber>(`/subscriber/default/${id}`);
+      setSubscriber(data);
+      console.log("Dados do Subscriber:", data);
+    } catch (err) {
+      console.error(err);
+      message.error("Erro ao carregar dados da prefeitura");
     } finally {
-      setLoadingVehicles(false);
-    }
-  };
-
-  const fetchDrivers = async (q?: string) => {
-    setLoadingDrivers(true);
-    try {
-      const { data } = await api.get<any[]>("/user/driver", { params: q ? { q } : {} });
-      setDrivers(data);
-    } catch {
-      message.error("Erro ao carregar motoristas");
-    } finally {
-      setLoadingDrivers(false);
+      setLoading(false);
     }
   };
 
@@ -115,68 +270,45 @@ export default function CreateFuelLogDrawer({
     }
   };
 
-  const fetchDepartments = async () => {
-    setLoadingDepartments(true);
-    try {
-      const { data } = await api.get<any[]>("/department");
-      setDepartments(data);
-    } catch {
-      message.error("Erro ao carregar departamentos");
-    } finally {
-      setLoadingDepartments(false);
-    }
-  };
-
   const fetchTrip = async (id: number) => {
     try {
-      const { data } = await api.get<Trip>(`/trip/${id}`);
+      const { data } = await api.get<Tripid>(`/trip/${id}`);
       setTrip(data);
     } catch {
       message.error("Erro ao carregar viagem");
     }
   };
 
-  // Debounce para buscas no Select
-  const debouncedVehicle  = useCallback(debounce(fetchVehicles, 500), []);
-  const debouncedDriver   = useCallback(debounce(fetchDrivers,  500), []);
-  const debouncedSupplier = useCallback(debounce(fetchSuppliers,500), []);
+  // Debounce para buscas no Select de fornecedores
+  const debouncedSupplier = useCallback(debounce(fetchSuppliers, 500), []);
 
-  // 2) Quando a Drawer abre, carrega a lista de departamentos
-  useEffect(() => {
-    if (open) fetchDepartments();
-  }, [open]);
-
-  // 3) Ao abrir com tripId, carrega veículos, motoristas, fornecedores e dados da viagem
+  // 3) Ao abrir com tripId, carrega viagem e fornecedores
   useEffect(() => {
     if (open && tripId != null) {
-      fetchVehicles();
-      fetchDrivers();
-      fetchSuppliers();
       fetchTrip(tripId);
+      fetchSuppliers();
     }
   }, [open, tripId]);
 
-  // 4) Define valores iniciais no form assim que payload estiver disponível
+  // 4) Ao abrir, só busca subscriber se tivermos userStorage carregado
   useEffect(() => {
-    if (open && payload) {
-      form.setFieldsValue({
-        supply_date: moment(),                   // data atual
-        fuel_type: "GASOLINA",                   // padrão GASOLINA
-        supply_type: "COMPLETE",                 // padrão COMPLETE
-        department_id: payload.departament_id    // usa departament_id do DTO
-      });
+    if (open && userStorage && userStorage.subscribe_id) {
+      fetchSubscriber(Number(userStorage.subscribe_id));
     }
-  }, [open, payload, form]);
+  }, [open, userStorage]);
 
-  // 5) Pré-preenche veículo e motorista após buscar a viagem
+  // 5) Define valores iniciais no form assim que payload e subscriber estiverem disponíveis
   useEffect(() => {
-    if (trip) {
+    if (open && payload && subscriber) {
       form.setFieldsValue({
-        vehicle_id: trip.vehicle_id,
-        driver_id: trip.driver_id
+        supply_date: moment(), // data atual
+        fuel_type: "GASOLINA", // padrão GASOLINA
+        supply_type: "COMPLETE", // padrão COMPLETE
+        department_id: payload.department_id, // usa department_id do DTO
+        is_success: subscriber.is_success_fuel_log
       });
     }
-  }, [trip, form]);
+  }, [open, payload, subscriber, form]);
 
   // 6) Envia o form: converte datas e usa o endpoint correto (“/fuel-log”)
   const handleFinish = async (values: FuelLogFormValues) => {
@@ -187,11 +319,14 @@ export default function CreateFuelLogDrawer({
     const payloadToSend = {
       ...values,
       trip_id: tripId,
+      vehicle_id: trip.vehicle_id,
+      driver_id: trip.driver_id,
       supply_date: values.supply_date.toISOString(),
       deadline: values.deadline ? values.deadline.toISOString() : null
     };
 
     try {
+      console.log(payloadToSend)
       await api.post("/fuel-log", payloadToSend);
       message.success("Abastecimento registrado com sucesso!");
       onClose();
@@ -223,48 +358,17 @@ export default function CreateFuelLogDrawer({
         </div>
       }
     >
+      <Descriptions bordered column={1} layout="horizontal">
+        <Descriptions.Item label="Veículo">
+          {trip?.vehicle?.surname ?? "Carregando..."}
+        </Descriptions.Item>
+        <Descriptions.Item label="Motorista">
+          {trip?.driver.full_name ?? "Carregando..."}
+        </Descriptions.Item>
+      </Descriptions>
+      <Divider />
       <Form form={form} layout="vertical" onFinish={handleFinish}>
-        {/* Linha 1: Veículo e Motorista */}
-        <Row gutter={16}>
-          <Col span={12}>
-            <Form.Item name="vehicle_id" label="Veículo" rules={[{ required: true }]}>
-              <Select
-                showSearch
-                placeholder="Buscar veículo..."
-                notFoundContent={loadingVehicles ? <Spin /> : null}
-                filterOption={false}
-                onSearch={debouncedVehicle}
-                loading={loadingVehicles}
-              >
-                {vehicles.map(v => (
-                  <Option key={v.id} value={v.id}>
-                    {`${v.mark} ${v.model}`}
-                  </Option>
-                ))}
-              </Select>
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item name="driver_id" label="Motorista" rules={[{ required: true }]}>
-              <Select
-                showSearch
-                placeholder="Buscar motorista..."
-                notFoundContent={loadingDrivers ? <Spin /> : null}
-                filterOption={false}
-                onSearch={debouncedDriver}
-                loading={loadingDrivers}
-              >
-                {drivers.map(d => (
-                  <Option key={d.id} value={d.id}>
-                    {d.name}
-                  </Option>
-                ))}
-              </Select>
-            </Form.Item>
-          </Col>
-        </Row>
-
-        {/* Linha 2: Fornecedor e Departamento */}
+        {/* Linha 2: Fornecedor e “Já contabilizar” */}
         <Row gutter={16}>
           <Col span={12}>
             <Form.Item name="supplier_id" label="Fornecedor" rules={[{ required: true }]}>
@@ -276,7 +380,7 @@ export default function CreateFuelLogDrawer({
                 onSearch={debouncedSupplier}
                 loading={loadingSuppliers}
               >
-                {suppliers.map(s => (
+                {suppliers.map((s) => (
                   <Option key={s.id} value={s.id}>
                     {s.name}
                   </Option>
@@ -285,14 +389,8 @@ export default function CreateFuelLogDrawer({
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item name="department_id" label="Departamento" rules={[{ required: true }]}>
-              <Select loading={loadingDepartments}>
-                {departments.map(d => (
-                  <Option key={d.id} value={d.id}>
-                    {d.name}
-                  </Option>
-                ))}
-              </Select>
+            <Form.Item name="is_success" label="Já contabilizar" rules={[{ required: true }]}>
+              <Switch />
             </Form.Item>
           </Col>
         </Row>
@@ -301,12 +399,12 @@ export default function CreateFuelLogDrawer({
         <Row gutter={16}>
           <Col span={12}>
             <Form.Item name="supply_date" label="Data" rules={[{ required: true }]}>
-              <DatePicker showTime style={{ width: "100%" }} />
+              <DatePicker showTime format="DD/MM/YYYY HH:mm" style={{ width: "100%" }} />
             </Form.Item>
           </Col>
           <Col span={12}>
             <Form.Item name="deadline" label="Prazo">
-              <DatePicker showTime style={{ width: "100%" }} />
+              <DatePicker showTime format="DD/MM/YYYY HH:mm" style={{ width: "100%" }} />
             </Form.Item>
           </Col>
         </Row>
@@ -315,7 +413,9 @@ export default function CreateFuelLogDrawer({
         <Row gutter={16}>
           <Col span={8}>
             <Form.Item name="liters" label="Litros">
-              <InputNumber style={{ width: "100%" }} min={0} step={0.01} />
+              <InputNumber style={{ width: "100%" }} min={0} step={0.01}      
+              
+                decimalSeparator=","/>
             </Form.Item>
           </Col>
           <Col span={8}>
@@ -323,7 +423,9 @@ export default function CreateFuelLogDrawer({
               <InputNumber
                 style={{ width: "100%" }}
                 min={0}
-                formatter={v => (v ? `R$ ${v}` : "")}
+                 step={0.01}
+              
+                decimalSeparator=","
               />
             </Form.Item>
           </Col>
@@ -339,7 +441,7 @@ export default function CreateFuelLogDrawer({
           <Col span={12}>
             <Form.Item name="fuel_type" label="Combustível" rules={[{ required: true }]}>
               <Select>
-                {["GASOLINA", "ETANOL", "DIESEL", "ELETRICO", "OUTRO"].map(f => (
+                {["GASOLINA", "ETANOL", "DIESEL", "ELETRICO", "OUTRO"].map((f) => (
                   <Option key={f} value={f}>
                     {f}
                   </Option>
@@ -350,7 +452,7 @@ export default function CreateFuelLogDrawer({
           <Col span={12}>
             <Form.Item name="supply_type" label="Tipo" rules={[{ required: true }]}>
               <Select>
-                {["COMPLETE", "LITRO_ESPECIFICADO"].map(t => (
+                {["COMPLETE", "LITRO_ESPECIFICADO"].map((t) => (
                   <Option key={t} value={t}>
                     {t === "COMPLETE" ? "Completo" : "Litro Especificado"}
                   </Option>

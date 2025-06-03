@@ -51,6 +51,7 @@ interface Trip {
   status: string;
   vehicle_id: number;
   driver_id: number;
+  fuel_logs: FuelLog[];
 }
 interface UserStorage {
   id: string;
@@ -58,7 +59,30 @@ interface UserStorage {
   role: string;
   subscribe_name: string;
 }
-
+interface FuelLog {
+  id: number;
+  uuid: string;
+  vehicle_id: number;
+  driver_id: number;
+  authorizer_id: number;
+  attendant_id: number;
+  supplier_id: number;
+  department_id: number;
+  subscriber_id: number;
+  fuel_price_id: number | null;
+  attendant_viewed: boolean;
+  trip_id: number;
+  supply_date: string;
+  deadline: string;
+  liters: number;
+  cost: number;
+  odometer: number;
+  fuel_type: string;   // ex.: "GASOLINA"
+  supply_type: string; // ex.: "COMPLETE"
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+}
 
 export default function Trip() {
   const navigate = useNavigate();
@@ -205,6 +229,14 @@ export default function Trip() {
           TripStatusOptions.find((o) => o.value === status)?.label || status;
         return <Tag color={color}>{label}</Tag>;
       },
+    },
+    {
+      title: "Abastecimento",
+      key: "fuel_logs",
+      width: "15%",
+      render: (_, record) => (
+ <>{record.fuel_logs.length} </>
+      ),
     },
     {
       title: "Ações",

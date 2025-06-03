@@ -42,13 +42,14 @@ export default function DepartmentList() {
 
   const onFinish = async (id: number) => {
     try {
-      const values = { "departament_id": id };
+      const values = { "department_id": id };
 
       // Chama o endpoint de refresh
       const response = await api.post<RefreshResponse>('/auth/admin/refresh', values);
       // Para apagar apenas esse item específico
 
       sessionStorage.setItem('authTokenFrota', response.data.token);
+      console.log(response.data.token)
       message.success('Token regenerado com sucesso.');
 
       // Redireciona para a página de viagens

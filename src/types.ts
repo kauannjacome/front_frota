@@ -39,7 +39,7 @@ export interface Trip {
 export interface PayloadTokenDto {
   id: number;
   role: string;
-  departament_id: number;
+  department_id: number;
   subscriber_id: number;
   iat: number;
   exp: number;

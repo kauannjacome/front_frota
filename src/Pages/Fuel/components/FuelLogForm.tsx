@@ -48,7 +48,7 @@ interface Vehicle {
 
 interface Driver {
   id: number;
-  name: string;
+  full_name: string;
 }
 
 interface Supplier {
@@ -90,6 +90,7 @@ export default function FuelLogForm({
       const { data } = await api.get<Driver[]>("/user/driver", {
         params: search ? { q: search } : {},
       });
+  
       setDrivers(data);
     } catch (err) {
       console.error("Erro ao buscar motoristas:", err);
@@ -205,7 +206,7 @@ export default function FuelLogForm({
             >
               {drivers.map((driver) => (
                 <Select.Option key={driver.id} value={driver.id}>
-                  {driver.name}
+                  {driver.full_name}
                 </Select.Option>
               ))}
             </Select>

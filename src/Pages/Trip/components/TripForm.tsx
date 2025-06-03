@@ -39,7 +39,7 @@ export interface PersonRow extends Person {
   notes: string;
 }
 
-type Driver = { id: number; name: string };
+type Driver = { id: number; full_name: string };
 
 type Props = {
   initialValues?: Partial<TripFormValues>;
@@ -285,7 +285,7 @@ export default function TripForm({
                 <Select placeholder="Selecione o motorista" showSearch allowClear loading={!drivers.length}>
                   {drivers.map(d => (
                     <Option key={d.id} value={d.id}>
-                      {d.name}
+                      {d.full_name}
                     </Option>
                   ))}
                 </Select>

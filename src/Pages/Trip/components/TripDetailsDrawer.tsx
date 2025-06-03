@@ -11,14 +11,14 @@ interface TripDetailsDrawerProps {
 }
 // logo no topo do seu componente ou num arquivo de constantes
 const typeTripLabels = {
-    IDA: "Ida",
-    VOLTA: "Volta",
-    IDA_E_VOLTA: "Ida e Volta",
-  } as const;
-  
-  type TypeTripKey = keyof typeof typeTripLabels; // "IDA" | "VOLTA" | "IDA_E_VOLTA"
+  IDA: "Ida",
+  VOLTA: "Volta",
+  IDA_E_VOLTA: "Ida e Volta",
+} as const;
 
-  
+type TypeTripKey = keyof typeof typeTripLabels; // "IDA" | "VOLTA" | "IDA_E_VOLTA"
+
+
 export default function TripDetailsDrawer({
   open,
   tripId,
@@ -28,9 +28,9 @@ export default function TripDetailsDrawer({
   const [tripDetails, setTripDetails] = useState<any>(null);
 
   useEffect(() => {
-      if (!open || tripId == null) {
-    return;
-  }
+    if (!open || tripId == null) {
+      return;
+    }
     setLoading(true);
     api
       .get(`/trip/${tripId}`)
@@ -52,12 +52,12 @@ export default function TripDetailsDrawer({
       onClose={onClose}
       open={open}
       extra={
-          <Button
-            type="primary"
-            icon={<PrinterOutlined  />}
-            onClick={() => {
-              console.log("Ação simples!");
-            }}
+        <Button
+          type="primary"
+          icon={<PrinterOutlined />}
+          onClick={() => {
+            console.log("Ação simples!");
+          }}
         >
           Imprimir
         </Button>
@@ -80,8 +80,8 @@ export default function TripDetailsDrawer({
             <Descriptions.Item label="Data Retorno">
               {tripDetails.journey_back
                 ? moment(tripDetails.journey_back).format(
-                    "DD/MM/YYYY HH:mm"
-                  )
+                  "DD/MM/YYYY HH:mm"
+                )
                 : "-"}
             </Descriptions.Item>
             <Descriptions.Item label="Origem">
@@ -109,12 +109,14 @@ export default function TripDetailsDrawer({
                 dataIndex: ["passenger", "full_name"],
                 key: "name",
               },
-              { title: "Tipo", dataIndex: "type", key: "type",
+              {
+                title: "Tipo", dataIndex: "type", key: "type",
                 render: (type: string) => {
-                    // força para nosso tipo e busca o label
-                    const key = type as TypeTripKey;
-                    return typeTripLabels[key] ?? "-";
-                  }},
+                  // força para nosso tipo e busca o label
+                  const key = type as TypeTripKey;
+                  return typeTripLabels[key] ?? "-";
+                }
+              },
               { title: "Notas", dataIndex: "notes", key: "notes" },
               {
                 title: "Local de específico",
@@ -123,14 +125,76 @@ export default function TripDetailsDrawer({
               },
             ]}
           />
-  
-                 <Divider />
+
+          <Divider />
+
+     <h4>Registros de Combustível</h4>
+          <Table
+            dataSource={tripDetails.fuel_logs}
+            rowKey="id"
+            pagination={false}
+            size="small"
+            columns={[
+              {
+                title: "Data do Abastecimento",
+                dataIndex: "supply_date",
+                key: "supply_date",
+                render: (dt: string) => moment(dt).format("DD/MM/YYYY HH:mm"),
+              },
+              {
+                title: "Litros (L)",
+                dataIndex: "liters",
+                key: "liters",
+                render: (litros: number) => litros?.toFixed(2) ?? "-",
+              },
+              {
+                title: "Custo (R$)",
+                dataIndex: "cost",
+                key: "cost",
+                render: (cost: number) =>
+                  cost !== null && cost !== undefined
+                    ? cost.toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                      })
+                    : "-",
+              },
+ 
+              {
+                title: "Tipo Abastecimento",
+                dataIndex: "supply_type",
+                key: "supply_type",
+              },
+
+              // Se quiser exibir o nome do motorista ou do atendente (caso tenha incluído no include do Prisma),
+              // basta usar dataIndex: ["driver", "full_name"] ou ["attendant", "full_name"], por exemplo:
+              // {
+              //   title: "Motorista",
+              //   dataIndex: ["driver", "full_name"],
+              //   key: "driver_name",
+              //   render: (nome: string) => nome || "-",
+              // },
+              // {
+              //   title: "Atendente",
+              //   dataIndex: ["attendant", "full_name"],
+              //   key: "attendant_name",
+              //   render: (nome: string) => nome || "-",
+              // },
+            ]}
+            locale={{ emptyText: "Nenhum registro de combustível encontrado." }}
+          />
+
+          <Divider />
+
+
+          <Divider />
           <p style={{ textAlign: "center", color: "#999" }}>
             Registrado em{" "}
             {moment(tripDetails.created_at).format("DD/MM/YYYY HH:mm")}, Atualizado em{" "}{moment(tripDetails.created_at).format("DD/MM/YYYY HH:mm")}
           </p>
-             </>
-        
+        </>
+
+
       ) : (
         <p>Sem dados para exibir.</p>
       )}
