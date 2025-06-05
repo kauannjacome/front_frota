@@ -60,7 +60,7 @@ export interface User {
   is_password_temp: boolean;
   number_try: number;
   is_blocked: boolean;
-  role: 'MANAGE' | 'SECRETARY' | 'ADMIN_LOCAL' | 'TYPIST' | 'DRIVE' | 'TYPIST_SUPPLY';
+  role: 'MANAGER' | 'SECRETARY' | 'ADMIN_LOCAL' | 'TYPIST' | 'DRIVE' | 'TYPIST_SUPPLY';
   type: 'CONTRATADO' | 'DIARISTA';
   accepted_terms: boolean;
   accepted_terms_at?: Date;

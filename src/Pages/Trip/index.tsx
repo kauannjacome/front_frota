@@ -235,7 +235,7 @@ export default function Trip() {
       key: "fuel_logs",
       width: "15%",
       render: (_, record) => (
- <>{record.fuel_logs.length} </>
+        <>{record.fuel_logs.length} </>
       ),
     },
     {
@@ -244,7 +244,7 @@ export default function Trip() {
       width: "20%",
       render: (_, record) => (
         <Space size="small">
-          {(user.role === "MANAGE" || user.role === "ADMIN_LOCAL" || user.role === "SECRETARY" || user.role === "SUPERVISOR") && (
+          {(user.role === "MANAGER" || user.role === "ADMIN_LOCAL" || user.role === "SECRETARY" || user.role === "SUPERVISOR") && (
             <Button
               type="text"
               icon={<DashboardOutlined />}

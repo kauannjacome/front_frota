@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Form, Input, Button, Row, Col, Select, Upload, message } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
+import api from '../../../services/api';
 
 export interface DepartmentFormValues {
   subscriber_id: number;
@@ -16,14 +17,23 @@ interface Props {
 
 export default function DepartmentForm({ initialValues, onFinish, onCancel }: Props) {
   const [subscribers, setSubscribers] = useState<{ id: number; name: string }[]>([]);
-  
+
+  const loadSubscribers = async () => {
+    const response = await api.get<any>('/subscriber');
+    try {
+
+      console.log("Resposta /subscriber →", response.data);
+      setSubscribers(response.data);
+    } catch (error) {
+      console.error('Erro ao carregar assinantes:', error);
+      message.error('Não foi possível carregar assinantes.');
+    }
+  };
+
   useEffect(() => {
-    // TODO: Replace with actual data fetching
-    fetch('/api/subscribers')
-      .then(res => res.json())
-      .then(data => setSubscribers(data))
-      .catch(() => message.error('Falha ao carregar assinantes'));
+    loadSubscribers();
   }, []);
+  
 
   const normFile = (e: any) => {
     if (Array.isArray(e)) {

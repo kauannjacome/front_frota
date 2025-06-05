@@ -20,7 +20,7 @@ const { Header, Sider, Content, Footer } = Layout;
 
 // Definição dos roles disponíveis
 enum role_user {
-  MANAGE = 'MANAGE',
+  MANAGER = 'MANAGER',
   ADMIN_LOCAL = 'ADMIN_LOCAL',
   SECRETARY = 'SECRETARY',
   TYPIST = 'TYPIST',
@@ -47,29 +47,29 @@ interface UserStorage {
 
 // Itens de menu com permissões por role
 const menuItems: AppMenuItem[] = [
-  { key: '1', label: 'Viagem', icon: <CalendarOutlined />, path: '/trip', roles: [role_user.MANAGE, role_user.ADMIN_LOCAL, role_user.SECRETARY, role_user.TYPIST] },
-  { key: '2', label: 'Combustível', icon: <ThunderboltOutlined />, path: '/fuel', roles: [role_user.MANAGE, role_user.SECRETARY, role_user.ADMIN_LOCAL] },
-  { key: '3', label: 'Manutenção', icon: <ToolOutlined />, path: '/maintenance', roles: [role_user.MANAGE, role_user.SECRETARY, role_user.ADMIN_LOCAL] },
-  { key: '5', label: 'Veículos', icon: <CarOutlined />, path: '/vehicle', roles: [role_user.MANAGE, role_user.SECRETARY, role_user.ADMIN_LOCAL, role_user.DRIVE] },
-  { key: '6', label: 'Pessoas', icon: <TeamOutlined />, path: '/person', roles: [role_user.MANAGE, role_user.SECRETARY, role_user.ADMIN_LOCAL, role_user.SECRETARY, role_user.TYPIST] },
-  { key: '7', label: 'Ticket', icon: <SnippetsOutlined />, path: '/ticket', roles: [role_user.MANAGE, role_user.SECRETARY, role_user.ADMIN_LOCAL, role_user.TYPIST] },
-  { key: '8', label: 'Usuários', icon: <ShopOutlined />, path: '/user', roles: [role_user.MANAGE, role_user.SECRETARY, role_user.ADMIN_LOCAL] },
-  { key: '9', label: 'Fornecedor', icon: <ShopOutlined />, path: '/supplier', roles: [role_user.MANAGE, role_user.SECRETARY, role_user.ADMIN_SUPPLY] },
+  { key: '1', label: 'Viagem', icon: <CalendarOutlined />, path: '/trip', roles: [role_user.MANAGER, role_user.ADMIN_LOCAL, role_user.SECRETARY, role_user.TYPIST] },
+  { key: '2', label: 'Combustível', icon: <ThunderboltOutlined />, path: '/fuel', roles: [role_user.MANAGER, role_user.SECRETARY, role_user.ADMIN_LOCAL] },
+  { key: '3', label: 'Manutenção', icon: <ToolOutlined />, path: '/maintenance', roles: [role_user.MANAGER, role_user.SECRETARY, role_user.ADMIN_LOCAL] },
+  { key: '5', label: 'Veículos', icon: <CarOutlined />, path: '/vehicle', roles: [role_user.MANAGER, role_user.SECRETARY, role_user.ADMIN_LOCAL, role_user.DRIVE] },
+  { key: '6', label: 'Pessoas', icon: <TeamOutlined />, path: '/person', roles: [role_user.MANAGER, role_user.SECRETARY, role_user.ADMIN_LOCAL, role_user.SECRETARY, role_user.TYPIST] },
+  { key: '7', label: 'Ticket', icon: <SnippetsOutlined />, path: '/ticket', roles: [role_user.MANAGER, role_user.SECRETARY, role_user.ADMIN_LOCAL, role_user.TYPIST] },
+  { key: '8', label: 'Usuários', icon: <ShopOutlined />, path: '/user', roles: [role_user.MANAGER, role_user.SECRETARY, role_user.ADMIN_LOCAL] },
+  { key: '9', label: 'Fornecedor', icon: <ShopOutlined />, path: '/supplier', roles: [role_user.MANAGER, role_user.SECRETARY, role_user.ADMIN_SUPPLY] },
   {
     key: '10',
     label: 'Relatórios',
     icon: <FileTextOutlined />,
-    roles: [role_user.MANAGE, role_user.SECRETARY, role_user.ADMIN_LOCAL, role_user.ADMIN_SUPPLY],
+    roles: [role_user.MANAGER, role_user.SECRETARY, role_user.ADMIN_LOCAL, role_user.ADMIN_SUPPLY],
     children: [
-      { key: '10-1', label: 'Viagens', path: '/report/trip', roles: [role_user.MANAGE, role_user.ADMIN_LOCAL] },
-      { key: '10-2', label: 'Combustível', path: '/report/fuel-log', roles: [role_user.MANAGE, role_user.ADMIN_LOCAL] },
-      { key: '10-3', label: 'Manutenção', path: '/report/maintenance', roles: [role_user.MANAGE, role_user.ADMIN_LOCAL] },
-      { key: '10-4', label: 'Motorista', path: '/report/driver', roles: [role_user.MANAGE, role_user.ADMIN_LOCAL] },
-      { key: '10-5', label: 'Veículos', path: '/report/vehicle', roles: [role_user.MANAGE, role_user.ADMIN_LOCAL] },
+      { key: '10-1', label: 'Viagens', path: '/report/trip', roles: [role_user.MANAGER, role_user.ADMIN_LOCAL] },
+      { key: '10-2', label: 'Combustível', path: '/report/fuel-log', roles: [role_user.MANAGER, role_user.ADMIN_LOCAL] },
+      { key: '10-3', label: 'Manutenção', path: '/report/maintenance', roles: [role_user.MANAGER, role_user.ADMIN_LOCAL] },
+      { key: '10-4', label: 'Motorista', path: '/report/driver', roles: [role_user.MANAGER, role_user.ADMIN_LOCAL] },
+      { key: '10-5', label: 'Veículos', path: '/report/vehicle', roles: [role_user.MANAGER, role_user.ADMIN_LOCAL] },
     ],
   },
-  { key: '4', label: 'Departamento', icon: <ApartmentOutlined />, path: '/department', roles: [role_user.MANAGE] },
-  { key: '11', label: 'Assinante', icon: <BankOutlined />, path: '/subscriber', roles: [role_user.MANAGE] },
+  { key: '4', label: 'Departamento', icon: <ApartmentOutlined />, path: '/department', roles: [role_user.MANAGER] },
+  { key: '11', label: 'Assinante', icon: <BankOutlined />, path: '/subscriber', roles: [role_user.MANAGER] },
 ];
 
 const App: React.FC = () => {
@@ -77,7 +77,7 @@ const App: React.FC = () => {
   let userInfo: UserStorage = {
     id: "",
     full_name: "Usuário Teste",
-    role: role_user.MANAGE,
+    role: role_user.MANAGER,
     subscribe_name: "",
   };
 

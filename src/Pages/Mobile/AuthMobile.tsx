@@ -2,7 +2,7 @@ import { Layout, Card, Form, Input, Button, message } from "antd";
 import { CSSProperties, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 
 // Tipagens
 interface UserStorage {
@@ -79,7 +79,7 @@ export default function AuthMobile() {
         // Decodifica payload para regras de navegação
         const payload = jwtDecode<JWTPayload>(token);
         switch (userStorage.role) {
-          case "MANAGE":
+          case "MANAGER":
             navigate("admin/subscriber");
             break;
           case "ADMIN_LOCAL":

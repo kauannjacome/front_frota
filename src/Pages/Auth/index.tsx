@@ -99,7 +99,7 @@ export default function Auth() {
         sessionStorage.setItem("userStorage", JSON.stringify(storageData));
 
         const payload = jwtDecode<JWTPayload>(token);
-        if (storageData.role === 'MANAGE') {
+        if (storageData.role === 'MANAGER') {
           navigate("admin/subscriber");
         }
         if (storageData.role === 'ADMIN_LOCAL') {

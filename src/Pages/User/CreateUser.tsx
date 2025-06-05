@@ -52,9 +52,7 @@ export default function CreateUser() {
           accepted_terms: false,
           accepted_terms_at: undefined,
           accepted_terms_version: null,
-          subscriber_id: 1, // substituir pelo ID real
-          supplier_id: null,
-          department_ids: [],
+
         }}
         onFinish={handleFinish}
         onCancel={() => navigate(-1)}
