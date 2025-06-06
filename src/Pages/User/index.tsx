@@ -33,6 +33,14 @@ interface User {
   updatedAt: string;
   deletedAt: string | null;
 }
+const RoleOptions = [
+  { label: 'Gestor', value: 'MANAGER' },
+  { label: 'Secretário(a)', value: 'SECRETARY' },
+  { label: 'Administrador Local', value: 'ADMIN_LOCAL' },
+  { label: 'Digitador', value: 'TYPIST' },
+  { label: 'Motorista', value: 'DRIVE' },
+  { label: 'Digitador Fornecedor', value: 'TYPIST_SUPPLY' },
+];
 
 export default function User() {
   const [form] = Form.useForm();
@@ -80,7 +88,12 @@ export default function User() {
       dataIndex: 'role',
       key: 'role',
       width: '10%',
-      render: role => <Tag color="blue">{role}</Tag>,
+       render: (role: string) => {
+        // Encontra o objeto cujo value === role
+        const option = RoleOptions.find(opt => opt.value === role);
+        // Se existir, exibe o label; caso contrário, exibe o próprio valor “role”
+        return <Tag color="blue">{option ? option.label : role}</Tag>;
+      },
     },
     {
       title: 'Bloqueado',

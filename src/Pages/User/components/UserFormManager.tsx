@@ -49,9 +49,9 @@ const defaultRoleOptions = [
   { label: 'Motorista', value: 'DRIVER' },
   { label: 'Digitador Fornecedor', value: 'TYPIST_SUPPLY' },
 ];
-type Mode = 'create' | 'edit' | 'byDept';
 
-export default function UserForm({
+
+export default function UserFormManager({
   initialValues,
   onFinish,
   onCancel,

@@ -23,6 +23,7 @@ enum role_user {
   MANAGER = 'MANAGER',
   ADMIN_LOCAL = 'ADMIN_LOCAL',
   SECRETARY = 'SECRETARY',
+  SUPERVISOR='SUPERVISOR',
   TYPIST = 'TYPIST',
   DRIVE = 'DRIVE',
   ADMIN_SUPPLY = 'ADMIN_SUPPLY',
@@ -47,14 +48,14 @@ interface UserStorage {
 
 // Itens de menu com permissões por role
 const menuItems: AppMenuItem[] = [
-  { key: '1', label: 'Viagem', icon: <CalendarOutlined />, path: '/trip', roles: [role_user.MANAGER, role_user.ADMIN_LOCAL, role_user.SECRETARY, role_user.TYPIST] },
-  { key: '2', label: 'Combustível', icon: <ThunderboltOutlined />, path: '/fuel', roles: [role_user.MANAGER, role_user.SECRETARY, role_user.ADMIN_LOCAL] },
-  { key: '3', label: 'Manutenção', icon: <ToolOutlined />, path: '/maintenance', roles: [role_user.MANAGER, role_user.SECRETARY, role_user.ADMIN_LOCAL] },
-  { key: '5', label: 'Veículos', icon: <CarOutlined />, path: '/vehicle', roles: [role_user.MANAGER, role_user.SECRETARY, role_user.ADMIN_LOCAL, role_user.DRIVE] },
-  { key: '6', label: 'Pessoas', icon: <TeamOutlined />, path: '/person', roles: [role_user.MANAGER, role_user.SECRETARY, role_user.ADMIN_LOCAL, role_user.SECRETARY, role_user.TYPIST] },
-  { key: '7', label: 'Ticket', icon: <SnippetsOutlined />, path: '/ticket', roles: [role_user.MANAGER, role_user.SECRETARY, role_user.ADMIN_LOCAL, role_user.TYPIST] },
+  { key: '1', label: 'Viagem', icon: <CalendarOutlined />, path: '/trip', roles: [role_user.MANAGER, role_user.ADMIN_LOCAL,role_user.SUPERVISOR , role_user.SECRETARY, role_user.TYPIST] },
+  { key: '2', label: 'Combustível', icon: <ThunderboltOutlined />, path: '/fuel', roles: [role_user.MANAGER, role_user.SECRETARY, role_user.ADMIN_LOCAL,role_user.SUPERVISOR] },
+  { key: '3', label: 'Manutenção', icon: <ToolOutlined />, path: '/maintenance', roles: [role_user.MANAGER, role_user.SECRETARY, role_user.ADMIN_LOCAL,role_user.SUPERVISOR] },
+  { key: '5', label: 'Veículos', icon: <CarOutlined />, path: '/vehicle', roles: [role_user.MANAGER, role_user.SECRETARY, role_user.ADMIN_LOCAL, ,role_user.SUPERVISOR, role_user.TYPIST,role_user.DRIVE] },
+  { key: '6', label: 'Pessoas', icon: <TeamOutlined />, path: '/person', roles: [role_user.MANAGER, role_user.SECRETARY, role_user.ADMIN_LOCAL, role_user.SECRETARY, role_user.TYPIST,role_user.SUPERVISOR, role_user.TYPIST] },
+  { key: '7', label: 'Ticket', icon: <SnippetsOutlined />, path: '/ticket', roles: [role_user.MANAGER, role_user.SECRETARY, role_user.ADMIN_LOCAL,,role_user.SUPERVISOR, role_user.TYPIST] },
   { key: '8', label: 'Usuários', icon: <ShopOutlined />, path: '/user', roles: [role_user.MANAGER, role_user.SECRETARY, role_user.ADMIN_LOCAL] },
-  { key: '9', label: 'Fornecedor', icon: <ShopOutlined />, path: '/supplier', roles: [role_user.MANAGER, role_user.SECRETARY, role_user.ADMIN_SUPPLY] },
+  { key: '9', label: 'Fornecedor', icon: <ShopOutlined />, path: '/supplier', roles: [role_user.MANAGER, role_user.SECRETARY,role_user.ADMIN_SUPPLY] },
   {
     key: '10',
     label: 'Relatórios',

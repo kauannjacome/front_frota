@@ -105,6 +105,9 @@ export default function Auth() {
         if (storageData.role === 'ADMIN_LOCAL') {
           navigate(`/admin/department/${payload.subscriber_id}`);
         }
+        if (storageData.role === 'SUPERVISOR') {
+          navigate(`/trip`);
+        }
         if (storageData.role === 'SECRETARY') {
           navigate(`/trip`);
         }

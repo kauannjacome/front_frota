@@ -4,7 +4,7 @@ import { DeleteOutlined, EditOutlined, EyeOutlined, PlusOutlined, PrinterOutline
 import Table, { ColumnsType } from "antd/es/table";
 import api from '../../services/api';
 import { useNavigate } from "react-router-dom";
-import UserForm, { UserFormValues } from "../User/components/UserForm";
+import UserFormManager, { UserFormValues } from "../User/components/UserFormManager";
 
 interface Subscriber {
   id: number;
@@ -251,7 +251,7 @@ export default function Department() {
         onClose={handleUserDrawerClose}
         destroyOnClose
       >
-        <UserForm
+        <UserFormManager
           initialValues={{
             cpf: '',
             full_name: '',
@@ -272,7 +272,6 @@ export default function Department() {
             accepted_terms: false,
             accepted_terms_at: undefined,
             accepted_terms_version: null,
-            subscriber_id: 1, // ajuste se necessário
             supplier_id: null,
             // → já pré-preenchemos com o departamento que o usuário clicou
             department_ids: selectedDeptId !== null ? [selectedDeptId] : [],

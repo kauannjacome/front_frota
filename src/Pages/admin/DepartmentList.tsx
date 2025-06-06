@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { List, Button, message, Row, Col, Card } from 'antd';
 import { EyeOutlined, PlusOutlined } from '@ant-design/icons';
 import api from '../../services/api';
-import { useNavigate, useParams } from 'react-router-dom';
+import { data, useNavigate, useParams } from 'react-router-dom';
 import moment from 'moment';
 
 moment.locale('pt-br');
@@ -27,12 +27,13 @@ interface RefreshResponse {
 
 export default function DepartmentList() {
   const [departments, setDepartments] = useState<Department[]>([]);
-  const { subscriberId } = useParams<{ subscriberId: string }>();
+const { id: subscriberIdNum } = useParams<{ id: string }>();
+
   const navigate = useNavigate();
 
   useEffect(() => {
     api
-      .get<Department[]>('/department')
+      .get<Department[]>(`/department/subscriber/${subscriberIdNum}`)
       .then(({ data }) => setDepartments(data))
       .catch(err => {
         console.error('Erro ao carregar departamentos', err);
@@ -42,8 +43,10 @@ export default function DepartmentList() {
 
   const onFinish = async (id: number) => {
     try {
-      const values = { "department_id": id };
-
+    const values = {
+      subscriber_id: subscriberIdNum,
+      department_id: id
+    };
       // Chama o endpoint de refresh
       const response = await api.post<RefreshResponse>('/auth/admin/refresh', values);
       // Para apagar apenas esse item específico
@@ -61,7 +64,6 @@ export default function DepartmentList() {
     }
 
   };
-
   return (
     // Container com fundo azul claro e preenchimento
     <div style={{ backgroundColor: '#f6f6f6', minHeight: '100vh', padding: 24 }}>
