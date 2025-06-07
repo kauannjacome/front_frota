@@ -1,42 +1,61 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Dropdown, Button, Avatar, Typography } from "antd";
-import { UserOutlined, DownOutlined, SettingOutlined } from "@ant-design/icons";
+import { UserOutlined, DownOutlined, SettingOutlined, UnorderedListOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-
 const { Text } = Typography;
 
 interface UserStorage {
   id: string;
   full_name: string;
   role: string;
+
+  subscribe_id: number,
   subscribe_name: string;
 }
+
 
 export default function UserButton() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
 
-let user: UserStorage = {
-  id: "",
-  full_name: "Usuário Teste",
-  role: "",
-  subscribe_name: "",
-};
+  let user: UserStorage = {
+    id: "",
+    full_name: "Usuário Teste",
+    role: "",
+     subscribe_id: 0,
+    subscribe_name: "",
+  };
 
-try {
-  const json = sessionStorage.getItem("userStorage");
-  if (json) {
-    user = JSON.parse(json);
+  try {
+    const json = sessionStorage.getItem("userStorage");
+    if (json) {
+      user = JSON.parse(json);
+    }
+  } catch (e) {
+    console.warn("Erro ao ler ou parsear userStorage:", e);
   }
-} catch (e) {
-  console.warn("Erro ao ler ou parsear userStorage:", e);
-}
+
+
 
   const handleMenuClick = ({ key }: { key: string }) => {
     if (key === "logout") {
       sessionStorage.clear();
       localStorage.removeItem("authTokenFrota");
       navigate("/");
+    }
+
+    if (key === "department") {
+      // Aqui você “atira” no clique do menu “Escolher assinatura”.
+      // Por exemplo, navegar para uma outra rota ou disparar uma função de atualização:
+      navigate(`/admin/department/${user.subscribe_id}`);
+      return;
+    }
+
+    if (key === "manager") {
+      // Aqui você “atira” no clique do menu “Escolher assinatura”.
+      // Por exemplo, navegar para uma outra rota ou disparar uma função de atualização:
+      navigate("/admin/subscriber");
+      return;
     }
     setOpen(false);
   };
@@ -48,10 +67,15 @@ try {
       key: "profile",
       icon: <UserOutlined />,
     },
-    user.role === "ADMIN_LOCAL" && {
-      label: "Painel de Admin",
-      key: "admin",
+    (user.role === "ADMIN_LOCAL" || user.role === "MANAGER") && {
+      label: "Departamento",
+      key: "department",
       icon: <SettingOutlined />,
+    },
+    user.role === "MANAGER" && {
+      label: "Escolher assinatura",
+      key: "manager",
+      icon: <UnorderedListOutlined />,
     },
     {
       label: "Sair",
