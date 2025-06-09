@@ -208,7 +208,6 @@ export default function User() {
               Buscar
             </Button>
             <Button
-                 color="orange" variant="solid"
               icon={<PlusOutlined />}
               style={{ marginLeft: 12 }}
               onClick={() =>  navigate('/user/create')}

@@ -18,6 +18,7 @@ import {
   PrinterOutlined,
   SearchOutlined,
   EyeOutlined,
+  CalculatorOutlined,
 } from "@ant-design/icons";
 import Table, { ColumnsType } from "antd/es/table";
 import api from "../../services/api";
@@ -56,6 +57,7 @@ export default function Fuel() {
 
   // **2. estados para o Drawer**
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [drawerPriceOpen, setdrawerPriceOpen] = useState(false);
   const [selectedLogId, setSelectedLogId] = useState<number | null>(null);
 
   const navigate = useNavigate();
@@ -85,7 +87,7 @@ export default function Fuel() {
       const response = await api.get<FuelLog[]>("/fuel-log/search", {
         params: params,
       });
-      console.log(response)
+
       setFuelLogs(response.data);
     } catch (error) {
       console.error("Erro ao buscar registros de abastecimento:", error);
@@ -183,10 +185,10 @@ export default function Fuel() {
           <Button
             type="text"
             icon={<PrinterOutlined />}
-            onClick={() => 
-                printPdfDirect(record.id)}
-              
-            
+            onClick={() =>
+              printPdfDirect(record.id)}
+
+
           />
           <Button
             type="text"
@@ -275,12 +277,22 @@ export default function Fuel() {
               Buscar
             </Button>
             <Button
-              type="dashed"
+             
               icon={<PlusOutlined />}
               style={{ marginLeft: 12 }}
               onClick={() => navigate(`/fuel/create`)}
             >
               Adicionar
+            </Button>
+
+            <Button
+              variant="solid"
+              color="magenta"
+              icon={<CalculatorOutlined />}
+              style={{ marginLeft: 12 }}
+              onClick={() => navigate(`/fuel-price`)}
+            >
+              Preços
             </Button>
           </Form.Item>
         </Form>
@@ -304,6 +316,7 @@ export default function Fuel() {
           setSelectedLogId(null);
         }}
       />
+
     </div>
   );
 }

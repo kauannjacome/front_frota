@@ -208,7 +208,7 @@ export default function Maintenance() {
               Buscar
             </Button>
             <Button
-              type="dashed"
+          
               icon={<PlusOutlined />}
               style={{ marginLeft: 12 }}
               onClick={() => navigate('/maintenance/create')}

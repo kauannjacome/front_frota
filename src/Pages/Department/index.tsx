@@ -224,7 +224,6 @@ export default function Department() {
               Buscar
             </Button>
             <Button
-              color="orange" variant="solid"
               icon={<PlusOutlined />}
               style={{ marginLeft: 12 }}
               onClick={() => navigate('/department/create')}

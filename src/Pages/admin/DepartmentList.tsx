@@ -1,7 +1,7 @@
 // src/pages/DepartmentList.tsx
 import { useEffect, useState } from 'react';
 import { List, Button, message, Row, Col, Card } from 'antd';
-import { EyeOutlined, PlusOutlined } from '@ant-design/icons';
+import { EyeOutlined } from '@ant-design/icons';
 import api from '../../services/api';
 import { data, useNavigate, useParams } from 'react-router-dom';
 import moment from 'moment';

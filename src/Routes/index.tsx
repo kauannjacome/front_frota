@@ -66,6 +66,9 @@ import DepartmentList from "../Pages/admin/DepartmentList";
 import AuthMobile from "../Pages/Mobile/AuthMobile";
 import UploadPersonCsvForm from "../Pages/Person/UploadPersonCsvForm";
 import EditPerson from "../Pages/Person/EditPerson";
+import FuelPrice from "../Pages/FuelPrice";
+import CreateFuelPrice from "../Pages/FuelPrice/CreateFuelPrice";
+import EditFuelPrice from "../Pages/FuelPrice/EditFuelPrice";
 
 export default function AppRoutes() {
   return (
@@ -91,6 +94,10 @@ export default function AppRoutes() {
           <Route path="/fuel" element={<Fuel />} />
           <Route path="/fuel/create" element={<CreateFuelLog />} />
           <Route path="/fuel/edit/:id" element={<EditFuelLog />} />
+
+          <Route path="/fuel-price" element={<FuelPrice />} />
+          <Route path="/fuel-price/create" element={<CreateFuelPrice />} />
+          <Route path="/fuel-price/edit/:id" element={<EditFuelPrice />} />
 
           <Route path="/maintenance" element={<Maintenance />} />
           <Route path="/maintenance/create" element={<CreateMaintenance />} />

@@ -49,7 +49,7 @@ export default function Ticket() {
   const [startCities, setStartCities] = useState<string[]>([]);
   const [startUf, setStartUf] = useState<string>();
 
-    const [drawerOpen, setDrawerOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedTiketId, setSelectedTiketId] = useState<number | null>(null);
   const suppliers = useSupplierStore((state) => state.suppliers) ?? [];
   const navigate = useNavigate();
@@ -87,7 +87,7 @@ export default function Ticket() {
       message.error("Não foi possível excluir a passagem.");
     }
   };
- const printPdfDirect = async (id: number) => {
+  const printPdfDirect = async (id: number) => {
     try {
       const response = await api.get<Blob>(`/ticket/pdf/${id}`, {
         responseType: "blob",
@@ -145,13 +145,13 @@ export default function Ticket() {
       key: "action",
 
 
-  render: (_, record) => (
+      render: (_, record) => (
         <Space size="small">
           <Button
             type="text"
             icon={<EyeOutlined />}
             onClick={() => {
-                   
+
               setSelectedTiketId(record.id);
               setDrawerOpen(true)
             }}
@@ -163,7 +163,7 @@ export default function Ticket() {
             icon={<PrinterOutlined />}
             onClick={(e) => {
 
-           printPdfDirect(record.id)
+              printPdfDirect(record.id)
             }}
           />
           <Button
@@ -171,7 +171,7 @@ export default function Ticket() {
             icon={<EditOutlined />}
             onClick={(e) => {
 
-             navigate(`/ticket/edit/${record.id}`);
+              navigate(`/ticket/edit/${record.id}`);
             }}
           />
           <Popconfirm
@@ -312,7 +312,6 @@ export default function Ticket() {
               Buscar
             </Button>
             <Button
-             color="orange" variant="solid"
               icon={<PlusOutlined />}
               style={{ marginLeft: 12 }}
               onClick={() => navigate("/ticket/create")}
@@ -329,17 +328,17 @@ export default function Ticket() {
           columns={columns}
           pagination={{ pageSize: 10 }}
         />
-              <TicketDetailsDrawer
-                open={drawerOpen}
-                ticket_id={selectedTiketId}
-                onClose={() => {
-        
-                  setDrawerOpen(false);
-                setSelectedTiketId(null);
-                }
-        
-                }
-              />
+        <TicketDetailsDrawer
+          open={drawerOpen}
+          ticket_id={selectedTiketId}
+          onClose={() => {
+
+            setDrawerOpen(false);
+            setSelectedTiketId(null);
+          }
+
+          }
+        />
       </Card>
     </div>
   );

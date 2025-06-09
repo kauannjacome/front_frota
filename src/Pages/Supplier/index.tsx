@@ -21,7 +21,7 @@ interface Supplier {
 export default function Supplier() {
   const [form] = Form.useForm();
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
-    const [drawerOpen, setDrawerOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedSupplierId, setSelectedSupplierId] = useState<number | null>(null);
 
   const navigate = useNavigate();
@@ -74,12 +74,12 @@ export default function Supplier() {
     {
       title: 'Ações', key: 'action', width: '20%',
 
-  render: (_, record) => (
+      render: (_, record) => (
         <Space size="small">
           <Button
             type="text"
             icon={<EyeOutlined />}
-           onClick={(e) => {
+            onClick={(e) => {
               setSelectedSupplierId(record.id);
               setDrawerOpen(true)
 
@@ -100,7 +100,7 @@ export default function Supplier() {
             icon={<EditOutlined />}
             onClick={(e) => {
 
-              navigate(`/supplier/edit/${record.id}`); ;
+              navigate(`/supplier/edit/${record.id}`);;
             }}
           />
           <Popconfirm
@@ -163,10 +163,9 @@ export default function Supplier() {
               Buscar
             </Button>
             <Button
-                color="orange" variant="solid"
               icon={<PlusOutlined />}
               style={{ marginLeft: 12 }}
-              onClick={() =>  navigate('/supplier/create')}
+              onClick={() => navigate('/supplier/create')}
             >
               Adicionar
             </Button>
@@ -183,17 +182,17 @@ export default function Supplier() {
         />
       </Card>
 
-            <SupplierDetailsDrawer
-              open={drawerOpen}
-              supplier_id={selectedSupplierId}
-              onClose={() => {
-      
-                setDrawerOpen(false);
-                setSelectedSupplierId(null);
-              }
-      
-              }
-            />
+      <SupplierDetailsDrawer
+        open={drawerOpen}
+        supplier_id={selectedSupplierId}
+        onClose={() => {
+
+          setDrawerOpen(false);
+          setSelectedSupplierId(null);
+        }
+
+        }
+      />
     </div>
   );
 }

@@ -70,12 +70,12 @@ export default function UserButton() {
     (user.role === "ADMIN_LOCAL" || user.role === "MANAGER") && {
       label: "Departamento",
       key: "department",
-      icon: <SettingOutlined />,
+      icon: <  UnorderedListOutlined/>,
     },
     user.role === "MANAGER" && {
       label: "Escolher assinatura",
       key: "manager",
-      icon: <UnorderedListOutlined />,
+      icon: <SettingOutlined />,
     },
     {
       label: "Sair",
