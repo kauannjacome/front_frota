@@ -20,6 +20,7 @@ export default function CreateTrip() {
         journey_back: values.journey_back.toISOString(),
         persons: persons.map((p) => ({
           person_id: p.id,
+           type: p.type, 
           dropoff_location: p.dropoff_location,
           notes: p.notes,
         })),

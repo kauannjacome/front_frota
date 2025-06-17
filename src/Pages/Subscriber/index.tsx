@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Card, Form, Input, Button, message, Space, Tag, Popconfirm, Row, Col } from "antd";
-import { DeleteOutlined, EditOutlined, EyeOutlined, PlusOutlined, PrinterOutlined, SearchOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, EyeOutlined, PlusOutlined, PrinterOutlined, SearchOutlined, UploadOutlined } from "@ant-design/icons";
 import Table, { ColumnsType } from "antd/es/table";
 import api from '../../services/api';
 import { useNavigate } from "react-router-dom";
+import UploadLogoDrawer from './components/UploadLogoDrawer';
 
 interface Subscriber {
   id: number;
@@ -22,6 +23,8 @@ export default function Subscriber() {
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [selectedSubscriberId, setSelectedSubscriberId] = useState<number | null>(null);
 
   // Fetch all subscribers
   const loadSubscribers = async (params: any = {}) => {
@@ -81,6 +84,17 @@ export default function Subscriber() {
       render: (_, record) => (
         <Space size="small">
           <Button
+            icon={<UploadOutlined />}
+            onClick={() => {
+              setSelectedSubscriberId(record.id);
+              setDrawerOpen(true);
+            }}
+          >
+            Upload Logo
+          </Button>
+
+
+          <Button
             type="text"
             icon={<EditOutlined />}
             onClick={(e) => {
@@ -88,6 +102,8 @@ export default function Subscriber() {
               navigate(`/subscriber/edit/${record.id}`);
             }}
           />
+
+
           <Popconfirm
             title="Tem certeza que deseja excluir?"
             onConfirm={async () => {
@@ -116,71 +132,83 @@ export default function Subscriber() {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-      <Card>
-        <Form
-          form={form}
-          layout="horizontal"
-          name="subscriberForm"
-          onFinish={onFinish}
-        >
-          <Row gutter={[16, 8]}>
-            <Col xs={24} sm={12} md={8} lg={6}>
-              <Form.Item label="Nome" name="subscriber_name">
-                <Input
-                  placeholder="Digite o nome fantasia"
-                  allowClear
-                />
-              </Form.Item>
-            </Col>
+    <>
+      <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+        <Card>
+          <Form
+            form={form}
+            layout="horizontal"
+            name="subscriberForm"
+            onFinish={onFinish}
+          >
+            <Row gutter={[16, 8]}>
+              <Col xs={24} sm={12} md={8} lg={6}>
+                <Form.Item label="Nome" name="subscriber_name">
+                  <Input
+                    placeholder="Digite o nome fantasia"
+                    allowClear
+                  />
+                </Form.Item>
+              </Col>
 
-            <Col xs={24} sm={12} md={8} lg={6}>
-              <Form.Item label="CNPJ" name="cnpj">
-                <Input
-                  placeholder="00.000.000/0000-00"
-                  maxLength={18}
-                  allowClear
-                />
-              </Form.Item>
-            </Col>
+              <Col xs={24} sm={12} md={8} lg={6}>
+                <Form.Item label="CNPJ" name="cnpj">
+                  <Input
+                    placeholder="00.000.000/0000-00"
+                    maxLength={18}
+                    allowClear
+                  />
+                </Form.Item>
+              </Col>
 
-            <Col xs={24} sm={12} md={8} lg={6}>
-              <Form.Item label="Cidade" name="city">
-                <Input
-                  placeholder="Digite a cidade"
-                  allowClear
-                />
-              </Form.Item>
-            </Col>
-          </Row>
+              <Col xs={24} sm={12} md={8} lg={6}>
+                <Form.Item label="Cidade" name="city">
+                  <Input
+                    placeholder="Digite a cidade"
+                    allowClear
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
 
-          <Form.Item style={{ marginTop: 16, textAlign: 'left' }}>
-            <Button
-              type="primary"
-              htmlType="submit"
-              icon={<SearchOutlined />}
-            >
-              Buscar
-            </Button>
-            <Button
-              icon={<PlusOutlined />}
-              style={{ marginLeft: 12 }}
-              onClick={() => navigate('/subscriber/create')}
-            >
-              Adicionar
-            </Button>
-          </Form.Item>
-        </Form>
-      </Card>
+            <Form.Item style={{ marginTop: 16, textAlign: 'left' }}>
+              <Button
+                type="primary"
+                htmlType="submit"
+                icon={<SearchOutlined />}
+              >
+                Buscar
+              </Button>
+              <Button
+                icon={<PlusOutlined />}
+                style={{ marginLeft: 12 }}
+                onClick={() => navigate('/subscriber/create')}
+              >
+                Adicionar
+              </Button>
+            </Form.Item>
+          </Form>
+        </Card>
 
-      <Card title="Lista de Assinantes">
-        <Table<Subscriber>
-          rowKey="id"
-          dataSource={subscribers}
-          columns={columns}
-          pagination={{ pageSize: 10 }}
-        />
-      </Card>
-    </div>
+        <Card title="Lista de Assinantes">
+          <Table<Subscriber>
+            rowKey="id"
+            dataSource={subscribers}
+            columns={columns}
+            pagination={{ pageSize: 10 }}
+          />
+        </Card>
+      </div>
+      <UploadLogoDrawer
+        open={drawerOpen}
+        subscriberId={selectedSubscriberId!}
+        onClose={() => setDrawerOpen(false)}
+        onUploaded={() => {
+          setDrawerOpen(false);
+          loadSubscribers(); // recarrega a lista
+        }}
+      />
+
+    </>
   );
 }

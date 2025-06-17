@@ -69,6 +69,7 @@ import EditPerson from "../Pages/Person/EditPerson";
 import FuelPrice from "../Pages/FuelPrice";
 import CreateFuelPrice from "../Pages/FuelPrice/CreateFuelPrice";
 import EditFuelPrice from "../Pages/FuelPrice/EditFuelPrice";
+import FuelLogDrive from "../Pages/Mobile/FuelLogDrive";
 
 export default function AppRoutes() {
   return (
@@ -77,10 +78,11 @@ export default function AppRoutes() {
         <Route path="/" element={<Auth />} />
         <Route path="/admin/subscriber" element={<SubscriberList />} />
         <Route path="/admin/department/:id" element={<DepartmentList />} />
- 
+
 
         <Route path="/auth/mobile" element={<AuthMobile />} />
-        <Route path="/supplier/fuel-log-attendant" element={<FuelLogAttendant />} />
+        <Route path="/drive/fuel-log/:id" element={<FuelLogDrive />} />
+        <Route path="/supplier/fuel-log-attendant/:id" element={<FuelLogAttendant />} />
 
         <Route element={<AppLayout />}>
           <Route path="/vehicle" element={<Vehicle />} />
@@ -105,7 +107,7 @@ export default function AppRoutes() {
 
           <Route path="/person" element={<Person />} />
           <Route path="/person/create" element={<CreatePerson />} />
-          <Route path="/person/edit/:id" element={<EditPerson/>} />
+          <Route path="/person/edit/:id" element={<EditPerson />} />
           <Route path="/person/lot/create" element={<UploadPersonCsvForm />} />
 
           <Route path="/ticket" element={<Ticket />} />

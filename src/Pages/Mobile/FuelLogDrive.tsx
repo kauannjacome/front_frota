@@ -64,7 +64,7 @@ interface PriceOption {
 }
 
 
-export default function FuelLogAttendant() {
+export default function FuelLogDrive() {
   const { id } = useParams<{ id: string }>();
   const [form] = Form.useForm();
   const screens = useBreakpoint();
@@ -93,31 +93,7 @@ export default function FuelLogAttendant() {
   };
 
 
-  const fetchDrivers = async (search?: string) => {
-    setLoadingDrivers(true);
-    try {
-      const { data } = await api.get<Driver[]>("/user/driver", {
-        params: search ? { q: search } : {},
-      });
 
-      setDrivers(data);
-
-
-    } catch (err) {
-      console.error("Erro ao buscar motoristas:", err);
-      message.error("Falha ao carregar lista de motoristas.");
-    } finally {
-      setLoadingDrivers(false);
-    }
-  };
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const handleDriverSearch = useCallback(
-    debounce((value: string) => {
-      fetchDrivers(value);
-    }, 500),
-    []
-  );
 
 
 
@@ -232,28 +208,7 @@ export default function FuelLogAttendant() {
           </Col>
         </Row>
         <Divider />
-        {/* Seleção de motorista */}
-        <Form.Item
-          name="driver_id"
-          label="Motorista"
 
-        >
-          <Select
-            showSearch
-            placeholder="Digite para buscar..."
-            notFoundContent={loadingDrivers ? <Spin size="small" /> : null}
-            filterOption={false}
-            onSearch={handleDriverSearch}
-            loading={loadingDrivers}
-            allowClear
-          >
-            {drivers.map((driver) => (
-              <Select.Option key={driver.id} value={driver.id}>
-                {driver.full_name}
-              </Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
 
         {/* Quantidade de litros */}
         <Form.Item

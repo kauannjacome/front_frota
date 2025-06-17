@@ -42,6 +42,7 @@ export default function EditTrip() {
             id: p.passenger_id,
             full_name: p.passenger.full_name,
             birth_date: p.passenger.birth_date,
+            type: p.type, 
             dropoff_location: p.dropoff_location,
             notes: p.notes,
           }))
@@ -81,6 +82,7 @@ export default function EditTrip() {
         attendant_id: rawData.attendant_id,
         persons: persons.map((p) => ({
           person_id: p.id,
+          type: p.type,
           dropoff_location: p.dropoff_location,
           notes: p.notes,
         })),

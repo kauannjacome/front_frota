@@ -13,7 +13,6 @@ import {
 import moment from "moment";
 import debounce from "lodash/debounce";
 import api from "../../../services/api";
-import { useForm } from "antd/es/form/Form";
 
 export interface FuelLogFormValues {
   vehicle_id?: number;
@@ -24,7 +23,9 @@ export interface FuelLogFormValues {
   supplier_id?: number;
   supply_date: moment.Moment;
   deadline?: moment.Moment;
+  price_id?: number;
   liters?: number;
+  price_liters?: number;
   cost?: number;
   odometer?: number;
   fuel_type: "GASOLINA" | "ALCOOL" | "DIESEL" | "ELETRICO";
@@ -56,6 +57,17 @@ interface Supplier {
   name: string;
 }
 
+interface PriceOption {
+  id: number;
+  uuid: string;
+  description: string;
+  fuel_type: string;
+  price: number;
+}
+
+
+
+
 export default function FuelLogForm({
   initialValues,
   onFinish,
@@ -67,8 +79,10 @@ export default function FuelLogForm({
   const [loadingDrivers, setLoadingDrivers] = useState(false);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [loadingSuppliers, setLoadingSuppliers] = useState(false);
-    const [status, setStatus] = useState('');
-
+  const [status, setStatus] = useState('');
+  const [fetchingPrice, setFetchingPrice] = useState(false);
+  // dentro do componente:
+  const [fuelPrices, setFuelPrices] = useState<PriceOption[]>([]);
   const fetchVehicles = async (search?: string) => {
     setLoadingVehicles(true);
     try {
@@ -90,7 +104,7 @@ export default function FuelLogForm({
       const { data } = await api.get<Driver[]>("/user/driver", {
         params: search ? { q: search } : {},
       });
-  
+
       setDrivers(data);
     } catch (err) {
       console.error("Erro ao buscar motoristas:", err);
@@ -99,6 +113,20 @@ export default function FuelLogForm({
       setLoadingDrivers(false);
     }
   };
+
+  const fetchFuelPrices = async (supplierId: number) => {
+    setFetchingPrice(true);
+    try {
+      const { data } = await api.get<PriceOption[]>(
+        `/fuel-price/supplier/${supplierId}`
+      );
+      setFuelPrices(data);
+
+    } finally {
+      setFetchingPrice(false);
+    }
+  };
+
 
   const fetchSuppliers = async (search?: string) => {
     setLoadingSuppliers(true);
@@ -123,7 +151,10 @@ export default function FuelLogForm({
     }, 500),
     []
   );
-
+  const handleSupplierChange = (value: number) => {
+    // dispara o fetch de preços
+    fetchFuelPrices(value);
+  };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleDriverSearch = useCallback(
     debounce((value: string) => {
@@ -145,10 +176,39 @@ export default function FuelLogForm({
     fetchDrivers();
     fetchSuppliers();
   }, []);
-  const [form] = useForm<FuelLogFormValues>();
-  const supplyType = Form.useWatch('supply_type', form);
+
+
+
+  const [form] = Form.useForm<FuelLogFormValues>();
+
+  const liters = Form.useWatch('liters', form);
+  const priceLiters = Form.useWatch('price_liters', form);
+  const priceId = Form.useWatch('price_id', form);
+  useEffect(() => {
+    if (typeof liters === 'number' && typeof priceLiters === 'number') {
+      form.setFieldsValue({ cost: +(liters * priceLiters).toFixed(2) });
+    } else {
+      // opcional: limpa se um dos valores ficar indefinido
+      form.setFieldsValue({ cost: undefined });
+    }
+  }, [liters, priceLiters, form]);
+
+  useEffect(() => {
+    if (typeof priceId === 'number') {
+      const sel = fuelPrices.find(p => p.id === priceId);
+      if (sel) {
+        form.setFieldsValue({ price_liters: sel.price });
+        form.setFieldsValue({ fuel_type: sel.fuel_type as FuelLogFormValues['fuel_type'] });
+      }
+    } else {
+      form.setFieldsValue({ price_liters: undefined });
+    }
+  }, [priceId, fuelPrices, form]);
+
+
   return (
     <Form<FuelLogFormValues>
+      form={form}
       layout="vertical"
       onFinish={onFinish}
       initialValues={{
@@ -189,6 +249,137 @@ export default function FuelLogForm({
           </Form.Item>
         </Col>
 
+
+
+        <Col span={6}>
+          <Form.Item
+            name="supplier_id"
+            label="Fornecedor"
+            rules={[{ required: true, message: "Selecione o fornecedor" }]}
+          >
+            <Select
+              showSearch
+              placeholder="Digite para buscar..."
+              notFoundContent={loadingSuppliers ? <Spin size="small" /> : null}
+              filterOption={false}
+              onChange={handleSupplierChange}
+              onSearch={handleSupplierSearch}
+              loading={loadingSuppliers}
+              allowClear
+            >
+              {suppliers.map((supplier) => (
+                <Select.Option key={supplier.id} value={supplier.id}>
+                  {supplier.name}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Col>
+
+        <Col span={6}>
+          <Form.Item
+            name="price_id"
+            label="Registro de Preço"
+          >
+            <Select
+              placeholder={fetchingPrice ? "Carregando..." : "Selecione o preço"}
+              disabled={fetchingPrice || fuelPrices.length === 0}
+              allowClear
+            >
+              {fuelPrices.map(p => (
+                <Select.Option key={p.id} value={p.id}>
+                  {p.description} – R$ {p.price.toFixed(2)}-{p.fuel_type}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Col>
+        <Col span={6}>
+          <Form.Item name="supply_type" label="Tipo de Abastecimento"
+            rules={[{ required: true, message: "Selecione o Tipo de Abastecimento" }]}>
+            <Select placeholder="Selecione o tipo" onChange={setStatus} >
+              <Select.Option value="COMPLETE">Completo</Select.Option>
+              <Select.Option value="LITRO_ESPECIFICADO">Parcial</Select.Option>
+            </Select>
+          </Form.Item>
+        </Col>
+      </Row>
+
+      {/* restante do formulário permanece igual */}
+
+      <Row gutter={16}>
+
+        <Col span={6}>
+          <Form.Item
+            name="fuel_type"
+            label="Tipo de Combustível"
+            rules={[
+              { required: true, message: "Selecione o tipo de combustível" },
+            ]}
+          >
+            <Select placeholder="Selecione o tipo" disabled={!!priceId}  >
+              <Select.Option value="GASOLINA">Gasolina</Select.Option>
+              <Select.Option value="ETANOL">Álcool</Select.Option>
+              <Select.Option value="DIESEL">Diesel</Select.Option>
+              <Select.Option value="ELETRICO">Elétrico</Select.Option>
+            </Select>
+          </Form.Item>
+        </Col>
+        <Col span={6}>
+          <Form.Item name="liters" label="Litros">
+            <InputNumber
+              disabled={status === 'COMPLETE'}
+              style={{ width: "100%" }} min={0} step={0.01} />
+          </Form.Item>
+        </Col>
+        <Col span={6}>
+          <Form.Item name="price_liters" label="Preço do litro"
+          >
+            <InputNumber
+              style={{ width: "100%" }}
+              min={0}
+              step={0.01}
+              disabled={!!priceId}
+              decimalSeparator=","
+              formatter={(value) => (value ? `R$ ${value}` : "")}
+            />
+          </Form.Item>
+        </Col>
+        <Col span={6}>
+          <Form.Item name="cost" label="Custo">
+            <InputNumber
+              style={{ width: "100%" }}
+              min={0}
+              step={0.01}
+              formatter={(value) => (value ? `R$ ${value}` : "")}
+              decimalSeparator=","
+              disabled
+            />
+          </Form.Item>
+        </Col>
+      </Row>
+
+      <Row gutter={16}>
+        <Col span={6}>
+          <Form.Item name="odometer" label="Hodômetro">
+            <InputNumber style={{ width: "100%" }} />
+          </Form.Item>
+        </Col>
+        <Col span={6}>
+          <Form.Item
+            name="supply_date"
+            label="Data de Abastecimento"
+          >
+            <DatePicker style={{ width: "100%" }} />
+          </Form.Item>
+        </Col>
+
+        <Col span={6}>
+          <Form.Item name="deadline" label="Prazo Limite">
+            <DatePicker style={{ width: "100%" }} />
+          </Form.Item>
+        </Col>
+
         <Col span={6}>
           <Form.Item
             name="driver_id"
@@ -210,99 +401,6 @@ export default function FuelLogForm({
                 </Select.Option>
               ))}
             </Select>
-          </Form.Item>
-        </Col>
-
-        <Col span={6}>
-          <Form.Item
-            name="supplier_id"
-            label="Fornecedor"
-            rules={[{ required: true, message: "Selecione o fornecedor" }]}
-          >
-            <Select
-              showSearch
-              placeholder="Digite para buscar..."
-              notFoundContent={loadingSuppliers ? <Spin size="small" /> : null}
-              filterOption={false}
-              onSearch={handleSupplierSearch}
-              loading={loadingSuppliers}
-              allowClear
-            >
-              {suppliers.map((supplier) => (
-                <Select.Option key={supplier.id} value={supplier.id}>
-                  {supplier.name}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-        </Col>
-        <Col span={6}>
-          <Form.Item name="supply_type" label="Tipo de Abastecimento">
-            <Select placeholder="Selecione o tipo"   onChange={setStatus} >
-              <Select.Option value="COMPLETE">Completo</Select.Option>
-              <Select.Option value="LITRO_ESPECIFICADO">Parcial</Select.Option>
-            </Select>
-          </Form.Item>
-        </Col>
-      </Row>
-
-      {/* restante do formulário permanece igual */}
-
-      <Row gutter={16}>
-        <Col span={6}>
-          <Form.Item name="deadline" label="Prazo Limite">
-            <DatePicker style={{ width: "100%" }} />
-          </Form.Item>
-        </Col>
-        <Col span={6}>
-          <Form.Item
-            name="fuel_type"
-            label="Tipo de Combustível"
-            rules={[
-              { required: true, message: "Selecione o tipo de combustível" },
-            ]}
-          >
-            <Select placeholder="Selecione o tipo">
-              <Select.Option value="GASOLINA">Gasolina</Select.Option>
-              <Select.Option value="ETANOL">Álcool</Select.Option>
-              <Select.Option value="DIESEL">Diesel</Select.Option>
-              <Select.Option value="ELETRICO">Elétrico</Select.Option>
-            </Select>
-          </Form.Item>
-        </Col>
-        <Col span={6}>
-          <Form.Item name="liters" label="Litros">
-            <InputNumber
-              disabled={status === 'COMPLETE'}
-              style={{ width: "100%" }} min={0} step={0.01} />
-          </Form.Item>
-        </Col>
-        <Col span={6}>
-          <Form.Item name="cost" label="Custo">
-            <InputNumber
-              style={{ width: "100%" }}
-              min={0}
-              formatter={(value) => (value ? `R$ ${value}` : "")}
-            />
-          </Form.Item>
-        </Col>
-      </Row>
-
-      <Row gutter={16}>
-        <Col span={6}>
-          <Form.Item name="odometer" label="Hodômetro">
-            <InputNumber style={{ width: "100%" }} />
-          </Form.Item>
-        </Col>
-        <Col span={6}>
-          <Form.Item
-            name="supply_date"
-            label="Data de Abastecimento"
-            rules={[
-              { required: true, message: "Informe a data de abastecimento" },
-            ]}
-          >
-            <DatePicker style={{ width: "100%" }} />
           </Form.Item>
         </Col>
       </Row>

@@ -115,7 +115,6 @@ export default function CreateUserDrawer({
             initialValues={initialValues}
             onFinish={handleFinish}
             onCancel={onClose}
-            roleOptions={roleOptions}
             typeOptions={typeOptions}
             departmentOptions={departmentOptions}
           />

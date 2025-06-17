@@ -50,6 +50,12 @@ type Props = {
 };
 
 const { Option } = Select;
+export interface PersonRow extends Person {
+  type: 'IDA' | 'VOLTA' | 'IDA_E_VOLTA';
+  dropoff_location: string;
+  notes: string;
+}
+
 
 export default function TripForm({
   initialValues = {},
@@ -116,6 +122,16 @@ export default function TripForm({
     );
   };
 
+  const handleTypeChange = (id: number, value: PersonRow['type']) => {
+  setPersons(prev =>
+    prev.map(p =>
+      p.id === id
+        ? { ...p, type: value }
+        : p
+    )
+  );
+};
+
   // busca pessoas para AutoComplete
   const handleSearch = async (value: string) => {
     if (!value) {
@@ -136,7 +152,7 @@ export default function TripForm({
     if (persons.some(p => p.id === id)) return;
     api.get<Person>(`/person/${id}`)
       .then(res => {
-        const newPerson: PersonRow = { ...res.data, dropoff_location: '', notes: '' };
+        const newPerson: PersonRow = { ...res.data, type: 'IDA_E_VOLTA',   dropoff_location: '', notes: '' };
         setPersons(prev => [...prev, newPerson]);
         setSearchValue('');
       })
@@ -157,6 +173,24 @@ export default function TripForm({
       key: 'birth_date',
       render: date => moment(date).format('DD/MM/YYYY'),
     },
+    {
+      title: 'Tipo',
+      dataIndex: 'type',
+      key: 'type',
+      render: (_: any, record) => (
+        <Select
+          value={record.type}
+          onChange={value => handleTypeChange(record.id, value as PersonRow['type'])}
+          style={{ width: 140 }}
+          options={[
+            { value: 'IDA', label: 'Ida' },
+            { value: 'VOLTA', label: 'Volta' },
+            { value: 'IDA_E_VOLTA', label: 'Ida e Volta' },
+          ]}
+        />
+      ),
+    },
+
     {
       title: 'Local de Entrega',
       dataIndex: 'dropoff_location',
